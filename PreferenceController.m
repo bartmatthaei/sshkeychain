@@ -111,7 +111,7 @@ PreferenceController *sharedPreferenceController;
 	frame.origin.y += frame.size.height;
 	frame.origin.y -= newHeight + toolbarHeight;
 	frame.size.height = newHeight + toolbarHeight;
-	frame.size.width = 475;
+	frame.size.width = 500;
 	
 	frame = [NSWindow frameRectForContentRect:frame styleMask:[window styleMask]];
 	

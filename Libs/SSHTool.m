@@ -30,22 +30,22 @@
 
 - (id)init
 {
-	if((self = [super init]) == NULL)
+	if(self = [super init])
 	{
-		return NULL;
+		task = [[NSTask alloc] init];
+		[task setStandardInput:[NSFileHandle fileHandleWithNullDevice]];
+		toolPath = nil;
 	}
-
-	task = [[NSTask alloc] init];
-	[task setStandardInput:[NSFileHandle fileHandleWithNullDevice]];
 
 	return self;
 }
 
 - (void)dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSTaskDidTerminateNotification object:nil];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	[task release];
+	[toolPath release];
 	
 	[super dealloc];
 }
@@ -53,7 +53,8 @@
 /* Set the path. */
 - (void)setPath:(NSString *)path
 {
-	toolPath = [NSString stringWithString:path];
+	[toolPath autorelease];
+	toolPath = [path copy];
 }
 
 /* Set the argument for the NSTask. */

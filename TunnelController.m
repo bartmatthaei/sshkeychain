@@ -443,6 +443,11 @@ TunnelController *sharedTunnelController;
 	{
 		[tunnel setCompression:YES];
 	}
+	
+	if([dict objectForKey:@"RemoteAccess"])
+	{
+		[tunnel setRemoteAccess:YES];
+	}
 
 	if([dict objectForKey:@"LocalPortForwards"]) 
 	{
@@ -463,6 +468,14 @@ TunnelController *sharedTunnelController;
 						localHost:[[[dict objectForKey:@"LocalPortForwards"] objectAtIndex:i] objectForKey:@"LocalHost"]
 						localPort:[[[[dict objectForKey:@"LocalPortForwards"] objectAtIndex:i] objectForKey:@"LocalPort"] intValue]
 			];
+		}
+	}
+	
+	if([dict objectForKey:@"DynamicPortForwards"]) 
+	{
+		for(i=0; i < [[dict objectForKey:@"DynamicPortForwards"] count]; i++)
+		{
+			[tunnel addDynamicPortForwardWithPort:[[[[dict objectForKey:@"DynamicPortForwards"] objectAtIndex:i] objectForKey:@"LocalPort"] intValue]];
 		}
 	}
 	

@@ -26,6 +26,9 @@
 
 	if([[NSUserDefaults standardUserDefaults] boolForKey:manageGlobalEnvironmentString]) 
 	{
+		NSSize environmentSize = [environmentTableView frame].size;
+		environmentSize.width = [self viewSize].width;
+		[environmentTableView setFrameSize:environmentSize];
 		[view addSubview:environmentTableView];
 	}
 	
@@ -69,6 +72,9 @@
 		[self syncEnvironment];
 
 		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
+		NSSize environmentSize = [environmentTableView frame].size;
+		environmentSize.width = [self viewSize].width;
+		[environmentTableView setFrameSize:environmentSize];
 		[view addSubview:environmentTableView];
 	}
 

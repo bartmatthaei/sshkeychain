@@ -5,16 +5,18 @@
 	IBOutlet id tunnelTable, delTunnelButton;
 	IBOutlet id tunnelDetailsView;
 
-	IBOutlet id tunnelName, tunnelCompression;
+	IBOutlet id tunnelName, tunnelCompression, tunnelRemoteAccess;
 	IBOutlet id tunnelHostname, tunnelPort, tunnelUser;
 	IBOutlet id tunnelLaunchOnAgentFilled, tunnelLaunchAfterSleep;
 	
-	IBOutlet id localPortForwardTable, remotePortForwardTable, delLocalPortForwardButton, delRemotePortForwardButton;
+	IBOutlet id localPortForwardTable, remotePortForwardTable, dynamicPortForwardTable;
+	IBOutlet id delLocalPortForwardButton, delRemotePortForwardButton, delDynamicPortForwardButton;
 
 	NSMutableArray *tunnels;
 
 	NSMutableArray *localPortForwards;
 	NSMutableArray *remotePortForwards;
+	NSMutableArray *dynamicPortForwards;
 	
 	int tunnelIndex;
 }
@@ -26,6 +28,8 @@
 - (IBAction)delLocalPortForward:(id)sender;
 - (IBAction)addRemotePortForward:(id)sender;
 - (IBAction)delRemotePortForward:(id)sender;
+- (IBAction)addDynamicPortForward:(id)sender;
+- (IBAction)delDynamicPortForward:(id)sender;
 
 - (void)showTunnelDetails:(int)index;
 - (void)hideTunnelDetails;

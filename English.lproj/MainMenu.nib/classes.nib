@@ -49,7 +49,6 @@
         }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
-            ACTIONS = {}; 
             CLASS = TunnelController; 
             LANGUAGE = ObjC; 
             OUTLETS = {

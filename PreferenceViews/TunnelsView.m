@@ -19,6 +19,7 @@
 	[tunnelTable setDataSource:self];
 	[remotePortForwardTable setDataSource:self];
 	[localPortForwardTable setDataSource:self];
+	[dynamicPortForwardTable setDataSource:self];
 }
 
 - (void)closePreferences
@@ -190,6 +191,57 @@
 	[[TunnelController sharedController] sync];
 }
 
+/* Add dynamic port forward. */
+- (IBAction)addDynamicPortForward:(id)sender
+{
+	NSMutableDictionary *dict;
+	int i;
+	BOOL match = NO;
+	
+	if(tunnelIndex < 0)
+	{
+		return;
+	}
+	
+	for(i=0; i < [dynamicPortForwards count]; i++)
+	{
+		if([[[dynamicPortForwards objectAtIndex:i] objectForKey:@"LocalPort"] isEqualToString:@"0"])
+		{
+			match = YES;
+			break;
+		}
+	}
+	
+	if(!match) {
+		dict = [[[NSMutableDictionary alloc] init] autorelease];
+		
+		[dict setObject:@"0" forKey:@"LocalPort"];
+		
+		[dynamicPortForwards addObject:dict];
+		
+		[self updateUI];
+		
+		[self savePreferences];
+		[[TunnelController sharedController] sync];
+	}
+}
+
+/* Delete dynamic port forward. */
+- (IBAction)delDynamicPortForward:(id)sender
+{
+	if((tunnelIndex < 0) || ([dynamicPortForwardTable selectedRow] < 0))
+	{
+		return;
+	}	
+	
+	[dynamicPortForwards removeObjectAtIndex:[dynamicPortForwardTable selectedRow]];
+	
+	[self updateUI];
+	
+	[self savePreferences];
+	[[TunnelController sharedController] sync];
+}
+
 /* Show tunnel details. */
 - (void)showTunnelDetails:(int)index
 {
@@ -202,20 +254,22 @@
 
 	tunnelIndex = index;
 
-	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"LocalPortForwards"]) 
-	{
+	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"LocalPortForwards"]) {
 		localPortForwards = [[NSMutableArray arrayWithArray:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"LocalPortForwards"]] retain];
-	} 
-
-	else 
-	{
-		localPortForwards = [[[[NSMutableArray alloc] init] autorelease] retain];
+	} else {
+		localPortForwards = [[NSMutableArray alloc] init];
 	}
 
 	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"RemotePortForwards"]) {
 		remotePortForwards = [[NSMutableArray arrayWithArray:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"RemotePortForwards"]] retain];
 	} else {
-		remotePortForwards = [[[[NSMutableArray alloc] init] autorelease] retain];
+		remotePortForwards = [[NSMutableArray alloc] init];
+	}
+	
+	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"DynamicPortForwards"]) {
+		dynamicPortForwards = [[NSMutableArray arrayWithArray:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"DynamicPortForwards"]] retain];
+	} else {
+		dynamicPortForwards = [[NSMutableArray alloc] init];
 	}
 
 	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"]) {
@@ -245,6 +299,12 @@
 	} else {
 		[tunnelCompression setState:NO];
 	}
+	
+	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"RemoteAccess"]) {
+		[tunnelRemoteAccess setState:YES];
+	} else {
+		[tunnelRemoteAccess setState:NO];
+	}
 		
 	if([[tunnels objectAtIndex:tunnelIndex] objectForKey:@"LaunchOnAgentFilled"]) {
 		[tunnelLaunchOnAgentFilled setState:YES];
@@ -261,6 +321,9 @@
 	size.height = (192 + [tunnelDetailsView frame].size.height);
 	
 	[[PreferenceController sharedController] resizeWindowToSize:size];
+	NSSize detailsSize = [tunnelDetailsView frame].size;
+	detailsSize.width = size.width;
+	[tunnelDetailsView setFrameSize:detailsSize];
 	[view addSubview:tunnelDetailsView];
 }
 
@@ -277,9 +340,11 @@
 	
 	[localPortForwards release];
 	[remotePortForwards release];
+	[dynamicPortForwards release];
 
 	localPortForwards = nil;
 	remotePortForwards = nil;
+	dynamicPortForwards = nil;
 }
 
 /* Save tunnel details. */
@@ -294,49 +359,57 @@
 	
 	
 	if([[tunnelName stringValue] isEqualToString:@""]) { [tunnelName setStringValue:@"Some Tunnel"]; }
-        if([[tunnelHostname stringValue] isEqualToString:@""]) { [tunnelHostname setStringValue:@"some.ssh-server.com"]; }
-        if([[tunnelPort stringValue] isEqualToString:@""]) { [tunnelPort setStringValue:@"22"]; }
-        if([[tunnelUser stringValue] isEqualToString:@""]) { [tunnelUser setStringValue:@"someuser"]; }
+	if([[tunnelHostname stringValue] isEqualToString:@""]) { [tunnelHostname setStringValue:@"some.ssh-server.com"]; }
+	if([[tunnelPort stringValue] isEqualToString:@""]) { [tunnelPort setStringValue:@"22"]; }
+	if([[tunnelUser stringValue] isEqualToString:@""]) { [tunnelUser setStringValue:@"someuser"]; }
 	
-        if(![[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"] isEqualToString:[tunnelName stringValue]])
-        {
-                [[TunnelController sharedController] changeTunnelName:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"]
-                                          		  toName:[tunnelName stringValue]];
-        }
+	if(![[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"] isEqualToString:[tunnelName stringValue]])
+	{
+		[[TunnelController sharedController] changeTunnelName:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"]
+													   toName:[tunnelName stringValue]];
+	}
 	
-        [dict setObject:[tunnelName stringValue] forKey:@"TunnelName"];
-        [dict setObject:[tunnelHostname stringValue] forKey:@"TunnelHostname"];
-        [dict setObject:[tunnelPort stringValue] forKey:@"TunnelPort"];
-        [dict setObject:[tunnelUser stringValue] forKey:@"TunnelUser"];
-
+	[dict setObject:[tunnelName stringValue] forKey:@"TunnelName"];
+	[dict setObject:[tunnelHostname stringValue] forKey:@"TunnelHostname"];
+	[dict setObject:[tunnelPort stringValue] forKey:@"TunnelPort"];
+	[dict setObject:[tunnelUser stringValue] forKey:@"TunnelUser"];
+	
 	if([tunnelCompression state]) {
-                [dict setObject:@"YES" forKey:@"Compression"];
-        } else {
-                [dict removeObjectForKey:@"Compression"];
-        }
+		[dict setObject:@"YES" forKey:@"Compression"];
+	} else {
+		[dict removeObjectForKey:@"Compression"];
+	}
 	
-        if([tunnelLaunchOnAgentFilled state]) {
-                [dict setObject:@"YES" forKey:@"LaunchOnAgentFilled"];
-        } else {
-                [dict removeObjectForKey:@"LaunchOnAgentFilled"];
-        }
+	if([tunnelRemoteAccess state]) {
+		[dict setObject:@"YES" forKey:@"RemoteAccess"];
+	} else {
+		[dict removeObjectForKey:@"RemoteAccess"];
+	}
+	
+	if([tunnelLaunchOnAgentFilled state]) {
+		[dict setObject:@"YES" forKey:@"LaunchOnAgentFilled"];
+	} else {
+		[dict removeObjectForKey:@"LaunchOnAgentFilled"];
+	}
 	
 	if([tunnelLaunchAfterSleep state]) {
-                [dict setObject:@"YES" forKey:@"LaunchAfterSleep"];
-        } else {
-                [dict removeObjectForKey:@"LaunchAfterSleep"];
-        }
+		[dict setObject:@"YES" forKey:@"LaunchAfterSleep"];
+	} else {
+		[dict removeObjectForKey:@"LaunchAfterSleep"];
+	}
 	
 	[dict setObject:[NSArray arrayWithArray:localPortForwards] 
 						forKey:@"LocalPortForwards"];
 	[dict setObject:[NSArray arrayWithArray:remotePortForwards]
 						forKey:@"RemotePortForwards"];
+	[dict setObject:[NSArray arrayWithArray:dynamicPortForwards]
+						forKey:@"DynamicPortForwards"];
 
 	[tunnels replaceObjectAtIndex:tunnelIndex withObject: dict];
-
-        [self savePreferences];
 	
-        [[TunnelController sharedController] sync];
+	[self savePreferences];
+	
+	[[TunnelController sharedController] sync];
 }
 
 /* Update the UI. */
@@ -373,7 +446,7 @@
 		[delLocalPortForwardButton setEnabled:NO];
 	}
 	
-	/* If the user selected a local port forward, enable the delLocalPortForwardButton. */
+	/* If the user selected a remote port forward, enable the delRemotePortForwardButton. */
 	if(([remotePortForwardTable selectedRow] != -1) && ([remotePortForwards count] > 0))
 	{
 		[delRemotePortForwardButton setEnabled:YES];
@@ -382,11 +455,23 @@
 	else
 	{
 		[delRemotePortForwardButton setEnabled:NO];
-	}	
+	}
+	
+	/* If the user selected a dynamic port forward, enable the delDynamicPortForwardButton. */
+	if(([dynamicPortForwardTable selectedRow] != -1) && ([dynamicPortForwards count] > 0))
+	{
+		[delDynamicPortForwardButton setEnabled:YES];
+	}
+	
+	else
+	{
+		[delDynamicPortForwardButton setEnabled:NO];
+	}
 
 	[tunnelTable reloadData];
 	[localPortForwardTable reloadData];
 	[remotePortForwardTable reloadData];
+	[dynamicPortForwardTable reloadData];
 }
 
 /* Delegated methods from NSTableView. */
@@ -411,6 +496,11 @@
 	else if((table == remotePortForwardTable) && (remotePortForwards))
 	{
 		return [remotePortForwards count];
+	}
+	
+	else if((table == dynamicPortForwardTable) && (dynamicPortForwards))
+	{
+		return [dynamicPortForwards count];
 	}
 	
 	return 0;
@@ -456,6 +546,14 @@
 		else if([[column identifier] isEqualToString:@"lport"])
 		{
 			return [[remotePortForwards objectAtIndex:nr] objectForKey:@"LocalPort"];
+		}
+	}
+	
+	else if((table == dynamicPortForwardTable) && (dynamicPortForwards) && ([dynamicPortForwards count] > nr))
+	{
+		if([[column identifier] isEqualToString:@"lport"])
+		{
+			return [[dynamicPortForwards objectAtIndex:nr] objectForKey:@"LocalPort"];
 		}
 	}
 	
@@ -530,6 +628,26 @@
 		}
 		
 		[remotePortForwardTable deselectAll:self];
+	}
+	
+	else if((table == dynamicPortForwardTable) && (dynamicPortForwards) && ([dynamicPortForwards count] > 0))
+	{
+		for(i=0; i < [dynamicPortForwards count]; i++)
+		{
+			if(([[column identifier] isEqualToString:@"lport"]) && 
+			   ([[[dynamicPortForwards objectAtIndex:i] objectForKey:@"LocalPort"] isEqualToString:object]))
+			{
+				match = YES;
+				break;
+			}
+		}
+		
+		if((!match) && ([[column identifier] isEqualToString:@"lport"]))
+		{
+			[[dynamicPortForwards objectAtIndex:row] setObject:object forKey:@"LocalPort"];
+		}
+		
+		[dynamicPortForwardTable deselectAll:self];
 	}
 }
 

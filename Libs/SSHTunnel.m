@@ -6,29 +6,39 @@
 
 - (id)init
 {
-	if((self = [super init]) == NULL)
+	if(self = [super init])
 	{
-		return NULL;
+		tunnelHost = NULL;
+		tunnelPort = 0;
+		tunnelUser = NULL;
+
+		localPortForwards = [[NSMutableArray alloc] init];
+		remotePortForwards = [[NSMutableArray alloc] init];
+		dynamicPortForwards = [[NSMutableArray alloc] init];
+		
+		closeSelector = NULL;
+		closeObject = NULL;
+		closeInfo = NULL;
+
+		compression = NO;
+		
+		tunnel = nil;
+		thePipe = nil;
 	}
-
-	tunnelHost = NULL;
-	tunnelPort = 0;
-	tunnelUser = NULL;
-
-	localPortForwards = [[[[NSMutableArray alloc] init] autorelease] retain];
-	remotePortForwards = [[[[NSMutableArray alloc] init] autorelease] retain];
-	
-	closeSelector = NULL;
-	closeObject = NULL;
-	closeInfo = NULL;
-
-	compression = NO;
 
 	return self;
 }
 
 - (void)dealloc
 {
+	[localPortForwards release];
+	[remotePortForwards release];
+	[dynamicPortForwards release];
+	[tunnelHost release];
+	[tunnelUser release];
+	[tunnel release];
+	[thePipe release];
+	
 	[super dealloc];
 }
 
@@ -39,9 +49,11 @@
 	{
 		return NO;
 	}
-
+	
+	[tunnelHost autorelease];
 	tunnelHost = [[NSString stringWithString:host] retain];
 	tunnelPort = port;
+	[tunnelUser autorelease];
 	tunnelUser = [[NSString stringWithString:user] retain];
 
 	return YES;
@@ -60,8 +72,21 @@
 	return YES;
 }
 
+/* Set remote access. */
+- (BOOL)setRemoteAccess:(BOOL)theBool
+{
+	if(open)
+	{
+		return NO;
+	}
+	
+	remoteAccess = theBool;
+	
+	return YES;
+}
+
 /* Add a local port forward. */
-- (BOOL)addLocalPortForwardWithPort:(int)lport remoteHost:(NSString *)rhost remotePort:(int)rport;
+- (BOOL)addLocalPortForwardWithPort:(int)lport remoteHost:(NSString *)rhost remotePort:(int)rport
 {
 	if((open) || (lport < 1) || (lport > 65535) || (rport < 1) || (rport > 65535))
 	{
@@ -74,7 +99,7 @@
 }
 
 /* Add a remote port forward. */
-- (BOOL)addRemotePortForwardWithPort:(int)rport localHost:(NSString *)lhost localPort:(int)lport;
+- (BOOL)addRemotePortForwardWithPort:(int)rport localHost:(NSString *)lhost localPort:(int)lport
 {
 	if((open) || (lport < 1) || (lport > 65535) || (rport < 1) || (rport > 65535))
 	{
@@ -83,6 +108,19 @@
 
 	[remotePortForwards addObject:[NSArray arrayWithObjects:[NSNumber numberWithInt:rport], lhost, [NSNumber numberWithInt:lport], nil]];
 
+	return YES;
+}
+
+/* Add a dynamic port forward. */
+- (BOOL)addDynamicPortForwardWithPort:(int)lport
+{
+	if((open) || (lport < 1) || (lport > 65535))
+	{
+		return NO;
+	}
+	
+	[dynamicPortForwards addObject:[NSNumber numberWithInt:lport]];
+	
 	return YES;
 }
 
@@ -144,26 +182,39 @@
 			stringByAppendingPathComponent:@"TunnelRunner"]] retain];
 
 	
-	arguments = [NSMutableArray arrayWithObjects:
-							[[[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString] 
-										stringByAppendingPathComponent:@"ssh"],
-							nil
-			];
-
+	/*  We want to use our internal build of ssh if we have dynamic ports and the sshToolsPathString
+		is /usr/bin. This is because the Panther-provided copy of ssh (and perhaps Jaguar-provided,
+		I don't know) is broken wrt. dynamic ports */
+	NSString *toolPath;
+	NSString *sshPathString = [[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString];
+	if([dynamicPortForwards count] > 0 && [[sshPathString stringByStandardizingPath] isEqualToString:@"/usr/bin"]) {
+		/* Time to use our internal build */
+		toolPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh"];
+	} else {
+		toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
+	}
+	arguments = [NSMutableArray arrayWithObject:toolPath];
+	
 	for(i=0; i < [localPortForwards count]; i++)
 	{
-			[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[[localPortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
-											[[localPortForwards objectAtIndex:i] objectAtIndex:1],
-											[[[localPortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
+		[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[[localPortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
+												[[localPortForwards objectAtIndex:i] objectAtIndex:1],
+												[[[localPortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
 			];
 	}
-
+	
 	for(i=0; i < [remotePortForwards count]; i++)
 	{
-			[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
-											[[remotePortForwards objectAtIndex:i] objectAtIndex:1],
-											[[[remotePortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
+		[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
+									[[remotePortForwards objectAtIndex:i] objectAtIndex:1],
+									[[[remotePortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
 			];
+	}
+	
+	for(i=0; i < [dynamicPortForwards count]; i++)
+	{
+		[arguments addObject:[NSString stringWithFormat:@"-D%d",
+			[[dynamicPortForwards objectAtIndex:0] intValue]]];
 	}
 
 	if((tunnelPort > 0) && (tunnelPort < 65535))
@@ -178,6 +229,11 @@
 	if(compression)
 	{
 		[arguments addObject:@"-C"];
+	}
+	
+	if(remoteAccess)
+	{
+		[arguments addObject:@"-g"];
 	}
 	
 	if((tunnelUser) && (![tunnelUser isEqualToString:@""]))
@@ -205,7 +261,7 @@
 		[tunnel handleTerminateWithSelector:closeSelector toObject:closeObject withInfo:closeInfo];
 	}
 	
-	thePipe = [[[[NSPipe alloc] init] autorelease] retain];
+	thePipe = [[NSPipe alloc] init];
 
 	[[tunnel task] setStandardOutput:thePipe];
 	
@@ -226,6 +282,9 @@
 	}
 
 	[tunnel release];
+	tunnel = nil;
+	[thePipe release];
+	thePipe = nil;
 }
 
 @end

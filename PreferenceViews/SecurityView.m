@@ -36,6 +36,9 @@
 
 	if([[NSUserDefaults standardUserDefaults] boolForKey:useCustomSecuritySettingsString]) 
 	{
+		NSSize securitySize = [customSecuritySettingsView frame].size;
+		securitySize.width = [self viewSize].width;
+		[customSecuritySettingsView setFrameSize:securitySize];
 		[view addSubview:customSecuritySettingsView];
 	}
 }
@@ -99,6 +102,9 @@
 	if([sender state] == YES)
 	{
 		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
+		NSSize settingsSize = [customSecuritySettingsView frame].size;
+		settingsSize.width = [self viewSize].width;
+		[customSecuritySettingsView setFrameSize:settingsSize];
 		[view addSubview:customSecuritySettingsView];
 	}
 

@@ -97,9 +97,11 @@
         }, 
         {
             ACTIONS = {
+                addDynamicPortForward = id; 
                 addLocalPortForward = id; 
                 addRemotePortForward = id; 
                 addTunnel = id; 
+                delDynamicPortForward = id; 
                 delLocalPortForward = id; 
                 delRemotePortForward = id; 
                 delTunnel = id; 
@@ -107,9 +109,11 @@
             CLASS = TunnelsView; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                delDynamicPortForwardButton = id; 
                 delLocalPortForwardButton = id; 
                 delRemotePortForwardButton = id; 
                 delTunnelButton = id; 
+                dynamicPortForwardTable = id; 
                 localPortForwardTable = id; 
                 remotePortForwardTable = id; 
                 tunnelCompression = id; 
@@ -119,6 +123,7 @@
                 tunnelLaunchOnAgentFilled = id; 
                 tunnelName = id; 
                 tunnelPort = id; 
+                tunnelRemoteAccess = id; 
                 tunnelTable = id; 
                 tunnelUser = id; 
             }; 

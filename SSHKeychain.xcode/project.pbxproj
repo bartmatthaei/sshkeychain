@@ -30,6 +30,37 @@
 //082
 //083
 //084
+//0A0
+//0A1
+//0A2
+//0A3
+//0A4
+		0A5AA8A0075F2CBD007668AB = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text.xml;
+			path = Info.plist;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A925562075F22B800B98A2B = {
+			isa = PBXFileReference;
+			lastKnownFileType = "compiled.mach-o.executable";
+			path = ssh;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A925563075F22B800B98A2B = {
+			fileRef = 0A925562075F22B800B98A2B;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+//0A0
+//0A1
+//0A2
+//0A3
+//0A4
 //100
 //101
 //102
@@ -168,8 +199,10 @@
 				CCC9E32606A58F9600422E9E,
 				CCC9E32706A58F9600422E9E,
 				CCC9E32806A58F9600422E9E,
+				0A925562075F22B800B98A2B,
 				CCC9E32106A58F7B00422E9E,
 				CCC9E27406A58DB600422E9E,
+				0A5AA8A0075F2CBD007668AB,
 				CCC9E27606A58DB600422E9E,
 				CCC9E27806A58DB600422E9E,
 				CCC9E27A06A58DB600422E9E,
@@ -279,7 +312,6 @@
 			buildRules = (
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = /Users/bart/wip/SSHKeychain;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -360,6 +392,7 @@
 				CC341CE706ACF3AD00E32630,
 				CC341D0C06AD012C00E32630,
 				CC604C2406AE6B1700B9CEBB,
+				0A925563075F22B800B98A2B,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1549,6 +1582,7 @@
 		CCCDD5FB06A57E9200B68ED1 = {
 			children = (
 				CC40C2D106A6813E00AE58DD,
+				CCC9E54306A6802000422E9E,
 				CCC9E53B06A6802000422E9E,
 				CCC9E53C06A6802000422E9E,
 				CCC9E53D06A6802000422E9E,
@@ -1557,7 +1591,6 @@
 				CCC9E54006A6802000422E9E,
 				CCC9E54106A6802000422E9E,
 				CCC9E54206A6802000422E9E,
-				CCC9E54306A6802000422E9E,
 			);
 			isa = PBXGroup;
 			name = Libs;
