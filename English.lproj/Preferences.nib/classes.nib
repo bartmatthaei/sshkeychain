@@ -117,6 +117,7 @@
                 localPortForwardTable = id; 
                 remotePortForwardTable = id; 
                 tunnelCompression = id; 
+                tunnelDetailsTabView = NSTabView; 
                 tunnelDetailsView = id; 
                 tunnelHostname = id; 
                 tunnelLaunchAfterSleep = id; 

@@ -185,13 +185,20 @@
 	/*  We want to use our internal build of ssh if we have dynamic ports and the sshToolsPathString
 		is /usr/bin. This is because the Panther-provided copy of ssh (and perhaps Jaguar-provided,
 		I don't know) is broken wrt. dynamic ports */
+	// Of course, since the build of ssh only works on Panther, we have to disable Dynamic Ports
+	// entirely under Jaguar
 	NSString *toolPath;
 	NSString *sshPathString = [[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString];
-	if([dynamicPortForwards count] > 0 && [[sshPathString stringByStandardizingPath] isEqualToString:@"/usr/bin"]) {
-		/* Time to use our internal build */
-		toolPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh"];
-	} else {
+	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) {
+		// It's Jaguar
 		toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
+	} else {
+		if([dynamicPortForwards count] > 0 && [[sshPathString stringByStandardizingPath] isEqualToString:@"/usr/bin"]) {
+			/* Time to use our internal build */
+			toolPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh"];
+		} else {
+			toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
+		}
 	}
 	arguments = [NSMutableArray arrayWithObject:toolPath];
 	
@@ -211,10 +218,13 @@
 			];
 	}
 	
-	for(i=0; i < [dynamicPortForwards count]; i++)
-	{
-		[arguments addObject:[NSString stringWithFormat:@"-D%d",
-			[[dynamicPortForwards objectAtIndex:0] intValue]]];
+	// No dynamic ports under Jaguar
+	if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_2) {
+		for(i=0; i < [dynamicPortForwards count]; i++)
+		{
+			[arguments addObject:[NSString stringWithFormat:@"-D%d",
+				[[dynamicPortForwards objectAtIndex:0] intValue]]];
+		}
 	}
 
 	if((tunnelPort > 0) && (tunnelPort < 65535))

@@ -111,7 +111,13 @@ PreferenceController *sharedPreferenceController;
 	frame.origin.y += frame.size.height;
 	frame.origin.y -= newHeight + toolbarHeight;
 	frame.size.height = newHeight + toolbarHeight;
-	frame.size.width = 500;
+	// We only resized larger to fit the Dynamic Ports tab, but that tab is gone on Jaguar
+	// So lets use the old size on Jaguar as well
+	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) {
+		frame.size.width = 475;
+	} else {
+		frame.size.width = 500;
+	}
 	
 	frame = [NSWindow frameRectForContentRect:frame styleMask:[window styleMask]];
 	
@@ -141,7 +147,8 @@ PreferenceController *sharedPreferenceController;
 			[window setTitle:[NSString stringWithFormat:@"%@ - %@", local(@"Preferences"), [array objectAtIndex:2]]];
 			[self resizeWindowToSize:[currentController viewSize]];
 
-			[toolbar setSelectedItemIdentifier:identifier];
+			if ([toolbar respondsToSelector:@selector(setSelectedItemIdentifier:)])
+				[toolbar setSelectedItemIdentifier:identifier];
 			[window setContentView:[currentController view]];
 
 			[currentController loadPreferences];

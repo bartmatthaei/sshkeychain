@@ -4,6 +4,7 @@
 {
 	IBOutlet id tunnelTable, delTunnelButton;
 	IBOutlet id tunnelDetailsView;
+	IBOutlet NSTabView *tunnelDetailsTabView;
 
 	IBOutlet id tunnelName, tunnelCompression, tunnelRemoteAccess;
 	IBOutlet id tunnelHostname, tunnelPort, tunnelUser;

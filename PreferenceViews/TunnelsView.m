@@ -5,6 +5,17 @@
 
 @implementation TunnelsView
 
+- (void) awakeFromNib {
+	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) {
+		// Ack, we gotta disable the dynamic ports tab
+		int dynamicTabIndex = [tunnelDetailsTabView indexOfTabViewItemWithIdentifier:@"dynamicPorts"];
+		NSTabViewItem *dynamicTab = [tunnelDetailsTabView tabViewItemAtIndex:dynamicTabIndex];
+		[tunnelDetailsTabView removeTabViewItem:dynamicTab];
+		dynamicPortForwardTable = nil;
+		delDynamicPortForwardButton = nil;
+	}
+}
+
 - (void)loadPreferences
 {
 	/* Get all tunnels. */
