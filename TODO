@@ -7,8 +7,24 @@
 - Option for screensaver check interval
 - Option to unload keys after a period of time
 - The option to not display messages regarding tunnels (Nov 05 - Marc Liyanage  - Feature suggestion for SSHKeychain)
+- Listen to local forwarded ports and start up the tunnel on demand (that's going to require some hacking with random ports
+  to have ssh listening on)
 
 1.0 TODO:
 - Comment & Clean up
 - Implement Exceptions instead of NSLog
 - Package
+
+The Early Spring Code Cleanup:
+
+- [[[[foo alloc] init] autorelease] retain] is rubbish.
+- #define NSStrings is rubbish
+- Constants should start uppercase
+- Check retain/release
+- Implement dealloc for all classes containing iVars
+- NULL -> nil
+- Use objectEnumerator for arrays, instead of indexes
+- Check task arguments (@"-arg", @"foo", instead of @"-arg foo")
+- Check for repeating code
+- Move local() to a macro (http://developer.apple.com/intl/localization/tools.html)
+
