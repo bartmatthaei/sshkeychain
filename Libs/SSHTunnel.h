@@ -1,5 +1,3 @@
-/* $Id: SSHTunnel.h,v 1.1 2004/06/23 08:12:21 bart Exp $ */
-
 #import <Foundation/Foundation.h>
 
 #import "SSHTool.h"

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "TunnelsView.h"
 
 #import "PreferenceController.h"

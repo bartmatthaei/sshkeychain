@@ -1,5 +1,3 @@
-/* $Id: SSHAgent.h,v 1.12 2003/10/02 09:27:37 bart Exp $ */
-
 #import <Foundation/Foundation.h>
 
 @interface SSHAgent : NSObject 

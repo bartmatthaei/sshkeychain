@@ -1,5 +1,3 @@
-/* $Id: SSHTool.m,v 1.13 2004/06/23 08:12:21 bart Exp $ */
-
 #import "SSHTool.h"
 
 #import "PreferenceController.h"

@@ -1,5 +1,3 @@
-/* $Id: SSHKeychain.m,v 1.20 2004/06/23 08:12:21 bart Exp $ */
-
 #import "SSHKeychain.h"
 
 #import "SSHKey.h"

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import <Cocoa/Cocoa.h>
 
 /* This function resides in Controller.m. */
