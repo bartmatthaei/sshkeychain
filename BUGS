@@ -110,3 +110,7 @@
 - Screensaver Bug
 
 	Some users experience a total system lockdown after a screensaver displays the login window.
+
+- Multiple Users Bugs
+
+	Using SSHKeychain while not being an admin on the machine generates headache. And using it between multiple users and multiple display options is impossible.
