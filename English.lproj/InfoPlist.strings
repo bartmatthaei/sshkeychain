@@ -1,4 +1,4 @@
 CFBundleName = "SSHKeychain";
-CFBundleShortVersionString = "0.7";
-CFBundleGetInfoString = "SSHKeychain 0.7, Copyright (c) 2003-2004 Bart Matthaei";
+CFBundleShortVersionString = "0.7.1";
+CFBundleGetInfoString = "SSHKeychain 0.7.1, Copyright (c) 2003-2004 Bart Matthaei";
 NSHumanReadableCopyright = "Copyright (c) 2003-2004 Bart Matthaei";

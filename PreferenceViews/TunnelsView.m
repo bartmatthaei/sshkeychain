@@ -421,12 +421,12 @@ extern TunnelController *tunnelController;
 
 - (id)tableView:(NSTableView *)table objectValueForTableColumn:(NSTableColumn *)column row:(int)nr
 {
-	if(table == tunnelTable)
+	if((table == tunnelTable) && (tunnels) && ([tunnels count] > nr))
 	{
 		return [[tunnels objectAtIndex:nr] objectForKey:@"TunnelName"];
 	}
 	
-	else if((table == localPortForwardTable) && (localPortForwards))
+	else if((table == localPortForwardTable) && (localPortForwards) && ([localPortForwards count] > nr))
 	{
 		if([[column identifier] isEqualToString:@"lport"])
 		{
@@ -444,7 +444,7 @@ extern TunnelController *tunnelController;
 		}
 	}
 	
-	else if((table == remotePortForwardTable) && (remotePortForwards))
+	else if((table == remotePortForwardTable) && (remotePortForwards) && ([remotePortForwards count] > nr))
 	{
 		if([[column identifier] isEqualToString:@"rport"])
 		{

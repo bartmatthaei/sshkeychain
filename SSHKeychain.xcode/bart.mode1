@@ -252,6 +252,7 @@
 								<string>CCC9E27A06A58DB600422E9E</string>
 								<string>CCC9E27C06A58DB600422E9E</string>
 								<string>1C37FBAC04509CD000000102</string>
+								<string>CC33042E072948E400C9425B</string>
 								<string>1C37FABC05509CD000000102</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
@@ -262,7 +263,7 @@
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
-							<string>{{0, 767}, {277, 597}}</string>
+							<string>{{0, 797}, {277, 597}}</string>
 						</dict>
 						<key>PBXTopSmartGroupGIDs</key>
 						<array/>
@@ -303,7 +304,7 @@
 										<key>PBXProjectModuleLabel</key>
 										<string>Controller.m</string>
 										<key>bookmark</key>
-										<string>CCADF65D07280D9700E54138</string>
+										<string>CC33042F072948E400C9425B</string>
 										<key>history</key>
 										<array>
 											<string>CCD4C06B06D3D43A00C544D7</string>
@@ -319,7 +320,7 @@
 											<string>CC84456C0725327D00833EEC</string>
 											<string>CC84456D0725327D00833EEC</string>
 											<string>CC84457607253D7800833EEC</string>
-											<string>CCDD13AC0726B0E800DB5526</string>
+											<string>CCDD71E807283EA600013CE8</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -393,9 +394,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>CCADF65B07280D9700E54138</string>
+				<string>CC330430072948E400C9425B</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>CCADF65C07280D9700E54138</string>
+				<string>CC330431072948E400C9425B</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -423,7 +424,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>CCADF65407280D2800E54138</string>
 		<string>1C0AD2B3069F1EA900FABCE6</string>
 		<string>/Users/bart/wip/SSHKeychain/SSHKeychain.xcode</string>
 	</array>
@@ -868,9 +868,9 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>1C0AD2B3069F1EA900FABCE6</string>
-				<string>CCADF65207280D2800E54138</string>
+				<string>CC330432072948E400C9425B</string>
 				<string>1CD0528B0623707200166675</string>
-				<string>CCADF65307280D2800E54138</string>
+				<string>CC330433072948E400C9425B</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.run</string>
