@@ -1,0 +1,64 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                addKeysToAgent = id; 
+                addSingleKeyToAgent = id; 
+                removeKeysFromAgent = id; 
+                showAgentStatusWindow = id; 
+                toggleAgent = id; 
+            }; 
+            CLASS = AgentController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                agentGlobalAuthSocket = id; 
+                agentLocalAuthSocket = id; 
+                agentPID = id; 
+                agentStatusWindow = id; 
+                dockMenuAddKeyItem = id; 
+                dockMenuAddKeysItem = id; 
+                dockMenuAgentItem = id; 
+                dockMenuRemoveKeysItem = id; 
+                keyTable = id; 
+                mainMenuAddKeyItem = id; 
+                mainMenuAddKeysItem = id; 
+                mainMenuAgentItem = id; 
+                mainMenuRemoveKeysItem = id; 
+                statusbarMenuAddKeyItem = id; 
+                statusbarMenuAddKeysItem = id; 
+                statusbarMenuAgentItem = id; 
+                statusbarMenuRemoveKeysItem = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                checkForUpdatesFromUI = id; 
+                preferences = id; 
+                showAboutPanel = id; 
+                toggleAppleKeychainLock = id; 
+            }; 
+            CLASS = Controller; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                dockMenuAppleKeychainItem = id; 
+                statusbarMenu = id; 
+                statusbarMenuAppleKeychainItem = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {}; 
+            CLASS = TunnelController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                dockMenuTunnelsItem = id; 
+                mainMenuTunnelsItem = id; 
+                statusbarMenuTunnelsItem = id; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

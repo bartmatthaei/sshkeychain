@@ -1,0 +1,129 @@
+{
+    IBClasses = (
+        {
+            CLASS = DisplayView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {display = id; }; 
+            SUPERCLASS = PreferenceView; 
+        }, 
+        {
+            ACTIONS = {
+                addEnvironmentVariable = id; 
+                delEnvironmentVariable = id; 
+                toggleManageGlobalEnvironment = id; 
+            }; 
+            CLASS = EnvironmentView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                delEnvironmentVariableButton = id; 
+                environmentTable = id; 
+                environmentTableView = id; 
+                manageGlobalEnvironment = id; 
+            }; 
+            SUPERCLASS = PreferenceView; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            CLASS = GeneralView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {checkForUpdatesOnStartup = id; socketPath = id; sshToolsPath = id; }; 
+            SUPERCLASS = PreferenceView; 
+        }, 
+        {
+            ACTIONS = {
+                addKey = id; 
+                cancelNewKey = id; 
+                delKey = id; 
+                generateNewKey = id; 
+                newKey = id; 
+                selectNewKeyPath = id; 
+            }; 
+            CLASS = KeysView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                delKeyButton = id; 
+                keyTable = id; 
+                newKeyBits = id; 
+                newKeyGenerateButton = id; 
+                newKeyPassphrase = id; 
+                newKeyPath = id; 
+                newKeyProgress = id; 
+                newKeyProgressText = id; 
+                newKeyType = id; 
+                newKeyView = id; 
+            }; 
+            SUPERCLASS = PreferenceView; 
+        }, 
+        {
+            CLASS = PreferenceController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                displayController = PreferenceView; 
+                environmentController = PreferenceView; 
+                generalController = PreferenceView; 
+                keysController = PreferenceView; 
+                securityController = PreferenceView; 
+                tunnelsController = PreferenceView; 
+                window = NSWindow; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            CLASS = PreferenceView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {view = id; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {
+                changeMinutesOfSleep = id; 
+                changeOnSleep = id; 
+                toggleCustomSecuritySettings = id; 
+            }; 
+            CLASS = SecurityView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                addKeysOnConnection = id; 
+                askForConfirmation = id; 
+                customSecuritySettingsView = id; 
+                followKeychain = id; 
+                minutesOfSleep = id; 
+                minutesOfSleepTextfield = id; 
+                onScreensaver = id; 
+                onSleep = id; 
+                useCustomSecuritySettings = id; 
+            }; 
+            SUPERCLASS = PreferenceView; 
+        }, 
+        {
+            ACTIONS = {
+                addLocalPortForward = id; 
+                addRemotePortForward = id; 
+                addTunnel = id; 
+                delLocalPortForward = id; 
+                delRemotePortForward = id; 
+                delTunnel = id; 
+            }; 
+            CLASS = TunnelsView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                delLocalPortForwardButton = id; 
+                delRemotePortForwardButton = id; 
+                delTunnelButton = id; 
+                localPortForwardTable = id; 
+                remotePortForwardTable = id; 
+                tunnelCompression = id; 
+                tunnelDetailsView = id; 
+                tunnelHostname = id; 
+                tunnelLaunchAfterSleep = id; 
+                tunnelLaunchOnAgentFilled = id; 
+                tunnelName = id; 
+                tunnelPort = id; 
+                tunnelTable = id; 
+                tunnelUser = id; 
+            }; 
+            SUPERCLASS = PreferenceView; 
+        }
+    ); 
+    IBVersion = 1; 
+}
