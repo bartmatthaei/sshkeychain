@@ -34,13 +34,12 @@
 
 }
 
-+ (id)currentController;
++ (Controller *)sharedController;
 
 - (void)setStatus:(BOOL)status;
 - (void)setToolTip:(NSString *)tooltip;
 
 - (IBAction)checkForUpdatesFromUI:(id)sender;
-- (void)checkForUpdatesWithWarnings:(BOOL)warnings;
 - (IBAction)preferences:(id)sender;
 
 - (IBAction)toggleAppleKeychainLock:(id)sender;

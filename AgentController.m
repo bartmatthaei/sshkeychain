@@ -14,9 +14,7 @@
 extern NSString *local(NSString *theString);
 extern int sleep_timestamp;
 
-extern TunnelController *tunnelController;
-
-AgentController *agentController;
+AgentController *sharedAgentController;
 
 @implementation AgentController
 
@@ -70,9 +68,18 @@ AgentController *agentController;
 
 	allKeysOnAgentLock = [[NSLock alloc] init];
 
-	agentController = self;
+	sharedAgentController = self;
 
 	return self;
+}
+
++ (AgentController *)sharedController
+{
+	if(!sharedAgentController) {
+		return [[AgentController alloc] init];
+	}
+
+	return sharedAgentController;
 }
 
 - (void)dealloc
@@ -140,7 +147,7 @@ AgentController *agentController;
 		}
 	}	
 
-	[tunnelController launchAfterSleepTunnels];
+	[[TunnelController sharedController] launchAfterSleepTunnels];
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification
@@ -152,13 +159,13 @@ AgentController *agentController;
 {
 	if([[notification name] isEqualToString:@"SKSleep"])
 	{
-		[tunnelController closeAllTunnels];
+		[[TunnelController sharedController] closeAllTunnels];
 	}
 
 	if([[notification name] isEqualToString:@"SKWake"])
 	{
-		[tunnelController closeAllTunnels];
-		[tunnelController launchAfterSleepTunnels];
+		[[TunnelController sharedController] closeAllTunnels];
+		[[TunnelController sharedController] launchAfterSleepTunnels];
 	}
 	
 	if(([[NSUserDefaults standardUserDefaults] integerForKey:onSleepString] == 1) && ([[agent keysOnAgent] count] > 0))
@@ -262,7 +269,7 @@ AgentController *agentController;
 		allKeysOnAgent = NO;
 		[allKeysOnAgentLock unlock];
 		
-		[[Controller currentController] setStatus:NO];
+		[[Controller sharedController] setStatus:NO];
 	}
 
 	else if([[notification name] isEqualToString:@"AgentFilled"])
@@ -281,7 +288,7 @@ AgentController *agentController;
 		allKeysOnAgent = YES;
 		[allKeysOnAgentLock unlock];
 		
-		[[Controller currentController] setStatus:YES];
+		[[Controller sharedController] setStatus:YES];
 	}
 
 	else if([[notification name] isEqualToString:@"KeysOnAgentUnknown"])
@@ -293,14 +300,14 @@ AgentController *agentController;
 			[mainMenuRemoveKeysItem setEnabled:YES];
 			[dockMenuRemoveKeysItem setEnabled:YES];
 			[statusbarMenuRemoveKeysItem setEnabled:YES];
-			[[Controller currentController] setStatus:YES];
+			[[Controller sharedController] setStatus:YES];
 		} else {
 			
 			[mainMenuRemoveKeysItem setEnabled:NO];
 			[dockMenuRemoveKeysItem setEnabled:NO];
 			[statusbarMenuRemoveKeysItem setEnabled:NO];
 			
-			[[Controller currentController] setStatus:NO];
+			[[Controller sharedController] setStatus:NO];
 		}
 	}
 }
@@ -327,7 +334,7 @@ AgentController *agentController;
 		[dockMenuAddKeyItem setEnabled:YES];
 		[statusbarMenuAddKeyItem setEnabled:YES];
 		
-		[[Controller currentController] setStatus:NO];
+		[[Controller sharedController] setStatus:NO];
 
 		SecKeychainGetStatus(NULL, &status);
 
@@ -363,7 +370,7 @@ AgentController *agentController;
 		[dockMenuAddKeyItem setEnabled:NO];
 		[statusbarMenuAddKeyItem setEnabled:NO];
 		
-		[[Controller currentController] setStatus:NO];
+		[[Controller sharedController] setStatus:NO];
 
 		[allKeysOnAgentLock lock];
 		allKeysOnAgent = NO;

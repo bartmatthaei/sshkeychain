@@ -9,7 +9,7 @@
 /* This function resides in Controller.m. */
 extern NSString *local(NSString *theString);
 
-TunnelController *tunnelController;
+TunnelController *sharedTunnelController;
 
 @implementation TunnelController
 
@@ -34,7 +34,7 @@ TunnelController *tunnelController;
 	[[NSNotificationCenter defaultCenter] addObserver:self
 						 selector:@selector(agentEmptiedNotification:) name:@"AgentEmptied" object:nil];
 
-	tunnelController = self;
+	sharedTunnelController = self;
 
 	notificationQueue  = [[NSMutableArray alloc] init];
 	notificationLock   = [[NSLock alloc] init];
@@ -46,6 +46,15 @@ TunnelController *tunnelController;
 	[[NSRunLoop currentRunLoop] addPort:notificationPort forMode:(NSString *)kCFRunLoopCommonModes];
 	
 	return self;
+}
+
++ (TunnelController *)sharedController
+{
+	if(!sharedTunnelController) {
+		return [[TunnelController alloc] init];
+	}
+
+	return sharedTunnelController;
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -136,7 +145,7 @@ TunnelController *tunnelController;
 
 - (void)setToolTipForActiveTunnels
 {
-	Controller *controller = [Controller currentController];
+	Controller *controller = [Controller sharedController];
 	int i;
 	int active = 0;
 	

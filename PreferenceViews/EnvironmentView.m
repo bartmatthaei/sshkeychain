@@ -68,7 +68,7 @@
 
 		[self syncEnvironment];
 
-		[[PreferenceController preferenceController] resizeWindowToSize:[self viewSize]];
+		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
 		[view addSubview:environmentTableView];
 	}
 
@@ -79,7 +79,7 @@
 		[self syncEnvironment];
 
 		[environmentTableView removeFromSuperview];
-		[[PreferenceController preferenceController] resizeWindowToSize:[self viewSize]];
+		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
 	}
 }
 

@@ -98,14 +98,14 @@
 
 	if([sender state] == YES)
 	{
-		[[PreferenceController preferenceController] resizeWindowToSize:[self viewSize]];
+		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
 		[view addSubview:customSecuritySettingsView];
 	}
 
 	else if([sender state] == NO)
 	{
 		[customSecuritySettingsView removeFromSuperview];
-		[[PreferenceController preferenceController] resizeWindowToSize:[self viewSize]];
+		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
 
 		[prefs setBool:YES forKey:addKeysOnConnectionString];
 		[prefs setBool:NO forKey:askForConfirmationString];

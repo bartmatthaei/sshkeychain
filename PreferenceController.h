@@ -33,8 +33,9 @@
 	NSToolbar *toolbar;
 }
 
-+ (id)preferenceController;
++ (PreferenceController *)sharedController;
 + (void)openPreferencesWindow;
+
 - (void)showWindow;
 - (NSWindow *)window;
 

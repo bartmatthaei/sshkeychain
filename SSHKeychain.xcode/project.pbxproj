@@ -17,6 +17,8 @@
 				CC08A64606A876B300C578A3,
 				CCCDD4AA06A576CF00B68ED1,
 				CCCDD4AB06A576CF00B68ED1,
+				CC6C191307421C8700CB0A18,
+				CC6C191407421C8700CB0A18,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -327,6 +329,7 @@
 				CCC3B47206B149E100B3A68B,
 				CCE66DE406B15AEA002A5BEE,
 				CC586C5106C3D56A00D73261,
+				CC6C191507421C8700CB0A18,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -381,6 +384,7 @@
 				CCC3B47306B149E100B3A68B,
 				CCE66DE506B15AEA002A5BEE,
 				CC586C5206C3D56A00D73261,
+				CC6C191607421C8700CB0A18,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -720,6 +724,34 @@
 		};
 		CC604C2F06AE932C00B9CEBB = {
 			fileRef = CC604C2D06AE932C00B9CEBB;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CC6C191307421C8700CB0A18 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = UpdateController.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CC6C191407421C8700CB0A18 = {
+			fileEncoding = 30;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = UpdateController.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		CC6C191507421C8700CB0A18 = {
+			fileRef = CC6C191307421C8700CB0A18;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		CC6C191607421C8700CB0A18 = {
+			fileRef = CC6C191407421C8700CB0A18;
 			isa = PBXBuildFile;
 			settings = {
 			};

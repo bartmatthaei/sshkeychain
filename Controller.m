@@ -5,14 +5,18 @@
 #include <utime.h>
 
 #import "PreferenceController.h"
+#import "UpdateController.h"
 
 #import "Libs/SSHAgent.h"
 #import "Libs/SSHKeychain.h"
 #import "Libs/SSHTunnel.h"
 
+#include <objc/objc-class.h>
+#include <objc/objc-runtime.h>
+
 #include "SSHKeychain_Prefix.pch"
 
-Controller *currentController;
+Controller *sharedController;
 
 NSString *local(NSString *theString)
 {
@@ -156,11 +160,20 @@ NSString *local(NSString *theString)
 	passphraseIsRequestedLock = [[NSLock alloc] init];
 	appleKeychainUnlockedLock = [[NSLock alloc] init];
 
-	currentController = self;
+	sharedController = self;
 
 	timestamp = 0;
 
 	return self;
+}
+
++ (Controller *)sharedController
+{
+	if(!sharedController) {
+		return [[Controller alloc] init];
+	}
+
+	return sharedController;
 }
 
 - (void)dealloc
@@ -169,12 +182,6 @@ NSString *local(NSString *theString)
 	[appleKeychainUnlockedLock dealloc];
 
 	[super dealloc];
-}
-
-/* Return the active application controller. */
-+ (id)currentController
-{
-	return currentController;
 }
 
 - (void)awakeFromNib
@@ -273,7 +280,7 @@ NSString *local(NSString *theString)
 
 	if([[NSUserDefaults standardUserDefaults] boolForKey:checkForUpdatesOnStartupString] == YES)
 	{
-		[NSThread detachNewThreadSelector:@selector(retrieveVersionFile) toTarget:self withObject:nil];
+		[[UpdateController sharedController] checkForUpdatesWithWarnings:NO];
 	}
 }
 
@@ -297,87 +304,9 @@ NSString *local(NSString *theString)
 	[statusitemLock unlock];
 }
 
-- (void)retrieveVersionFile
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		
-	[self checkForUpdatesWithWarnings:NO];
-
-	[pool release];
-}
-
 - (IBAction)checkForUpdatesFromUI:(id)sender
 {
-	[self checkForUpdatesWithWarnings:YES];
-}
-
-- (void)checkForUpdatesWithWarnings:(BOOL)warnings
-{
-	NSString *latestVersion, *currentVersion;
-	NSDictionary *remoteVersionInfo;
-	NSURL *downloadURL, *changesURL;
-	int r;
-
-	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:[NSURL URLWithString:remoteVersionURL]];
-
-	if(!remoteVersionInfo)
-	{
-		if(warnings == YES) 
-		{
-			[self warningPanelWithTitle:local(@"CheckForUpdates")
-				 andMessage:local(@"FailedToRetrieveXMLVersionInfo")];
-		}
-
-		return;
-	}
-
-	latestVersion = [remoteVersionInfo objectForKey:@"version"];
-	downloadURL = [NSURL URLWithString:[remoteVersionInfo objectForKey:@"downloadURL"]];
-	changesURL = [NSURL URLWithString:[remoteVersionInfo objectForKey:@"changesURL"]];
-
-	currentVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-
-	if(currentVersion == NULL)
-	{
-		if(warnings == YES)
-		{
-			[self warningPanelWithTitle:local(@"CheckForUpdates")
-					 andMessage:local(@"Can'tFigureOutOwnVersion")];
-		}
-	}
-
-	else if(strcmp([latestVersion cString], [currentVersion cString]) > 0)
-	{
-		if((downloadURL) && (changesURL))
-		{
-			[NSApp requestUserAttention:NSCriticalRequest];
-			[NSApp activateIgnoringOtherApps:YES];
-			r = NSRunAlertPanel(local(@"NewVersion"), local(@"NewVersionAvailable"), local(@"Download"), local(@"Cancel"), local(@"Changes"));
-
-			if(r == NSAlertDefaultReturn)
-			{
-				[[NSWorkspace sharedWorkspace] openURL:downloadURL];
-			}
-
-			else if(r == NSAlertOtherReturn)
-			{
-				[[NSWorkspace sharedWorkspace] openURL:changesURL];
-			}
-		}
-
-		else
-		{
-			[self warningPanelWithTitle:local(@"NewVersion")
-				andMessage:local(@"NewVersionAvailable")];
-		}
-     	}
-
-	else if(warnings == YES)
-	{
-		[self warningPanelWithTitle:local(@"NewVersion") andMessage:local(@"NoNewVersion")];
-	}
-
-	return;
+	[[UpdateController sharedController] checkForUpdatesWithWarnings:YES];
 }
 
 - (IBAction)preferences:(id)sender

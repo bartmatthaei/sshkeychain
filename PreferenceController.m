@@ -1,8 +1,22 @@
 #import "PreferenceController.h"
 
-PreferenceController *preferenceController;
+PreferenceController *sharedPreferenceController;
 
 @implementation PreferenceController
+
+- (id)init
+{
+	if(!(self = [super init]))
+	{
+		return NULL;
+	}
+	
+	sharedPreferenceController = self;
+	
+	[NSBundle loadNibNamed:@"Preferences" owner:sharedPreferenceController];
+	
+	return self;
+}
 
 - (void)awakeFromNib
 {
@@ -51,27 +65,24 @@ PreferenceController *preferenceController;
 	[[NSColorPanel sharedColorPanel] setShowsAlpha:YES];
 }
 
-+ (id)preferenceController
++ (PreferenceController *)sharedController
 {
-	if(preferenceController == NULL)
-	{
-		preferenceController = [[PreferenceController alloc] init];
-		[NSBundle loadNibNamed:@"Preferences" owner:preferenceController];
+	if(!sharedPreferenceController) {
+		return [[PreferenceController alloc] init];
 	}
-	
-	return(preferenceController);
+
+	return sharedPreferenceController;
 }
 
 + (void)openPreferencesWindow
 {
-	if(preferenceController == NULL)
+	PreferenceController *preferenceController = [PreferenceController sharedController];
+
+	if(preferenceController) 
 	{
-		preferenceController = [[PreferenceController alloc] init];
-		[NSBundle loadNibNamed:@"Preferences" owner:preferenceController];
+		[NSApp activateIgnoringOtherApps:YES];
+		[preferenceController showWindow];
 	}
-	
-	[NSApp activateIgnoringOtherApps:YES];
-	[preferenceController showWindow];
 }
 
 - (void)showWindow

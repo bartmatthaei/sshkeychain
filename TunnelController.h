@@ -17,6 +17,8 @@
 	NSMachPort *notificationPort;
 }
 
++ (TunnelController *)sharedController;
+
 - (void)sync;
 - (void)changeTunnelName:(NSString *)oldName toName:(NSString *)newName;
 - (void)removeTunnelWithName:(NSString *)name;

@@ -24,6 +24,8 @@
 	NSLock *allKeysOnAgentLock;
 }
 
++ (AgentController *)sharedController;
+
 - (IBAction)toggleAgent:(id)sender;
 - (IBAction)addKeysToAgent:(id)sender;
 - (IBAction)addSingleKeyToAgent:(id)sender;

@@ -6,9 +6,6 @@
 #import "Libs/SSHAgent.h"
 #import "TunnelController.h"
 
-/* Tunnel Controller. */
-extern TunnelController *tunnelController;
-
 io_connect_t root_port;
 
 int sleep_timestamp;
@@ -47,7 +44,7 @@ void sighandler(int num)
 {
 	SSHAgent *agent = [SSHAgent currentAgent];
 	[agent stop];
-	[tunnelController closeAllTunnels];
+	[[TunnelController sharedController] closeAllTunnels];
 	exit(0);
 }
 

@@ -124,17 +124,17 @@
 	[newKeyPassphrase setEnabled:NO];
 	[newKeyGenerateButton setEnabled:NO];
 
-	[[[PreferenceController preferenceController] window] setContentView:[[[NSView alloc] init] autorelease]];
-	[[PreferenceController preferenceController] resizeWindowToSize:[newKeyView frame].size];
-	[[[PreferenceController preferenceController] window] setContentView:newKeyView];
+	[[[PreferenceController sharedController] window] setContentView:[[[NSView alloc] init] autorelease]];
+	[[PreferenceController sharedController] resizeWindowToSize:[newKeyView frame].size];
+	[[[PreferenceController sharedController] window] setContentView:newKeyView];
 }
 
 /* Cancel New Key View. */
 - (IBAction)cancelNewKey:(id)sender
 {
-	[[[PreferenceController preferenceController] window] setContentView:[[[NSView alloc] init] autorelease]];
-	[[PreferenceController preferenceController] resizeWindowToSize:[view frame].size];
-	[[[PreferenceController preferenceController] window] setContentView:view];
+	[[[PreferenceController sharedController] window] setContentView:[[[NSView alloc] init] autorelease]];
+	[[PreferenceController sharedController] resizeWindowToSize:[view frame].size];
+	[[[PreferenceController sharedController] window] setContentView:view];
 }
 
 /* Generate new keypair. */
@@ -283,9 +283,9 @@
 
 	[self updateUI];
 
-	[[[PreferenceController preferenceController] window] setContentView:[[[NSView alloc] init] autorelease]];
-	[[PreferenceController preferenceController] resizeWindowToSize:[view frame].size];
-	[[[PreferenceController preferenceController] window] setContentView:view];
+	[[[PreferenceController sharedController] window] setContentView:[[[NSView alloc] init] autorelease]];
+	[[PreferenceController sharedController] resizeWindowToSize:[view frame].size];
+	[[[PreferenceController sharedController] window] setContentView:view];
 }
 
 /* Ask the user where we should save the key. */

@@ -3,9 +3,6 @@
 #import "PreferenceController.h"
 #import "TunnelController.h"
 
-/* Tunnel Controller. */
-extern TunnelController *tunnelController;
-
 @implementation TunnelsView
 
 - (void)loadPreferences
@@ -61,7 +58,7 @@ extern TunnelController *tunnelController;
 		[self updateUI];
 		
 		[self savePreferences];
-		[tunnelController sync];
+		[[TunnelController sharedController] sync];
 	}
 }
 
@@ -79,7 +76,7 @@ extern TunnelController *tunnelController;
 
 	[self hideTunnelDetails];
 
-	[tunnelController removeTunnelWithName:[[tunnels objectAtIndex:index] objectForKey:@"TunnelName"]];
+	[[TunnelController sharedController] removeTunnelWithName:[[tunnels objectAtIndex:index] objectForKey:@"TunnelName"]];
 	[tunnels removeObjectAtIndex:index];
 
 	[tunnelTable deselectAll:self];
@@ -120,7 +117,7 @@ extern TunnelController *tunnelController;
 		[self updateUI];
 	
 		[self savePreferences];
-		[tunnelController sync];
+		[[TunnelController sharedController] sync];
 	}
 }
 
@@ -137,7 +134,7 @@ extern TunnelController *tunnelController;
 	[self updateUI];
 	
 	[self savePreferences];
-	[tunnelController sync];
+	[[TunnelController sharedController] sync];
 }
 
 /* Add remote port forward. */
@@ -173,7 +170,7 @@ extern TunnelController *tunnelController;
 		[self updateUI];
 	
 		[self savePreferences];
-		[tunnelController sync];
+		[[TunnelController sharedController] sync];
 	}
 }
 
@@ -190,7 +187,7 @@ extern TunnelController *tunnelController;
 	[self updateUI];
 	
 	[self savePreferences];
-	[tunnelController sync];
+	[[TunnelController sharedController] sync];
 }
 
 /* Show tunnel details. */
@@ -263,7 +260,7 @@ extern TunnelController *tunnelController;
 
 	size.height = (192 + [tunnelDetailsView frame].size.height);
 	
-	[[PreferenceController preferenceController] resizeWindowToSize:size];
+	[[PreferenceController sharedController] resizeWindowToSize:size];
 	[view addSubview:tunnelDetailsView];
 }
 
@@ -276,7 +273,7 @@ extern TunnelController *tunnelController;
 	tunnelIndex = -1;
 	
 	[tunnelDetailsView removeFromSuperview];
-	[[PreferenceController preferenceController] resizeWindowToSize:size];
+	[[PreferenceController sharedController] resizeWindowToSize:size];
 	
 	[localPortForwards release];
 	[remotePortForwards release];
@@ -303,8 +300,8 @@ extern TunnelController *tunnelController;
 	
         if(![[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"] isEqualToString:[tunnelName stringValue]])
         {
-                [tunnelController changeTunnelName:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"]
-                                            toName:[tunnelName stringValue]];
+                [[TunnelController sharedController] changeTunnelName:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"]
+                                          		  toName:[tunnelName stringValue]];
         }
 	
         [dict setObject:[tunnelName stringValue] forKey:@"TunnelName"];
@@ -339,7 +336,7 @@ extern TunnelController *tunnelController;
 
         [self savePreferences];
 	
-        [tunnelController sync];
+        [[TunnelController sharedController] sync];
 }
 
 /* Update the UI. */
