@@ -20,8 +20,8 @@
 + (TunnelController *)sharedController;
 
 - (void)sync;
-- (void)changeTunnelName:(NSString *)oldName toName:(NSString *)newName;
-- (void)removeTunnelWithName:(NSString *)name;
+- (void)changeTunnel:(NSString *)uuid setName:(NSString *)newName;
+- (void)removeTunnelWithUUID:(NSString *)uuid;
 
 - (void)setToolTipForActiveTunnels;
 

@@ -6,23 +6,21 @@ PreferenceController *sharedPreferenceController;
 
 - (id)init
 {
-	if(!(self = [super init]))
+	if(self = [super init])
 	{
-		return nil;
-	}
-	
-	sharedPreferenceController = self;
-	
-	[NSBundle loadNibNamed:@"Preferences" owner:sharedPreferenceController];
+		sharedPreferenceController = self;
 
-	blankView = [[NSView alloc] init];
+		blankView = [[NSView alloc] init];
+		
+		[NSBundle loadNibNamed:@"Preferences" owner:sharedPreferenceController];
+	}
 	
 	return self;
 }
 
 - (void)dealloc
 {
-	[blankView dealloc];
+	[blankView release];
 	[super dealloc];
 }
 
@@ -144,7 +142,7 @@ PreferenceController *sharedPreferenceController;
 	if(((array = [preferenceItems objectForKey:identifier])) && ([array count] > 1)) 
 	{
 		if(([array objectAtIndex:1]) && (currentController != [array objectAtIndex:1]))
-       		{
+		{
 			[currentController closePreferences];
 
 			currentController = [array objectAtIndex:1];

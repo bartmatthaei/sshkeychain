@@ -56,6 +56,76 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"Cleaning up unneeded files...\"\nfind $BUILD_ROOT/$WRAPPER_NAME '(' -name '.svn' -or -name '.DS_Store' ')' -prune -exec rm -rf '{}' ';'";
 		};
+		0A7F548E07676EB500E1C1E4 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = Utilities.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A7F548F07676EB500E1C1E4 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = Utilities.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A7F549007676EB500E1C1E4 = {
+			fileRef = 0A7F548E07676EB500E1C1E4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0A7F549107676EB500E1C1E4 = {
+			fileRef = 0A7F548F07676EB500E1C1E4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0A7F549A07676F2400E1C1E4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = wrapper.framework;
+			name = Carbon.framework;
+			path = /System/Library/Frameworks/Carbon.framework;
+			refType = 0;
+			sourceTree = "<absolute>";
+		};
+		0A7F549B07676F2400E1C1E4 = {
+			fileRef = 0A7F549A07676F2400E1C1E4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0A7F554E07677DCC00E1C1E4 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
+			path = NSMenu_Additions.h;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A7F554F07677DCC00E1C1E4 = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
+			path = NSMenu_Additions.m;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A7F555007677DCC00E1C1E4 = {
+			fileRef = 0A7F554E07677DCC00E1C1E4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		0A7F555107677DCC00E1C1E4 = {
+			fileRef = 0A7F554F07677DCC00E1C1E4;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		0A925562075F22B800B98A2B = {
 			isa = PBXFileReference;
 			lastKnownFileType = "compiled.mach-o.executable";
@@ -85,6 +155,7 @@
 				CCC9E42806A6763E00422E9E,
 				CCC9E42906A6763E00422E9E,
 				1058C7A1FEA54F0111CA2CBB,
+				0A7F549A07676F2400E1C1E4,
 			);
 			isa = PBXGroup;
 			name = "Linked Frameworks";
@@ -181,6 +252,10 @@
 		};
 		29B97315FDCFA39411CA2CEA = {
 			children = (
+				0A7F554E07677DCC00E1C1E4,
+				0A7F554F07677DCC00E1C1E4,
+				0A7F548E07676EB500E1C1E4,
+				0A7F548F07676EB500E1C1E4,
 				32CA4F630368D1EE00C91783,
 				CCCDD4A706A576CF00B68ED1,
 				CCC9E32906A58F9600422E9E,
@@ -376,6 +451,8 @@
 				CCE66DE406B15AEA002A5BEE,
 				CC586C5106C3D56A00D73261,
 				CC6C191507421C8700CB0A18,
+				0A7F549007676EB500E1C1E4,
+				0A7F555007677DCC00E1C1E4,
 			);
 			isa = PBXHeadersBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -432,6 +509,8 @@
 				CCE66DE506B15AEA002A5BEE,
 				CC586C5206C3D56A00D73261,
 				CC6C191607421C8700CB0A18,
+				0A7F549107676EB500E1C1E4,
+				0A7F555107677DCC00E1C1E4,
 			);
 			isa = PBXSourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -450,6 +529,7 @@
 				8D11072F0486CEB800E47090,
 				CCC9E42A06A6763E00422E9E,
 				CCC9E42B06A6763F00422E9E,
+				0A7F549B07676F2400E1C1E4,
 			);
 			isa = PBXFrameworksBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;

@@ -3,6 +3,8 @@
 #import "Controller.h"
 #import "PreferenceController.h"
 #import "Libs/SSHTunnel.h"
+#import "Utilities.h"
+#import "NSMenu_Additions.h"
 
 #include "SSHKeychain_Prefix.pch"
 
@@ -15,35 +17,33 @@ TunnelController *sharedTunnelController;
 
 - (id)init
 {		
-	if(!(self = [super init]))
+	if(self = [super init])
 	{
-		return nil;
+		[[NSNotificationCenter defaultCenter] addObserver:self
+						selector:@selector(applicationDidFinishLaunching:)
+						name:@"NSApplicationDidFinishLaunchingNotification" object:NSApp];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+							 selector:@selector(applicationWillTerminate:)
+								 name:@"NSApplicationWillTerminateNotification" object:NSApp];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+							 selector:@selector(agentFilledNotification:) name:@"AgentFilled" object:nil];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+							 selector:@selector(agentEmptiedNotification:) name:@"AgentEmptied" object:nil];
+
+		sharedTunnelController = self;
+
+		notificationQueue  = [[NSMutableArray alloc] init];
+		notificationLock   = [[NSLock alloc] init];
+		notificationThread = [[NSThread currentThread] retain];
+		notificationPort   = [[NSMachPort alloc] init];
+
+		[notificationPort setDelegate:self];
+
+		[[NSRunLoop currentRunLoop] addPort:notificationPort forMode:(NSString *)kCFRunLoopCommonModes];
 	}
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-					selector:@selector(applicationDidFinishLaunching:)
-					name:@"NSApplicationDidFinishLaunchingNotification" object:NSApp];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-						 selector:@selector(applicationWillTerminate:)
-						     name:@"NSApplicationWillTerminateNotification" object:NSApp];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-						 selector:@selector(agentFilledNotification:) name:@"AgentFilled" object:nil];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-						 selector:@selector(agentEmptiedNotification:) name:@"AgentEmptied" object:nil];
-
-	sharedTunnelController = self;
-
-	notificationQueue  = [[NSMutableArray alloc] init];
-	notificationLock   = [[NSLock alloc] init];
-	notificationThread = [[NSThread currentThread] retain];
-	notificationPort   = [[NSMachPort alloc] init];
-
-	[notificationPort setDelegate:self];
-
-	[[NSRunLoop currentRunLoop] addPort:notificationPort forMode:(NSString *)kCFRunLoopCommonModes];
 	
 	return self;
 }
@@ -75,30 +75,53 @@ TunnelController *sharedTunnelController;
 {
 	NSArray *newTunnels;
 	NSMutableDictionary *dict;
-	int i, j;
+	int i;
 	BOOL match;
 	
 	if(!tunnels) { return; }
 	
-	newTunnels = [NSArray arrayWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString]];
-
-	for(i=0; i < [newTunnels count]; i++) 
-	{
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	newTunnels = [[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString];
+	
+	// Because we're adding UUIDs, we should give them to all tunnels that don't yet have them
+	BOOL setUUID = NO;
+	NSEnumerator *e =  [newTunnels objectEnumerator];
+	NSDictionary *aTunnel;
+	NSMutableArray *modifiedTunnels = [NSMutableArray array];
+	while (aTunnel = [e nextObject]) {
+		if ([aTunnel objectForKey:@"TunnelUUID"] == nil)
+		{
+			NSMutableDictionary *modifiedTunnel = [NSMutableDictionary dictionaryWithDictionary:aTunnel];
+			[modifiedTunnel setObject:CreateUUID() forKey:@"TunnelUUID"];
+			[modifiedTunnels addObject:modifiedTunnel];
+			setUUID = YES;
+		} else {
+			[modifiedTunnels addObject:aTunnel];
+		}
+	}
+	if (setUUID) {
+		newTunnels = [NSArray arrayWithArray:modifiedTunnels];
+		[[NSUserDefaults standardUserDefaults] setObject:newTunnels forKey:tunnelsString];
+	}
+	
+	e = [newTunnels objectEnumerator];
+	while (aTunnel = [e nextObject]) {
 		match = NO;
 		
-		for(j=0; j < [tunnels count]; j++)
+		for(i=0; i < [tunnels count]; i++)
 		{
-			if([[[newTunnels objectAtIndex:i] objectForKey:@"TunnelName"] isEqualToString:
-				[[tunnels objectAtIndex:j] objectForKey:@"TunnelName"]])
+			NSDictionary *oldTunnel = [tunnels objectAtIndex:i];
+			if([[aTunnel objectForKey:@"TunnelUUID"] isEqualToString:
+				[oldTunnel objectForKey:@"TunnelUUID"]])
 			{
-				dict = [NSMutableDictionary dictionaryWithDictionary:[newTunnels objectAtIndex:i]];
+				dict = [NSMutableDictionary dictionaryWithDictionary:aTunnel];
 
-				if([[tunnels objectAtIndex:j] objectForKey:@"TunnelObject"]) 
+				if([oldTunnel objectForKey:@"TunnelObject"]) 
 				{
-					[dict setObject:[[tunnels objectAtIndex:j] objectForKey:@"TunnelObject"] forKey:@"TunnelObject"];
+					[dict setObject:[oldTunnel objectForKey:@"TunnelObject"] forKey:@"TunnelObject"];
 				}
 
-				[tunnels replaceObjectAtIndex:j withObject:dict];
+				[tunnels replaceObjectAtIndex:i withObject:dict];
 
 				match = YES;
 			}
@@ -106,37 +129,46 @@ TunnelController *sharedTunnelController;
 		
 		if(!match)
 		{
-			dict = [NSMutableDictionary dictionaryWithDictionary:[newTunnels objectAtIndex:i]];
+			dict = [NSMutableDictionary dictionaryWithDictionary:aTunnel];
 			
-			[[mainMenuTunnelsItem addItemWithTitle:[dict objectForKey:@"TunnelName"]
-							action:@selector(toggleTunnel:) keyEquivalent:@""] setTarget:self];
+			id <NSMenuItem> mItem;
+			mItem = [mainMenuTunnelsItem addItemWithTitle:[dict objectForKey:@"TunnelName"]
+												   action:@selector(toggleTunnel:)
+											keyEquivalent:@""];
+			[mItem setTarget:self];
+			[mItem setRepresentedObject:[dict objectForKey:@"TunnelUUID"]];
 			
-			[[dockMenuTunnelsItem addItemWithTitle:[dict objectForKey:@"TunnelName"]
-							action:@selector(toggleTunnel:) keyEquivalent:@""] setTarget:self];
+			mItem = [dockMenuTunnelsItem addItemWithTitle:[dict objectForKey:@"TunnelName"]
+												   action:@selector(toggleTunnel:)
+											keyEquivalent:@""];
+			[mItem setTarget:self];
+			[mItem setRepresentedObject:[dict objectForKey:@"TunnelUUID"]];
 			
-			[[statusbarMenuTunnelsItem addItemWithTitle:[dict objectForKey:@"TunnelName"]
-							action:@selector(toggleTunnel:) keyEquivalent:@""] setTarget:self];
+			mItem = [statusbarMenuTunnelsItem addItemWithTitle:[dict objectForKey:@"TunnelName"]
+														action:@selector(toggleTunnel:) keyEquivalent:@""];
+			[mItem setTarget:self];
+			[mItem setRepresentedObject:[dict objectForKey:@"TunnelUUID"]];
 			
 			[tunnels addObject:[NSMutableDictionary dictionaryWithDictionary:dict]];
 		}
 	}
 }
 
-- (void)changeTunnelName:(NSString *)oldName toName:(NSString *)newName
+- (void)changeTunnel:(NSString *)uuid setName:(NSString *)newName
 {
-	int i;
-	
 	if(!tunnels) { return; }
-			
-	for(i=0; i < [tunnels count]; i++) 
+	
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSMutableDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
 	{
-		if([[[tunnels objectAtIndex:i] objectForKey:@"TunnelName"] isEqualToString:oldName])
+		if([[aTunnel objectForKey:@"TunnelUUID"] isEqualToString:uuid])
 		{
-			[[tunnels objectAtIndex:i] setObject:newName forKey:@"TunnelName"];
+			[aTunnel setObject:newName forKey:@"TunnelName"];
 			
-			[[mainMenuTunnelsItem itemWithTitle:oldName] setTitle:newName];
-			[[statusbarMenuTunnelsItem itemWithTitle:oldName] setTitle:newName];
-			[[dockMenuTunnelsItem itemWithTitle:oldName] setTitle:newName];
+			[[mainMenuTunnelsItem itemWithRepresentation:uuid] setTitle:newName];
+			[[statusbarMenuTunnelsItem itemWithRepresentation:uuid] setTitle:newName];
+			[[dockMenuTunnelsItem itemWithRepresentation:uuid] setTitle:newName];
 			
 			return;
 		}
@@ -146,7 +178,6 @@ TunnelController *sharedTunnelController;
 - (void)setToolTipForActiveTunnels
 {
 	Controller *controller = [Controller sharedController];
-	int i;
 	int active = 0;
 	
 	if(!tunnels) { 
@@ -154,9 +185,11 @@ TunnelController *sharedTunnelController;
 		return; 
 	}
 	
-	for(i=0; i < [tunnels count]; i++) 
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
 	{
-		if([[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"])
+		if([aTunnel objectForKey:@"TunnelObject"])
 		{
 			active++;
 		}
@@ -171,52 +204,53 @@ TunnelController *sharedTunnelController;
 	}		
 }
 
-- (void)removeTunnelWithName:(NSString *)name
+- (void)removeTunnelWithUUID:(NSString *)uuid
 {
 	SSHTunnel *tunnel;
-	int i;
 	
 	if(!tunnels) { return; }
-		
-	for(i=0; i < [tunnels count]; i++) 
+	
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
 	{
-		if([[[tunnels objectAtIndex:i] objectForKey:@"TunnelName"] isEqualToString:name])
+		if([[aTunnel objectForKey:@"TunnelUUID"] isEqualToString:uuid])
 		{
-			tunnel = [[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"];
+			tunnel = [aTunnel objectForKey:@"TunnelObject"];
 			
-			if(tunnel)
+			if (tunnel)
 			{
 				[tunnel closeTunnel];
 			}
 			
-			[tunnels removeObjectAtIndex:i];
+			[tunnels removeObjectIdenticalTo:aTunnel];
 
-			[mainMenuTunnelsItem removeItem:[mainMenuTunnelsItem itemWithTitle:name]];
-			[dockMenuTunnelsItem removeItem:[dockMenuTunnelsItem itemWithTitle:name]];
-			[statusbarMenuTunnelsItem removeItem:[statusbarMenuTunnelsItem itemWithTitle:name]];
+			[mainMenuTunnelsItem removeItem:[mainMenuTunnelsItem itemWithRepresentation:uuid]];
+			[dockMenuTunnelsItem removeItem:[dockMenuTunnelsItem itemWithRepresentation:uuid]];
+			[statusbarMenuTunnelsItem removeItem:[statusbarMenuTunnelsItem itemWithRepresentation:uuid]];
 		}
 	}
 }
 
 - (void)closeAllTunnels
-{
-	int i;
-	
+{	
 	if(!tunnels) { return; }
 	
-	for(i=0; i < [tunnels count]; i++) 
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSMutableDictionary *aTunnel;
+	while (aTunnel = [e nextObject]) 
 	{
-		if([[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"]) 
+		if([aTunnel objectForKey:@"TunnelObject"]) 
 		{
-			SSHTunnel *tunnel = [[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"];
-			NSString *name = [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"];
+			SSHTunnel *tunnel = [aTunnel objectForKey:@"TunnelObject"];
+			NSString *uuid = [aTunnel objectForKey:@"TunnelUUID"];
 			
 			[tunnel closeTunnel];
-			[[tunnels objectAtIndex:i] removeObjectForKey:@"TunnelObject"];
+			[aTunnel removeObjectForKey:@"TunnelObject"];
 			
-			[[mainMenuTunnelsItem itemWithTitle:name] setState:NO];
-			[[statusbarMenuTunnelsItem itemWithTitle:name] setState:NO];
-			[[dockMenuTunnelsItem itemWithTitle:name] setState:NO];
+			[[mainMenuTunnelsItem itemWithRepresentation:uuid] setState:NO];
+			[[statusbarMenuTunnelsItem itemWithRepresentation:uuid] setState:NO];
+			[[dockMenuTunnelsItem itemWithRepresentation:uuid] setState:NO];
 		}
 	}
 	
@@ -226,31 +260,31 @@ TunnelController *sharedTunnelController;
 - (void)launchAfterSleepTunnels
 {
 	SSHTunnel *tunnel;
-	NSString *name;
-
-	int i;
+	NSString *uuid;
 	
 	if(!tunnels) { return; }
 	
-	for(i=0; i < [tunnels count]; i++) 
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSMutableDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
 	{
-		if([[tunnels objectAtIndex:i] objectForKey:@"LaunchAfterSleep"]) 
+		if([aTunnel objectForKey:@"LaunchAfterSleep"]) 
 		{
 			/* First kill the tunnel, if it's still open. */
-			if([[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"]) 
+			if([aTunnel objectForKey:@"TunnelObject"]) 
 			{
-				tunnel = [[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"];
-				name = [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"];
+				tunnel = [aTunnel objectForKey:@"TunnelObject"];
+				uuid = [aTunnel objectForKey:@"TunnelUUID"];
 			
 				[tunnel closeTunnel];
-				[[tunnels objectAtIndex:i] removeObjectForKey:@"TunnelObject"];
+				[aTunnel removeObjectForKey:@"TunnelObject"];
 			
-				[[mainMenuTunnelsItem itemWithTitle:name] setState:NO];
-				[[statusbarMenuTunnelsItem itemWithTitle:name] setState:NO];
-				[[dockMenuTunnelsItem itemWithTitle:name] setState:NO];
+				[[mainMenuTunnelsItem itemWithRepresentation:uuid] setState:NO];
+				[[statusbarMenuTunnelsItem itemWithRepresentation:uuid] setState:NO];
+				[[dockMenuTunnelsItem itemWithRepresentation:uuid] setState:NO];
 			}
 
-			[self openTunnelWithDict:[tunnels objectAtIndex:i]];
+			[self openTunnelWithDict:aTunnel];
 		}
 	}
 	
@@ -260,18 +294,20 @@ TunnelController *sharedTunnelController;
 - (void)toggleTunnel:(id)sender
 {
 	NSMutableDictionary *dict;
-	int i;
 	SSHTunnel *tunnel;
 	
 	dict = nil;
 	
 	if(!tunnels) { return; }
 	
-	for(i=0; i < [tunnels count]; i++) 
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSMutableDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
 	{
-		if([[[tunnels objectAtIndex:i] objectForKey:@"TunnelName"] isEqualToString:[sender title]]) 
+		if([[aTunnel objectForKey:@"TunnelUUID"] isEqualToString:[sender representedObject]]) 
 		{
-			dict = [tunnels objectAtIndex:i];
+			dict = aTunnel;
+			break;
 		}
 	}
 	
@@ -300,7 +336,7 @@ TunnelController *sharedTunnelController;
 /* Handle closed tunnels. */
 - (void)handleClosedTunnels:(NSString *)contextInfo
 {
-	int i, last_terminated;
+	int last_terminated;
 	NSString *output;
 	BOOL fails_exceeded = NO;
 		
@@ -308,18 +344,20 @@ TunnelController *sharedTunnelController;
 		return;
 	}
 
-	[[mainMenuTunnelsItem itemWithTitle:contextInfo] setState:NO];
-	[[statusbarMenuTunnelsItem itemWithTitle:contextInfo] setState:NO];
-	[[dockMenuTunnelsItem itemWithTitle:contextInfo] setState:NO];
+	[[mainMenuTunnelsItem itemWithRepresentation:contextInfo] setState:NO];
+	[[statusbarMenuTunnelsItem itemWithRepresentation:contextInfo] setState:NO];
+	[[dockMenuTunnelsItem itemWithRepresentation:contextInfo] setState:NO];
 	
 	if(!tunnels) { return; }
-
-	for(i=0; i < [tunnels count]; i++) 
+	
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSMutableDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
 	{
-		if([[[tunnels objectAtIndex:i] objectForKey:@"TunnelName"] isEqualToString:contextInfo]) 
+		if([[aTunnel objectForKey:@"TunnelUUID"] isEqualToString:contextInfo]) 
 		{
-			SSHTunnel *tunnel = [[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"];
-
+			SSHTunnel *tunnel = [aTunnel objectForKey:@"TunnelObject"];
+			
 			if(tunnel) 
 			{
 				last_terminated = 0;
@@ -327,37 +365,37 @@ TunnelController *sharedTunnelController;
 				
 				output = [tunnel getOutput];
 				
-				[[tunnels objectAtIndex:i] removeObjectForKey:@"TunnelObject"];
+				[aTunnel removeObjectForKey:@"TunnelObject"];
 
-				if([[tunnels objectAtIndex:i] objectForKey:@"LastTerminated"]) 
+				if([aTunnel objectForKey:@"LastTerminated"]) 
 				{
-					last_terminated = [[[tunnels objectAtIndex:i] objectForKey:@"LastTerminated"] intValue];
+					last_terminated = [[aTunnel objectForKey:@"LastTerminated"] intValue];
 				}
 
 				if((last_terminated) && ((time(nil) - last_terminated) < 300)) 
 				{
 					fails_exceeded = YES;
-					[[tunnels objectAtIndex:i] removeObjectForKey:@"LastTerminated"];
+					[aTunnel removeObjectForKey:@"LastTerminated"];
 				} 
 				
 				else if((allKeysOnAgent) && ([output length] < 1))
 				{
-					[[tunnels objectAtIndex:i] setObject:[NSNumber numberWithInt:time(nil)] forKey:@"LastTerminated"];
-					[self openTunnelWithDict:[tunnels objectAtIndex:i]];
+					[aTunnel setObject:[NSNumber numberWithInt:time(nil)] forKey:@"LastTerminated"];
+					[self openTunnelWithDict:aTunnel];
 				}
 
 				if((fails_exceeded) && ([output length] > 0)) 
 				{
 					[self warningPanelWithTitle:local(@"TunnelTerminated") 
 							 andMessage:[NSString stringWithFormat:@"(%@) %@",
-								 [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"],
+								 [aTunnel objectForKey:@"TunnelName"],
 								 local(@"TunnelTerminatedAndCouldNotBeRestarted")]];
 				}
 				
 				else if((!fails_exceeded) && (!allKeysOnAgent) && ([output length] < 1)) {
 					[self warningPanelWithTitle:local(@"TunnelTerminated") 
 							 andMessage:[NSString stringWithFormat:@"(%@) %@",
-								 [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"],
+								 [aTunnel objectForKey:@"TunnelName"],
 								 local(@"TunnelTerminatedAndCouldNotBeRestarted")]];
 				}
 
@@ -365,7 +403,7 @@ TunnelController *sharedTunnelController;
 				{
 					[self warningPanelWithTitle:local(@"TunnelForwardingFailed") 
 							 andMessage:[NSString stringWithFormat:@"(%@) %@",
-								 [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"],
+								 [aTunnel objectForKey:@"TunnelName"],
 								 local(@"ForwardingFailedDuringInitialization")]];
 				} 
 				
@@ -373,7 +411,7 @@ TunnelController *sharedTunnelController;
 				{
 					[self warningPanelWithTitle:local(@"TunnelSetupFailed")
 							 andMessage:[NSString stringWithFormat:@"(%@) Error:\n%@", 
-								 [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"],
+								 [aTunnel objectForKey:@"TunnelName"],
 								 output]];
 				}
 				
@@ -381,7 +419,7 @@ TunnelController *sharedTunnelController;
 				{
 					[self warningPanelWithTitle:local(@"TunnelTerminated")
 							 andMessage:[NSString stringWithFormat:@"(%@) %@",
-								 [[tunnels objectAtIndex:i] objectForKey:@"TunnelName"],
+								 [aTunnel objectForKey:@"TunnelName"],
 								 local(@"TunnelUnexpectedlyTerminated")]];
 				}
 			}
@@ -394,8 +432,6 @@ TunnelController *sharedTunnelController;
 /* Handle Apple keychain unlocks. */
 - (void)agentFilledNotification:(NSNotification *)notification
 {
-	int i;
-
 	/* Forward the notification to the correct thread. */
 	if([NSThread currentThread] != notificationThread) 
 	{
@@ -411,14 +447,14 @@ TunnelController *sharedTunnelController;
 	allKeysOnAgent = YES;
 	
 	if(!tunnels) { return; }
-			
-	for(i=0; i < [tunnels count]; i++) {
-		if((![[tunnels objectAtIndex:i] objectForKey:@"TunnelObject"]) &&
-			([[tunnels objectAtIndex:i] objectForKey:@"LaunchOnAgentFilled"])) {
-			
-			NSMutableDictionary *dict = [tunnels objectAtIndex:i];
-
-			[self openTunnelWithDict:dict];
+	
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSMutableDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
+	{
+		if(![aTunnel objectForKey:@"TunnelObject"] && [aTunnel objectForKey:@"LaunchOnAgentFilled"]) 
+		{
+			[self openTunnelWithDict:aTunnel];
 		}
 	}
 }
@@ -480,15 +516,16 @@ TunnelController *sharedTunnelController;
 	}
 	
 	[tunnel handleClosedWithSelector:@selector(handleClosedTunnels:) toObject:self 
-				withInfo:[dict objectForKey:@"TunnelName"]];
+				withInfo:[dict objectForKey:@"TunnelUUID"]];
 	
 	if([tunnel openTunnel]) 
 	{
 		[dict setObject:tunnel forKey:@"TunnelObject"];
-	
-		[[mainMenuTunnelsItem itemWithTitle:[dict objectForKey:@"TunnelName"]] setState:YES];
-		[[statusbarMenuTunnelsItem itemWithTitle:[dict objectForKey:@"TunnelName"]] setState:YES];
-		[[dockMenuTunnelsItem itemWithTitle:[dict objectForKey:@"TunnelName"]] setState:YES];
+		
+		NSString *uuid = [dict objectForKey:@"TunnelUUID"];
+		[[mainMenuTunnelsItem itemWithRepresentation:uuid] setState:YES];
+		[[statusbarMenuTunnelsItem itemWithRepresentation:uuid] setState:YES];
+		[[dockMenuTunnelsItem itemWithRepresentation:uuid] setState:YES];
 		
 		[self setToolTipForActiveTunnels];
 	}

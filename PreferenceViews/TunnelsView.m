@@ -2,11 +2,14 @@
 
 #import "PreferenceController.h"
 #import "TunnelController.h"
+#import "Utilities.h"
 
 @implementation TunnelsView
 
-- (void) awakeFromNib {
-	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) {
+- (void) awakeFromNib
+{
+	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) 
+	{
 		// Ack, we gotta disable the dynamic ports tab
 		int dynamicTabIndex = [tunnelDetailsTabView indexOfTabViewItemWithIdentifier:@"dynamicPorts"];
 		NSTabViewItem *dynamicTab = [tunnelDetailsTabView tabViewItemAtIndex:dynamicTabIndex];
@@ -19,7 +22,9 @@
 - (void)loadPreferences
 {
 	/* Get all tunnels. */
-	tunnels = [[NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString]] retain];
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	tunnels = [[NSMutableArray alloc] initWithArray:
+					[[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString]];
 	
 	if(!tunnels) {
 		tunnels = [[NSMutableArray alloc] init];
@@ -52,19 +57,23 @@
 /* Add a tunnel. */
 - (IBAction)addTunnel:(id)sender
 {
-	int i;
 	BOOL match = NO;
 	
-	for(i=0; i < [tunnels count]; i++) {
-		if([[[tunnels objectAtIndex:i] objectForKey:@"TunnelName"] isEqualToString:@"New Tunnel"]) {
+	NSEnumerator *e = [tunnels objectEnumerator];
+	NSDictionary *aTunnel;
+	while (aTunnel = [e nextObject])
+	{
+		if ([[aTunnel objectForKey:@"TunnelName"] isEqualToString:@"New Tunnel"])
+		{
 			match = YES;
 		}
 	}
 	
-	if(!match)
+	if (!match)
 	{
 		NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
 		[dict setObject:@"New Tunnel" forKey:@"TunnelName"];
+		[dict setObject:CreateUUID() forKey:@"TunnelUUID"];
 		
 		[tunnels addObject:dict];
 		[self updateUI];
@@ -88,7 +97,7 @@
 
 	[self hideTunnelDetails];
 
-	[[TunnelController sharedController] removeTunnelWithName:[[tunnels objectAtIndex:index] objectForKey:@"TunnelName"]];
+	[[TunnelController sharedController] removeTunnelWithUUID:[[tunnels objectAtIndex:index] objectForKey:@"TunnelUUID"]];
 	[tunnels removeObjectAtIndex:index];
 
 	[tunnelTable deselectAll:self];
@@ -361,13 +370,12 @@
 /* Save tunnel details. */
 - (void)saveTunnelDetails
 {
-	NSMutableDictionary *dict = [[[NSMutableDictionary alloc] init] autorelease];
-
 	if(tunnelIndex < 0)
 	{
 		return;
 	}
 	
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[tunnels objectAtIndex:tunnelIndex]];
 	
 	if([[tunnelName stringValue] isEqualToString:@""]) { [tunnelName setStringValue:@"Some Tunnel"]; }
 	if([[tunnelHostname stringValue] isEqualToString:@""]) { [tunnelHostname setStringValue:@"some.ssh-server.com"]; }
@@ -376,8 +384,8 @@
 	
 	if(![[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"] isEqualToString:[tunnelName stringValue]])
 	{
-		[[TunnelController sharedController] changeTunnelName:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelName"]
-													   toName:[tunnelName stringValue]];
+		[[TunnelController sharedController] changeTunnel:[[tunnels objectAtIndex:tunnelIndex] objectForKey:@"TunnelUUID"]
+													   setName:[tunnelName stringValue]];
 	}
 	
 	[dict setObject:[tunnelName stringValue] forKey:@"TunnelName"];
