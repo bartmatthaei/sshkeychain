@@ -1,11 +1,3 @@
-//
-//  NSMenu_Additions.m
-//  SSHKeychain
-//
-//  Created by Kevin Ballard on 12/8/04.
-//  Copyright 2004 Kevin Ballard. All rights reserved.
-//
-
 #import "NSMenu_Additions.h"
 
 @implementation NSMenu (NSMenu_Additions)
