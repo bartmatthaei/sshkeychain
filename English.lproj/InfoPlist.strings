@@ -1,0 +1,6 @@
+/* $Id: InfoPlist.strings,v 1.13 2004/06/23 08:12:20 bart Exp $ */
+
+CFBundleName = "SSHKeychain";
+CFBundleShortVersionString = "0.7";
+CFBundleGetInfoString = "SSHKeychain 0.7, Copyright (c) 2003-2004 Bart Matthaei";
+NSHumanReadableCopyright = "Copyright (c) 2003-2004 Bart Matthaei";

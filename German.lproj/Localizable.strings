@@ -1,0 +1,113 @@
+/* $Id: Localizable.strings,v 1.6 2004/06/23 08:12:20 bart Exp $ */
+
+"Yes" = "Ja";
+"No" = "Nein";
+
+"Download" = "Download";
+"Cancel" = "Abbrechen";
+"Changes" = "Änderungen";
+
+"LockAppleKeychain" = "Schlüsselbund schützen";
+"UnlockAppleKeychain" = "Schlüsselbund freigeben";
+
+"AddedAuthsockToEnvironment" = "Die Umgebungsvariable SSH_AUTH_SOCK wurde in ~/.MacOSX/environment.plist eingetragen.\nDie Änderung tritt beim nächsten Login in Kraft.";
+"ChangedAuthsockInEnvironment" = "Die Umgebungsvariable SSH_AUTH_SOCK wurde in ~/.MacOSX/environment.plist geändert.\nDie Änderung tritt beim nächsten Login in Kraft.";
+
+"CheckForUpdates" = "Nach Updates suchen";
+"FailedToRetrieveXMLVersionInfo" = "Laden der XML-Versionsdaten schlug fehl.";
+
+"Can'tFigureOutOwnVersion" = "Ich kann leider nicht feststellen, welche Versionsnummer ich trage.";
+
+"NewVersion" = "Neue Version";
+"NewVersionAvailable" = "Es gibt eine neuere Version von SSHKeychain.";
+"NoNewVersion" = "Zur Zeit gibt es leider keine neuere Version von SSHKeychain";
+
+"NoKeysOnKeychainPanelTitle" = "Keine Schlüssel im Schlüsselbund.";
+"NoKeysOnKeychainPanelText" = "Ein Prozeß versucht auf den SSH-Agenten zuzugreifen, aber im Schlüsselbund sind momentan keine Schlüssel. Möchten Sie Ihre Standardschlüssel hinzufügen?";
+
+"AgentTerminatedPanelTitle" = "Agent beendet";
+"AgentTerminatedPanelText" = "Der Agent wurde unerwartet beendet. Möchten Sie Ihn neu starten?";
+
+"PreferencesNotSavedPanelTitle" = "Einstellungen nicht gesichert";
+"PreferencesNotSavedPanelText" = "Möchten Sie Ihre geänderten Einstellungen speichern?";
+
+"DisplayPanelTitle" = "Programmanzeige";
+"DisplayPanelText" = "Änderungen an der Anzeige werden beim nächsten Starten des Programms aktiv.";
+"DisplayChangeNotAllowed" = "Die Anzeigeoptionen k�nnen nicht ge�ndert werden, weil sie keine Schreibrechte f�r das SSHKeychain-Paket besitzen.";
+
+"NewSocketpathPanelTitle" = "Neuer Socket-Pfad";
+"NewSocketpathPanelText" = "Der neuer Socket-Pfad wird beim nächsten Start des Agenten verwendet. Die Änderung der globalen Umgebungsvariable SSH_AUTH_SOCK tritt beim nächsten Login in Kraft.";
+
+"InvalidKey" = "Ungültiger Schlüssel";
+"KeyAlreadyOnList" = "Schlüssel ist schon in meiner Liste";
+
+"ReadPermissionToKeyDenied" = "Keine Erlaubnis zum Lesen des Schlüssels.";
+
+"InvalidPrivateKey" = "Ungültiger privater Schlüssel";
+
+"StartAgent" = "Agent starten";
+"StopAgent" = "Agent beenden";
+
+"FailedToStartAgent" = "Fehler beim Starten von ssh-agent.";
+"FailedToStopAgent" = "Fehler beim Beenden von ssh-agent.";
+"FailedToStartAgentSocketpathInvalid" = "Fehler beim Starten von ssh-agent. Der Socket-Pfad ist ungültig.";
+"AgentNotFound" = "ssh-agent konnte im angegebenen Werkzeugpfad nicht gefunden werden.";
+
+"AddAllKeysToAgent" = "Alle Schlüssel hinzufügen";
+"AddAllKeysToAgentFailed" = "Fehler beim Hinzufügen aller Schlüssel zum Agenten.";
+"AddSingleKeyToAgent" = "Einzelnen Schlüssel hinzufügen";
+"AddSingleKeyToAgentFailed" = "Fehler beim Hinzufügen des Schlüssels zum Agenten.";
+"AgentNotRunning" = "Der Agent l�uft gerade nicht.";
+
+"RemoveAllKeysFromAgent" = "Alle Schlüssel entfernen";
+"RemoveAllKeysFromAgentFailed" = "Fehler beim Entfernen aller Schlüssel.";
+
+"AgentNotStarted" = "Agent nicht gestartet";
+"InternalInconsistency" = "Interne Inkonsistenz";
+
+"SocketpathDirectory" = "Der Socket-Pfad scheint ein Ordner zu sein.";
+"PleaseChangeSocketpath" = "Bitte ändern Sie den Socket-Pfad in den Einstellungen.";
+
+"Can'tWriteSocketInDirectory" = "Kann den Socket im Verzeichnis nicht beschreiben";
+"PleaseCheckPermissions" = "Bitte überprüfen Sie die Dateireichte.";
+
+"Couldn'tCreateSocketDirectory" = "Konnte das Verzeichnis für den Socket nicht erstellen";
+"PleaseCreateItManually" = "Bitte erstellen Sie es von Hand.";
+
+"PleaseSelectAPath" = "Bitte wählen Sie einen Ordner aus.";
+"AlreadyExists" = "existiert bereits.";
+"KeyTypeUnknown" = "Unbekannte Schlüsselart.";
+"NumberOfBitsInvalid" = "Ungültige Anzahl an Bit.";
+"PassphraseTooShort" = "Das Passwort ist zu kurz (mindestens fünf Buchstaben).";
+"Generating" = "Erzeuge Schlüssel...";
+"KeyGenerationFailed" = "Schlüsselerzeugung fehlgeschlagen.";
+
+"WhereWouldYouLikeToSaveThePrivateKey" = "Wo möchten Sie den privaten Schlüssel abspeichern?";
+
+"AddPassphraseToAppleKeychain" = "Passwort zum Schlüsselbund hinzufügen";
+"Passphrase" = "Passwort";
+
+"TunnelForwardingFailed" = "Tunnelweiterleitung fehlgeschlagen";
+
+"ForwardingFailedDuringInitialization" = "Weiterleitung schlug während der Initialisierung fehl.";
+
+"TunnelSetupFailed" = "Tunnelaufbau fehlgeschlagen";
+
+"TunnelTerminated" = "Tunnel beendet";
+"TunnelUnexpectedlyTerminated" = "Der Tunnel wurde unerwartet unterbrochen. Er wird nicht wieder gestartet.";
+"TunnelTerminatedAndCouldNotBeRestarted" = "Der Tunnel wurde unerwartet unterbrochen und konnte nicht wieder gestartet werden.";
+
+"ActiveTunnel" = "Aktive Tunnel";
+"ActiveTunnels" = "Aktive Tunnel";
+"NoActiveTunnels" = "Keine aktiven Tunnel";
+
+"ConfirmationPanelTitle" = "Bestätigung benötigt";
+"ConfirmationPanelText" = "Ein Programm versucht, Ihre Schlüssel zu verwenden. Möchten Sie das zulassen?";
+
+"Preferences" = "Voreinstellungen";
+"General" = "Allgemein";
+"Display" = "Anzeige";
+"Security" = "Sicherheit";
+"Environment" = "Umgebung";
+"SSH Keys" = "SSH-Schlüssel";
+"Tunnels" = "Tunnel";

@@ -1,0 +1,8 @@
+0.8 TODO:
+- Don't ask for confirmation when a tunnel is launched. (SCM_CREDS ?)
+- Keys per location
+- Tunnels per location
+
+1.0 TODO:
+- Comment & Clean up
+- Implement Exceptions instead of NSLog :)
