@@ -8,17 +8,17 @@
 {
 	if(self = [super init])
 	{
-		tunnelHost = NULL;
+		tunnelHost = nil;
 		tunnelPort = 0;
-		tunnelUser = NULL;
+		tunnelUser = nil;
 
 		localPortForwards = [[NSMutableArray alloc] init];
 		remotePortForwards = [[NSMutableArray alloc] init];
 		dynamicPortForwards = [[NSMutableArray alloc] init];
 		
-		closeSelector = NULL;
-		closeObject = NULL;
-		closeInfo = NULL;
+		closeSelector = nil;
+		closeObject = nil;
+		closeInfo = nil;
 
 		compression = NO;
 		
@@ -149,7 +149,7 @@
 	
 	else
 	{
-		closeInfo = NULL;
+		closeInfo = nil;
 	}
 }
 
@@ -212,7 +212,8 @@
 	
 	for(i=0; i < [remotePortForwards count]; i++)
 	{
-		[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
+		[arguments addObject:@"-L"];
+		[arguments addObject:[NSString stringWithFormat:@"%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
 									[[remotePortForwards objectAtIndex:i] objectAtIndex:1],
 									[[[remotePortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
 			];
@@ -222,14 +223,17 @@
 	if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_2) {
 		for(i=0; i < [dynamicPortForwards count]; i++)
 		{
-			[arguments addObject:[NSString stringWithFormat:@"-D%d",
-				[[dynamicPortForwards objectAtIndex:0] intValue]]];
+			[arguments addObject:@"-D"];
+
+			/* A bit awkward, but it makes sure a number is given. */
+			[arguments addObject:[NSString stringWithFormat:@"%d", [[dynamicPortForwards objectAtIndex:i] intValue]]];
 		}
 	}
 
 	if((tunnelPort > 0) && (tunnelPort < 65535))
 	{
-			[arguments addObject:[NSString stringWithFormat:@"-p %d", tunnelPort]];
+			[arguments addObject:@"-p"];
+			[arguments addObject:[NSString stringWithFormat:@"%d", tunnelPort]];
 	}
 
 	[arguments addObject:@"-N"];

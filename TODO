@@ -16,14 +16,11 @@
 
 The Early Spring Code Cleanup:
 
-- [[[[foo alloc] init] autorelease] retain] is rubbish.
 - #define NSStrings is rubbish
 - Constants should start uppercase
 - Check retain/release
 - Implement dealloc for all classes containing iVars
-- NULL -> nil
 - Use objectEnumerator for arrays, instead of indexes
-- Check task arguments (@"-arg", @"foo", instead of @"-arg foo")
 - Check for repeating code
 - Move local() to a macro (http://developer.apple.com/intl/localization/tools.html)
 

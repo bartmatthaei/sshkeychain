@@ -11,7 +11,7 @@
 	path = [[NSString stringWithString:@"~/.MacOSX/environment.plist"] stringByExpandingTildeInPath];
 
 	environment = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease];
-	if(environment == NULL)
+	if(environment == nil)
 	{
 		environment = [NSMutableDictionary dictionary];
 	}
@@ -207,7 +207,7 @@
 		return [environment objectForKey:[environmentKeys objectAtIndex:nr]];
 	}
 
-	return NULL;
+	return nil;
 }
 
 - (void)tableView:(NSTableView *)table setObjectValue:(id)object forTableColumn:(NSTableColumn *)column row:(int)row

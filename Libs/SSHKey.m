@@ -15,9 +15,9 @@
 	NSFileHandle *handle;
 	NSArray *lines;
 
-	if((self = [super init]) == NULL)
+	if((self = [super init]) == nil)
 	{
-		return NULL;
+		return nil;
 	}
 
 	fullpath = [[NSString stringWithString:thePath] retain];
@@ -63,7 +63,7 @@
 
 	else
 	{
-		return NULL;
+		return nil;
 	}
 }
 

@@ -75,7 +75,7 @@
 	[keychain addKey:key];
 	paths = [keychain arrayOfPaths];
 
-	if(paths != NULL)
+	if(paths != nil)
 	{
 		prefs = [NSUserDefaults standardUserDefaults];
 		[prefs setObject:paths forKey:@"Keys"];
@@ -97,7 +97,7 @@
 		[keychain removeKeyAtIndex:nr];
 		/* Get a new list of paths. */
 		paths = [keychain arrayOfPaths];
-		if(paths != NULL)
+		if(paths != nil)
 		{
 			/* Write the paths to the UserDefaults. */
 			prefs = [NSUserDefaults standardUserDefaults];
@@ -274,7 +274,7 @@
 	[keychain addKey:key];
 	paths = [keychain arrayOfPaths];
 
-	if(paths != NULL)
+	if(paths != nil)
 	{
 		prefs = [NSUserDefaults standardUserDefaults];
 		[prefs setObject:paths forKey:@"Keys"];
@@ -338,7 +338,7 @@
 {       
 	if((okFlag == YES) && ([[NSFileManager defaultManager] fileExistsAtPath:[sender filename]]))
 	{
-		return NULL;
+		return nil;
 	}
 	
 	return filename;
@@ -376,7 +376,7 @@
 		}
 	}
 	
-	return NULL;
+	return nil;
 }
 
 - (BOOL)tableView:(NSTableView *)table shouldEditTableColumn:(NSTableColumn *)column row:(int)row

@@ -13,9 +13,9 @@ int main(int argc, const char *argv[])
 		procinfo = [NSProcessInfo processInfo];
 		pool = [[NSAutoreleasePool alloc] init];
 
-		UI = [NSConnection rootProxyForConnectionWithRegisteredName:@"SSHKeychain" host:NULL];
+		UI = [NSConnection rootProxyForConnectionWithRegisteredName:@"SSHKeychain" host:nil];
 
-		if(UI == NULL) { 
+		if(UI == nil) { 
 			fprintf(stderr, "Can't connect to SSHKeychain\n"); 
 			[pool release]; 
 			exit(1); 
@@ -29,7 +29,7 @@ int main(int argc, const char *argv[])
 		{
 			passphrase = [UI askPassphrase:[[procinfo arguments] objectAtIndex:1] withInteraction:YES];
 			
-			if(passphrase == NULL)
+			if(passphrase == nil)
 			{
 				[pool release];
 				exit(1);
@@ -40,7 +40,7 @@ int main(int argc, const char *argv[])
 		{
 			passphrase = [UI askPassphrase:[[procinfo arguments] objectAtIndex:1] withInteraction:NO];
 			
-			if(passphrase == NULL)
+			if(passphrase == nil)
 			{
 				[pool release];
 				exit(1);

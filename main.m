@@ -15,11 +15,11 @@ void powerchange_callback(void *x, io_service_t y, natural_t type, void *argumen
 	switch(type)
 	{
 		case kIOMessageSystemWillSleep:
-			sleep_timestamp = time(NULL);
+			sleep_timestamp = time(nil);
 			IOAllowPowerChange(root_port,(long)argument);
 			break;
 		case kIOMessageCanSystemSleep:
-			sleep_timestamp = time(NULL);
+			sleep_timestamp = time(nil);
 			IOAllowPowerChange(root_port,(long)argument);
 			break;
 		case kIOMessageSystemHasPoweredOn:
@@ -54,7 +54,7 @@ int main(int argc, const char *argv[])
 	io_object_t theIterator;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-	if((root_port = IORegisterForSystemPower(0, &notify, powerchange_callback, &theIterator)) == NULL)
+	if((root_port = IORegisterForSystemPower(0, &notify, powerchange_callback, &theIterator)) == nil)
 	{
 		[NSException raise: NSInternalInconsistencyException
 			format: @"Failed to register process for System Power Notifications"];
@@ -64,8 +64,8 @@ int main(int argc, const char *argv[])
 
 	signal(SIGTERM, sighandler);
 
-	SecKeychainAddCallback(&keychain_locked, kSecLockEventMask, NULL);
-	SecKeychainAddCallback(&keychain_unlocked, kSecUnlockEventMask, NULL);	
+	SecKeychainAddCallback(&keychain_locked, kSecLockEventMask, nil);
+	SecKeychainAddCallback(&keychain_unlocked, kSecUnlockEventMask, nil);	
 
 	[pool release];
 	

@@ -10,7 +10,7 @@ SSHKeychain *currentKeychain;
 /* Return the global keychain, if set. */
 + (id)currentKeychain
 {
-	if(currentKeychain == NULL)
+	if(currentKeychain == nil)
 	{
 		[self keychainWithPaths:[[NSUserDefaults standardUserDefaults] arrayForKey:@"Keys"]];
 	}
@@ -28,9 +28,9 @@ SSHKeychain *currentKeychain;
 {
 	SSHKey *theKey;
 
-	if((self = [super init]) == NULL)
+	if((self = [super init]) == nil)
 	{
-		return NULL;
+		return nil;
 	}
 
 	[keychainLock lock];
@@ -42,7 +42,7 @@ SSHKeychain *currentKeychain;
 	{
 		/* If the key is valid, add it to the keychain array. */
 		theKey = [SSHKey keyWithPath:[paths objectAtIndex:i]];
-		if(theKey != NULL)
+		if(theKey != nil)
 		{
 			[keychain addObject:theKey];
 		}
@@ -57,9 +57,9 @@ SSHKeychain *currentKeychain;
 
 - (id)init
 {
-	if((self = [super init]) == NULL)
+	if((self = [super init]) == nil)
 	{
-		return NULL;
+		return nil;
 	}
 
 	addingKeysLock = [[NSLock alloc] init];
@@ -70,7 +70,7 @@ SSHKeychain *currentKeychain;
 
 - (void)dealloc
 {
-	currentKeychain = NULL;
+	currentKeychain = nil;
 
 	int i;
 	for(i=0; i < [keychain count]; i++)
@@ -81,7 +81,7 @@ SSHKeychain *currentKeychain;
 	[keychainLock lock];
 
 	[keychain release];
-	keychain = NULL;
+	keychain = nil;
 
 	[keychainLock unlock];
 
@@ -97,7 +97,7 @@ SSHKeychain *currentKeychain;
 
 	[keychainLock lock];
 
-	if(keychain != NULL)
+	if(keychain != nil)
 	{
 		[keychain release];
 	}
@@ -110,7 +110,7 @@ SSHKeychain *currentKeychain;
 	{
 		/* If the key is valid, add it to the keychain array. */
 		theKey = [SSHKey keyWithPath:[paths objectAtIndex:i]];
-		if(theKey != NULL)
+		if(theKey != nil)
 		{
 			[keychain addObject:theKey];
 		}
@@ -147,7 +147,7 @@ SSHKeychain *currentKeychain;
 	if((nr < 0) || (nr > [keychain count]))
 	{
 		[keychainLock unlock];
-		return NULL;
+		return nil;
 	}
 
 	returnKey = [keychain objectAtIndex:nr];
@@ -186,7 +186,7 @@ SSHKeychain *currentKeychain;
 {
 	SSHKey *key = [SSHKey keyWithPath:path];
 
-	if(key == NULL)
+	if(key == nil)
 	{
 		return NO;
 	}
@@ -288,7 +288,7 @@ SSHKeychain *currentKeychain;
 	/* Set the SSH_AUTH_SOCK environment variable so the tool can talk to the real agent. */
 	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:agentSocketPath];
 
-	if((paths != NULL) && ([paths count] > 0))
+	if((paths != nil) && ([paths count] > 0))
 	{
 		[theTool setArguments:paths];
 

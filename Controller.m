@@ -34,7 +34,7 @@ NSString *local(NSString *theString)
 	
 	if(!(self = [super init]))
 	{
-		return NULL;
+		return nil;
 	}
 
 	conn = [NSConnection defaultConnection];
@@ -83,7 +83,7 @@ NSString *local(NSString *theString)
 	path = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Info.plist"];
 	dict = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease];
 		
-	if(dict == NULL)
+	if(dict == nil)
 	{
 		dict = [NSMutableDictionary dictionary];
 	}
@@ -102,7 +102,7 @@ NSString *local(NSString *theString)
 	
 			/* Change the bundle's modification time to let LaunchServices know we've
 			 * changed something. */
-			if(utime([[[NSBundle mainBundle] bundlePath] cString], NULL) == -1)
+			if(utime([[[NSBundle mainBundle] bundlePath] cString], nil) == -1)
 			{
 				NSLog(@"DEBUG: utime on bundlePath failed.");
 				exit(0);
@@ -125,7 +125,7 @@ NSString *local(NSString *theString)
 	
 			/* Change the bundle's modification time to let LaunchServices know we've
 				* changed something. */
-			if(utime([[[NSBundle mainBundle] bundlePath] cString], NULL) == -1)
+			if(utime([[[NSBundle mainBundle] bundlePath] cString], nil) == -1)
 			{
 				NSLog(@"DEBUG: utime on bundlePath failed.");
 			}
@@ -208,7 +208,7 @@ NSString *local(NSString *theString)
 	}
 
 	SecKeychainStatus status;
-	SecKeychainGetStatus(NULL, &status);
+	SecKeychainGetStatus(nil, &status);
 
 	if(status & 1)
 	{
@@ -256,12 +256,12 @@ NSString *local(NSString *theString)
 		}
 
 		/* If ~/.MacOSX/environment.plist doesn't exists, make a new dictionary. */
-		if((dict = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease]) == NULL)
+		if((dict = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease]) == nil)
 		{
 			dict = [NSMutableDictionary dictionary];
 		}
 
-		if([dict objectForKey:@"SSH_AUTH_SOCK"] == NULL)
+		if([dict objectForKey:@"SSH_AUTH_SOCK"] == nil)
 		{
 			[dict setObject:socketPath forKey:@"SSH_AUTH_SOCK"];
 			[dict writeToFile:path atomically:YES];
@@ -324,7 +324,7 @@ NSString *local(NSString *theString)
 	if(appleKeychainUnlocked == YES)
 	{
 		[appleKeychainUnlockedLock unlock];
-		SecKeychainLock(NULL);
+		SecKeychainLock(nil);
 	}
 
 	else
@@ -338,7 +338,7 @@ NSString *local(NSString *theString)
 		}
 
 		[NSApp activateIgnoringOtherApps:YES];
-		SecKeychainUnlock(NULL, 0, NULL, 0);
+		SecKeychainUnlock(nil, 0, nil, 0);
 
 		if(giveFocusBack)
 		{
@@ -371,7 +371,7 @@ NSString *local(NSString *theString)
 	if(passphraseIsRequested == YES)
 	{
 		[passphraseIsRequestedLock unlock];
-		return NULL;
+		return nil;
 	}
 
 	passphraseIsRequested = YES;
@@ -386,7 +386,7 @@ NSString *local(NSString *theString)
 componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 		serviceName = "SSHKeychain";
 
-		SecKeychainGetStatus(NULL, &status);
+		SecKeychainGetStatus(nil, &status);
 
 		[appleKeychainUnlockedLock lock];
 		
@@ -403,7 +403,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 		
 		[appleKeychainUnlockedLock unlock];
 
-		status = SecKeychainFindGenericPassword(NULL, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, NULL);
+		status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
 
 		if(giveFocusBack)
 		{
@@ -444,39 +444,39 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 		[dict setObject:local(@"Cancel") forKey:(NSString *)kCFUserNotificationAlternateButtonTitleKey];
 
 		/* Display a passphrase request notification. */
-		notification = CFUserNotificationCreate(NULL, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
+		notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
 
-		/* If there was an error, return NULL. */
+		/* If there was an error, return nil. */
 		if(error)
 		{
 			[passphraseIsRequestedLock lock];
 			passphraseIsRequested = NO;
 			[passphraseIsRequestedLock unlock];
-			return NULL;
+			return nil;
 		}
 		
-		/* If we couldn't receive a response, return NULL. */
+		/* If we couldn't receive a response, return nil. */
 		if(CFUserNotificationReceiveResponse(notification, 0, &response))
 		{
 			[passphraseIsRequestedLock lock];
 			passphraseIsRequested = NO;
 			[passphraseIsRequestedLock unlock];
-			return NULL;
+			return nil;
 		}
 
-		/* If OK wasn't pressed, return NULL. */
+		/* If OK wasn't pressed, return nil. */
 		if((response & 0x3) != kCFUserNotificationDefaultResponse)
 		{
 			[passphraseIsRequestedLock lock];
 			passphraseIsRequested = NO;
 			[passphraseIsRequestedLock unlock];
-			return NULL;
+			return nil;
 		}
 		
 		/* Get the passphrase from the textfield. */
 		enteredPassphrase = CFUserNotificationGetResponseValue(notification, kCFUserNotificationTextFieldValuesKey, 0);
 
-		if(enteredPassphrase != NULL)
+		if(enteredPassphrase != nil)
 		{
 			passphrase = [NSString stringWithString:(NSString *)enteredPassphrase];
 			CFRelease(notification);
@@ -501,7 +501,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 				
 				[appleKeychainUnlockedLock unlock];
 				
-				SecKeychainAddGenericPassword(NULL, strlen(serviceName), serviceName, strlen(accountName), accountName, [passphrase length], (const void *)[passphrase cString], NULL);
+				SecKeychainAddGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, [passphrase length], (const void *)[passphrase cString], nil);
 				
 				if(giveFocusBack)
 				{
@@ -523,7 +523,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 	passphraseIsRequested = NO;
 	[passphraseIsRequestedLock unlock];
 
-	return NULL;
+	return nil;
 }
 
 - (IBAction)showAboutPanel:(id)sender

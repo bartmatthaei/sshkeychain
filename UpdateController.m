@@ -13,7 +13,7 @@ extern NSString *local(NSString *theString);
 {
 	if(!(self = [super init]))
 	{
-		return NULL;
+		return nil;
 	}
 
 	sharedUpdateController = self;
@@ -64,7 +64,7 @@ extern NSString *local(NSString *theString);
 
 	currentVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
 
-	if(currentVersion == NULL)
+	if(currentVersion == nil)
 	{
 		if([warnings boolValue] == YES)
 		{

@@ -8,14 +8,22 @@ PreferenceController *sharedPreferenceController;
 {
 	if(!(self = [super init]))
 	{
-		return NULL;
+		return nil;
 	}
 	
 	sharedPreferenceController = self;
 	
 	[NSBundle loadNibNamed:@"Preferences" owner:sharedPreferenceController];
+
+	blankView = [[NSView alloc] init];
 	
 	return self;
+}
+
+- (void)dealloc
+{
+	[blankView dealloc];
+	[super dealloc];
 }
 
 - (void)awakeFromNib
@@ -51,8 +59,6 @@ PreferenceController *sharedPreferenceController;
 
 	/* Define the precedence of the sections. */
 	preferenceItemsKeys = [[NSArray arrayWithObjects:@"General", @"Display", @"SSH Keys", @"Tunnels", @"Security", @"Environment", nil] retain];
-
-	blankView = [[[[NSView alloc] init] autorelease] retain];
 
 	toolbar = [[NSToolbar alloc] initWithIdentifier:@"preferenceToolbar"];
 	[toolbar setDelegate:self];

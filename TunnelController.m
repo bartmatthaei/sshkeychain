@@ -17,7 +17,7 @@ TunnelController *sharedTunnelController;
 {		
 	if(!(self = [super init]))
 	{
-		return NULL;
+		return nil;
 	}
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -59,7 +59,7 @@ TunnelController *sharedTunnelController;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	tunnels = [[[[NSMutableArray alloc] init] autorelease] retain];
+	tunnels = [[NSMutableArray alloc] init];
 	
 	[self sync];
 
@@ -263,7 +263,7 @@ TunnelController *sharedTunnelController;
 	int i;
 	SSHTunnel *tunnel;
 	
-	dict = NULL;
+	dict = nil;
 	
 	if(!tunnels) { return; }
 	
@@ -334,7 +334,7 @@ TunnelController *sharedTunnelController;
 					last_terminated = [[[tunnels objectAtIndex:i] objectForKey:@"LastTerminated"] intValue];
 				}
 
-				if((last_terminated) && ((time(NULL) - last_terminated) < 300)) 
+				if((last_terminated) && ((time(nil) - last_terminated) < 300)) 
 				{
 					fails_exceeded = YES;
 					[[tunnels objectAtIndex:i] removeObjectForKey:@"LastTerminated"];
@@ -342,7 +342,7 @@ TunnelController *sharedTunnelController;
 				
 				else if((allKeysOnAgent) && ([output length] < 1))
 				{
-					[[tunnels objectAtIndex:i] setObject:[NSNumber numberWithInt:time(NULL)] forKey:@"LastTerminated"];
+					[[tunnels objectAtIndex:i] setObject:[NSNumber numberWithInt:time(nil)] forKey:@"LastTerminated"];
 					[self openTunnelWithDict:[tunnels objectAtIndex:i]];
 				}
 

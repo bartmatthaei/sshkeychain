@@ -25,7 +25,7 @@ extern NSString *local(NSString *theString);
 /* Return the current agent, if set. */
 + (id)currentAgent
 {
-	if(currentAgent == NULL)
+	if(currentAgent == nil)
 	{
 		currentAgent = [[SSHAgent alloc] init];
 	}
@@ -35,9 +35,9 @@ extern NSString *local(NSString *theString);
 
 - (id)init
 {
-	if((self = [super init]) == NULL)
+	if((self = [super init]) == nil)
 	{
-		return NULL;
+		return nil;
 	}
 
 	currentAgent = self;
@@ -62,7 +62,7 @@ extern NSString *local(NSString *theString);
 
 - (void)dealloc
 {
-	currentAgent = NULL;
+	currentAgent = nil;
 
 	[socketPathLock dealloc];
 	[agentSocketPathLock dealloc];
@@ -85,10 +85,10 @@ extern NSString *local(NSString *theString);
 	[socketPathLock lock];
 
 	/* We don't use the socketPath method here, since we've just locked socketPathLock. */
-	if(socketPath != NULL)
+	if(socketPath != nil)
 	{
 		[socketPath release];
-		socketPath = NULL;
+		socketPath = nil;
 	}
 
 	socketPath = [[NSString stringWithString:path] retain];
@@ -100,7 +100,7 @@ extern NSString *local(NSString *theString);
 /* Get the socket path we bind to. */
 - (NSString *)socketPath
 {
-	NSString *returnString = NULL;
+	NSString *returnString = nil;
 	
 	[socketPathLock lock];
 	
@@ -117,7 +117,7 @@ extern NSString *local(NSString *theString);
 /* Get the socket path the ssh-agent listens to. */
 - (NSString *)agentSocketPath
 {
-	NSString *returnString = NULL;
+	NSString *returnString = nil;
 
 	[agentSocketPathLock lock];
 	
@@ -151,12 +151,12 @@ extern NSString *local(NSString *theString);
 	{
 		[agentSocketPathLock lock];
 		[agentSocketPath release];
-		agentSocketPath = NULL;
+		agentSocketPath = nil;
 		[agentSocketPathLock unlock];
 	}
 
 
-	if([self socketPath] == NULL)
+	if([self socketPath] == nil)
 	{
 		NSLog(@"DEBUG: start: socketPath not set");
 		return NO;
@@ -169,7 +169,7 @@ extern NSString *local(NSString *theString);
 	/* Launch the agent and retrieve stdout. */
 	theOutput = [theTool launchForStandardOutput];
 
-	if(theOutput == NULL)
+	if(theOutput == nil)
 	{
 		NSLog(@"ssh-agent didn't launch");
 		return NO;
@@ -201,7 +201,7 @@ extern NSString *local(NSString *theString);
 	}
 
 	/* If the PID is > 0 but the socket path isn't filled, stop the agent and return -1. */
-	if(([self pid] > 0) && (([self agentSocketPath] == NULL) || ([agentSocketPath length] < 1)))
+	if(([self pid] > 0) && (([self agentSocketPath] == nil) || ([agentSocketPath length] < 1)))
 	{
 		NSLog(@"SSHAgent start: ssh-agent didn't give the output we expected");
 		[self stop];
@@ -237,7 +237,7 @@ extern NSString *local(NSString *theString);
 
 		[agentSocketPathLock lock];
 		[agentSocketPath release];
-		agentSocketPath = NULL;
+		agentSocketPath = nil;
 		[agentSocketPathLock unlock];
 
 		[self closeSockets];
@@ -248,7 +248,7 @@ extern NSString *local(NSString *theString);
 
 		[keysOnAgentLock lock];
 		[keysOnAgent release];
-		keysOnAgent = NULL;
+		keysOnAgent = nil;
 		[keysOnAgentLock unlock];
 
 		[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentStopped" object:nil];
@@ -279,7 +279,7 @@ extern NSString *local(NSString *theString);
 /* Return the keys on agent since last notification. */
 - (NSArray *)keysOnAgent
 {
-	NSArray *returnArray = NULL;
+	NSArray *returnArray = nil;
 
 	[keysOnAgentLock lock];
 	
@@ -297,7 +297,7 @@ extern NSString *local(NSString *theString);
 - (void)closeSockets
 {
 	close(s);
-	if([[self socketPath] cString] != NULL)
+	if([[self socketPath] cString] != nil)
 	{
 		unlink([[socketPath self] cString]);
 	}
@@ -366,7 +366,7 @@ extern NSString *local(NSString *theString);
 
 	/* Allocate space for 10 int's, to keep track of fd's in use. */
 	fds = malloc(sizeof(int) * allocated);
-	if(fds == NULL)
+	if(fds == nil)
 	{
 		NSLog(@"handleAgentConnections: malloc() failed");
 		[self stop];
@@ -385,7 +385,7 @@ extern NSString *local(NSString *theString);
 	ssa = sizeof(struct sockaddr);
 
 	/* Run a select over all available fd's. */
-	while((a = select(hfd + 1, &rfds, (fd_set *) 0, (fd_set *) 0, NULL)))
+	while((a = select(hfd + 1, &rfds, (fd_set *) 0, (fd_set *) 0, nil)))
 	{
 		/* If a == -1 and errno == EBADF, then we're probably exiting. Stop agent to be sure and return. */
 		if((a == -1) && (errno == EBADF))
@@ -412,7 +412,7 @@ extern NSString *local(NSString *theString);
 			{
 				fds = realloc(fds, ((sizeof(int) * allocated) * 2));
 				allocated = allocated * 2;
-				if(fds == NULL)
+				if(fds == nil)
 				{
 					NSLog(@"handleAgentConnections: realloc() failed");
 					[self stop];
@@ -606,9 +606,9 @@ extern NSString *local(NSString *theString);
 		[dict setObject:local(@"No") forKey:(NSString *)kCFUserNotificationAlternateButtonTitleKey];
 		
 		/* Display a passphrase request notification. */
-		notification = CFUserNotificationCreate(NULL, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
+		notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
 		
-		/* If we couldn't receive a response, return NULL. */
+		/* If we couldn't receive a response, return nil. */
 		if((error) || (CFUserNotificationReceiveResponse(notification, 0, &response))
 				|| ((response & 0x3) != kCFUserNotificationDefaultResponse))
 		{
@@ -637,7 +637,7 @@ extern NSString *local(NSString *theString);
 
 		keychain = [SSHKeychain currentKeychain];
 
-		if((keychain != NULL) && ([keychain count] > 0))
+		if((keychain != nil) && ([keychain count] > 0))
 		{
 			[openPanelLock lock];
 			openPanel = YES;
@@ -688,9 +688,9 @@ extern NSString *local(NSString *theString);
 			[dict setObject:local(@"No") forKey:(NSString *)kCFUserNotificationAlternateButtonTitleKey];
 		
 			/* Display a passphrase request notification. */
-			notification = CFUserNotificationCreate(NULL, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
+			notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
 		
-			/* If we couldn't receive a response, return NULL. */
+			/* If we couldn't receive a response, return nil. */
 			if((error) || (CFUserNotificationReceiveResponse(notification, 0, &response)))
 			{
 				return;
@@ -721,7 +721,7 @@ extern NSString *local(NSString *theString);
 	/* If the PID is < 1, we assume the agent isn't running. */
 	if([self pid] < 1)
 	{
-		return NULL;
+		return nil;
 	}
 
 	/* Initialize a ssh-add SSHTool, set the arguments to -l for a list of keys. */
@@ -734,14 +734,14 @@ extern NSString *local(NSString *theString);
 	/* Launch the tool and retrieve stdout. */
 	theOutput = [theTool launchForStandardOutput];
 
-	if(theOutput == NULL)
+	if(theOutput == nil)
 	{
-		return NULL;
+		return nil;
 	}
 
 	if([theOutput isEqualToString:@"The agent has no identities.\n"])
 	{
-		return NULL;
+		return nil;
 	}
 
 	/* Split the lines with delimiter "\n". */
@@ -780,7 +780,7 @@ extern NSString *local(NSString *theString);
 		return [NSArray arrayWithArray:keys];
 	}
 
-	return NULL;
+	return nil;
 }
 
 /* This method is called when keys are added/removed from the agent. */
@@ -794,7 +794,7 @@ extern NSString *local(NSString *theString);
 			[keysOnAgent release];
 		}
 
-		keysOnAgent = NULL;
+		keysOnAgent = nil;
 		
 		[keysOnAgentLock unlock];
  	}

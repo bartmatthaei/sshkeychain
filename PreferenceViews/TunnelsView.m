@@ -22,7 +22,7 @@
 	tunnels = [[NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString]] retain];
 	
 	if(!tunnels) {
-		tunnels = [[[[NSMutableArray alloc] init] autorelease] retain];
+		tunnels = [[NSMutableArray alloc] init];
 	}
 
 	tunnelIndex = -1;
@@ -63,7 +63,7 @@
 	
 	if(!match)
 	{
-		NSMutableDictionary *dict = [[[[NSMutableDictionary alloc] init] autorelease] retain];
+		NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
 		[dict setObject:@"New Tunnel" forKey:@"TunnelName"];
 		
 		[tunnels addObject:dict];

@@ -22,7 +22,7 @@ AgentController *sharedAgentController;
 {
 	if(!(self = [super init]))
 	{
-		return NULL;
+		return nil;
 	}
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
@@ -96,7 +96,7 @@ AgentController *sharedAgentController;
 	NSString *agentPath = [[[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString] stringByAppendingPathComponent:@"ssh-agent"];
 		
 	SecKeychainStatus status;
-	SecKeychainGetStatus(NULL, &status);
+	SecKeychainGetStatus(nil, &status);
 	
 	agent = [SSHAgent currentAgent];
 	keychain = [SSHKeychain currentKeychain];
@@ -138,7 +138,7 @@ AgentController *sharedAgentController;
 		
 		[allKeysOnAgentLock unlock];
 		
-		SecKeychainGetStatus(NULL, &status);
+		SecKeychainGetStatus(nil, &status);
 		
 		if((status & 1) && ([agent isRunning]))
 		{
@@ -174,7 +174,7 @@ AgentController *sharedAgentController;
 
 		if([[notification name] isEqualToString:@"SKSleep"])
 		{
-			sleep_timestamp = time(NULL);	
+			sleep_timestamp = time(nil);	
 		}
 
 		else if(([[notification name] isEqualToString:@"SKWake"]) && (sleep_timestamp != 0))
@@ -184,7 +184,7 @@ AgentController *sharedAgentController;
 			 * if it's more than the timestamp, remove all keys. 
 			 */
 
-			if((time(NULL) - (minutes * 60)) > sleep_timestamp)
+			if((time(nil) - (minutes * 60)) > sleep_timestamp)
 			{
 				[self removeKeysFromAgent:nil];
 			}
@@ -224,7 +224,7 @@ AgentController *sharedAgentController;
 
 		[allKeysOnAgentLock unlock];
 
-		SecKeychainGetStatus(NULL, &status);
+		SecKeychainGetStatus(nil, &status);
 
 		if((status & 1) && ([agent isRunning]))
 		{
@@ -336,7 +336,7 @@ AgentController *sharedAgentController;
 		
 		[[Controller sharedController] setStatus:NO];
 
-		SecKeychainGetStatus(NULL, &status);
+		SecKeychainGetStatus(nil, &status);
 
 		if((([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 3)
 			|| ([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 4))
@@ -656,7 +656,7 @@ AgentController *sharedAgentController;
 			return [[theArray objectAtIndex:nr] objectAtIndex:2];
 	}
 
-	return NULL;
+	return nil;
 }
 
 /* Wrapper for warningPanelWithTitle: andMessage: inMainThread: */
@@ -669,9 +669,9 @@ AgentController *sharedAgentController;
 - (void)warningPanelWithTitle:(NSString *)title andMessage:(NSString *)message inMainThread:(BOOL)thread
 {
 	if(thread == YES) {
-		id UI = [NSConnection rootProxyForConnectionWithRegisteredName:@"SSHKeychain" host:NULL];
+		id UI = [NSConnection rootProxyForConnectionWithRegisteredName:@"SSHKeychain" host:nil];
 
-		if(UI == NULL) {
+		if(UI == nil) {
 			NSLog(@"Can't connect to UI to post warning");
 		}
 
@@ -712,7 +712,7 @@ AgentController *sharedAgentController;
 			/* Put the data from thePipe to theOutput. */
 			theOutput = [[[NSString alloc] initWithData:[[thePipe fileHandleForReading] readDataToEndOfFile] encoding:NSASCIIStringEncoding] autorelease];
 	
-			if(strstr([theOutput cString], "ScreenSaverEngine.app") != NULL)
+			if(strstr([theOutput cString], "ScreenSaverEngine.app") != nil)
 			{
 				if((([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] == 2)
 				|| ([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] == 4))
@@ -741,7 +741,7 @@ AgentController *sharedAgentController;
 	NSDictionary *attributes;
 	BOOL isDirectory;
 
-	if(path == NULL)
+	if(path == nil)
 	{
 			[self warningPanelWithTitle:local(@"AgentNotStarted") andMessage:local(@"InternalInconsistency")];
 	}

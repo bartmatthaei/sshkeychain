@@ -97,7 +97,7 @@
 
 	if([self launchAndWait] == NO)
 	{
-		return NULL;
+		return nil;
 	}
 
 	/* Retrieve the stdout as a NSPipe. */
