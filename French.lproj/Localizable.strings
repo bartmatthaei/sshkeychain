@@ -3,110 +3,109 @@
 "Yes" = "Oui";
 "No" = "Non";
 
-"Download" = "T√©l√©charger";
+"Download" = "Télécharger";
 "Cancel" = "Annuler";
-"Changes" = "Nouveaut√©s";
+"Changes" = "Nouveautés";
 
 "LockAppleKeychain" = "Verrouiller le trousseau";
-"UnlockAppleKeychain" = "D√©verrouiller le trousseau";
+"UnlockAppleKeychain" = "Déverrouiller le trousseau";
 
-"AddedAuthsockToEnvironment" = "La variable \"SSH_AUTH_SOCK\" a √©t√© ajout√©e au fichier ~/.MacOSX/environment.plist\".\nElle sera op√©rationnelle lors de la prochaine session.";
-"ChangedAuthsockInEnvironment" = "La variable \"SSH_AUTH_SOCK\" a √©t√© modifi√©e dans le fichier ~/.MacOSX/environment.plist\".\nElle sera op√©rationnelle lors de la prochaine session.";
+"AddedAuthsockToEnvironment" = "La variable \"SSH_AUTH_SOCK\" a été ajoutée au fichier ~/.MacOSX/environment.plist\".\nElle sera opérationnelle lors de la prochaine session.";
+"ChangedAuthsockInEnvironment" = "La variable \"SSH_AUTH_SOCK\" a été modifiée dans le fichier ~/.MacOSX/environment.plist\".\nElle sera opérationnelle lors de la prochaine session.";
 
-"CheckForUpdates" = "V√©rifier les mises √† jour";
-"FailedToRetrieveXMLVersionInfo" = "√âchec lors de la v√©rification du fichier XML d'information.";
+"CheckForUpdates" = "Vérifier les mises à jour";
+"FailedToRetrieveXMLVersionInfo" = "Échec lors de la vérification du fichier XML d'information.";
 
-"Can'tFigureOutOwnVersion" = "Je ne sais m√™me pas quelle est ma version.";
+"Can'tFigureOutOwnVersion" = "Je ne sais même pas quelle est ma version.";
 
 "NewVersion" = "Nouvelle version";
 "NewVersionAvailable" = "Une nouvelle version de SSHKeychain est disponible.";
 "NoNewVersion" = "Il n'y a pas de nouvelle version.";
 
-"AgentTerminatedPanelTitle" = "L'ajout √† quitt√©.";
-"AgentTerminatedPanelText" = "L'agent a quitt√© inopin√©ment. Voulez-vous le relancer ?";
+"AgentTerminatedPanelTitle" = "L'ajout à quitté.";
+"AgentTerminatedPanelText" = "L'agent a quitté inopinément. Voulez-vous le relancer ?";
 
-"PreferencesNotSavedPanelTitle" = "Pr√©f√©rences non enregistr√©es.";
-"PreferencesNotSavedPanelText" = "Voulez-vous enregistrer vos pr√©f√©rences ?";
+"PreferencesNotSavedPanelTitle" = "Préférences non enregistrées.";
+"PreferencesNotSavedPanelText" = "Voulez-vous enregistrer vos préférences ?";
 
 "DisplayPanelTitle" = "Changement de configuration";
-"DisplayPanelText" = "Les changements apport√©s seront op√©rationnels au prochain lancement de SSHKeychain.";
-"DisplayChangeNotAllowed" = "Vous n'avez pas le droit d'√©crire dans le bundle SSHKeychain, donc l'option d'affichage ne peut √™tre chang√©e.";
+"DisplayPanelText" = "Les changements apportés seront opérationnels au prochain lancement de SSHKeychain.";
+"DisplayChangeNotAllowed" = "Vous n'avez pas le droit d'écrire dans le bundle SSHKeychain, donc l'option d'affichage ne peut être changée.";
 
 "NewSocketpathPanelTitle" = "Nouvel emplacement du socket";
-"NewSocketpathPanelText" = "Le nouvel emplacement du socket sera utilis√© par l'agent √† son prochain lancement.\nLa variable d'environnement globale \"SSH_AUTH_SOCK\" sera affect√©e par ce changement lors de la procjaine session.";
+"NewSocketpathPanelText" = "Le nouvel emplacement du socket sera utilisé par l'agent à son prochain lancement.\nLa variable d'environnement globale \"SSH_AUTH_SOCK\" sera affectée par ce changement lors de la procjaine session.";
 
-"InvalidKey" = "Cl√© invalide";
-"KeyAlreadyOnList" = "Cette cl√© est d√©j√† dans la liste";
+"InvalidKey" = "Clé invalide";
+"KeyAlreadyOnList" = "Cette clé est déjà dans la liste";
 
-"ReadPermissionToKeyDenied" = "Lecture de la cl√© interdite";
+"ReadPermissionToKeyDenied" = "Lecture de la clé interdite";
 
-"InvalidPrivateKey" = "Cl√© priv√©e invalide";
+"InvalidPrivateKey" = "Clé privée invalide";
 
 "StartAgent" = "Lancer l'agent";
-"StopAgent" = "Arr√™ter l'agent";
+"StopAgent" = "Arrêter l'agent";
 
-"FailedToStartAgent" = "√âchec du lancement de ssh-agent.";
-"FailedToStopAgent" = "√âchec de l'arr√™t de ssh-agent.";
-"FailedToStartAgentSocketpathInvalid" = "√âchec du lancement de ssh-agent. L'emplacement du socket est invalide.";
-"AgentNotFound" = "L'ex√©cutable ssh-agent n'a pu √™tre trouv√© √† l'emplacement indiqu√© dans les pr√©f√©rences de SSHKeychain.";
+"FailedToStartAgent" = "Échec du lancement de ssh-agent.";
+"FailedToStopAgent" = "Échec de l'arrêt de ssh-agent.";
+"FailedToStartAgentSocketpathInvalid" = "Échec du lancement de ssh-agent. L'emplacement du socket est invalide.";
+"AgentNotFound" = "L'exécutable ssh-agent n'a pu être trouvé à l'emplacement indiqué dans les préférences de SSHKeychain.";
 
-"AddAllKeysToAgent" = "Ajouter toutes les cl√©s √† l'agent";
-"AddAllKeysToAgentFailed" = "√âchec lors de l'ajout de toutes les cl√©s √† l'agent.";
-"AddSingleKeyToAgent" = "Ajouter une seule cl√© √† l'agent";
-"AddSingleKeyToAgentFailed" = "√âchec lors de l'ajout de la cl√© √† l'agent.";
-"AgentNotRunning" = "L'agent n'est pas lanc√©.";
+"AddAllKeysToAgent" = "Ajouter toutes les clés à l'agent";
+"AddAllKeysToAgentFailed" = "Échec lors de l'ajout de toutes les clés à l'agent.";
+"AddSingleKeyToAgent" = "Ajouter une seule clé à l'agent";
+"AddSingleKeyToAgentFailed" = "Échec lors de l'ajout de la clé à l'agent.";
+"AgentNotRunning" = "L'agent n'est pas lancé.";
 
-"RemoveAllKeysFromAgent" = "Effacer toutes les cl√©s de l'agent";
-"RemoveAllKeysFromAgentFailed" = "√âchec lors de l'effacement de toutes les cl√©s de l'agent.";
+"RemoveAllKeysFromAgent" = "Effacer toutes les clés de l'agent";
+"RemoveAllKeysFromAgentFailed" = "Échec lors de l'effacement de toutes les clés de l'agent.";
 
-"AgentNotStarted" = "L'agent n'est pas lanc√©";
-"InternalInconsistency" = "Probl√®me interne";
+"AgentNotStarted" = "L'agent n'est pas lancé";
+"InternalInconsistency" = "Problème interne";
 
-"SocketpathDirectory" = "L'emplacement du socket est apparemment un r√©pertoire.";
-"PleaseChangeSocketpath" = "Changez s'il vous pla√Æt l'emplacement du socket dans les pr√©f√©rences.";
+"SocketpathDirectory" = "L'emplacement du socket est apparemment un répertoire.";
+"PleaseChangeSocketpath" = "Changez s'il vous plaît l'emplacement du socket dans les préférences.";
 
-"Can'tWriteSocketInDirectory" = "√âcriture du socket dans le r√©pertoire impossible.";
-"PleaseCheckPermissions" = "V√©rifiez s'il vous pla√Æt les permissions.";
+"Can'tWriteSocketInDirectory" = "Écriture du socket dans le répertoire impossible.";
+"PleaseCheckPermissions" = "Vérifiez s'il vous plaît les permissions.";
 
-"Couldn'tCreateSocketDirectory" = "Impossible de cr√©er le r√©pertoire o√π le socket doit √™tre plac√©.";
-"PleaseCreateItManually" = "Cr√©ez-le manuellement.";
+"Couldn'tCreateSocketDirectory" = "Impossible de créer le répertoire où le socket doit être placé.";
+"PleaseCreateItManually" = "Créez-le manuellement.";
 
 
 "PleaseSelectAPath" = "Choisissez un emplacement.";
-"AlreadyExists" = "existe d√©j√†.";
-"KeyTypeUnknown" = "Type de cl√© inconnu.";
+"AlreadyExists" = "existe déjà.";
+"KeyTypeUnknown" = "Type de clé inconnu.";
 "NumberOfBitsInvalid" = "Longueur invalide.";
-"PassphraseTooShort" = "Mot de passe trop court (5 caract√®res min.).";
-"Generating" = "Cr√©ation...";
-"KeyGenerationFailed" = "√âchec lors de la cr√©ation de la cl√©.";
+"PassphraseTooShort" = "Mot de passe trop court (5 caractères min.).";
+"Generating" = "Création...";
+"KeyGenerationFailed" = "Échec lors de la création de la clé.";
 
-"WhereWouldYouLikeToSaveThePrivateKey" = "O√π voulez-vous enregistrer la cl√© priv√©e ?";
+"WhereWouldYouLikeToSaveThePrivateKey" = "Où voulez-vous enregistrer la clé privée ?";
 
-"AddPassphraseToAppleKeychain" = "Ajouter le mot de passe dans le trousseau d'acc√®s Apple";
+"AddPassphraseToAppleKeychain" = "Ajouter le mot de passe dans le trousseau d'accès Apple";
 "Passphrase" = "Mot de passe";
 
-"TunnelForwardingFailed" = "√âchec lors du passage par le tunnel";
+"TunnelForwardingFailed" = "Échec lors du passage par le tunnel";
 
-"ForwardingFailedDuringInitialization" = "√âchec du passsage lors de l'initialisation";
+"ForwardingFailedDuringInitialization" = "Échec du passsage lors de l'initialisation";
 
-"TunnelSetupFailed" = "√âchec des r√©glages du tunnel";
+"TunnelSetupFailed" = "Échec des réglages du tunnel";
 
-"TunnelTerminated" = "Tunnel ferm√©";
-"TunnelUnexpectedlyTerminated" = "Le tunnel a quitt√© inopin√©ment. Il ne sera pas relanc√©.";
-"TunnelTerminatedAndCouldNotBeRestarted" = "Le tunnel a quitt√© inopin√©ment et n'a pu √™tre relanc√©.";
+"TunnelTerminated" = "Tunnel fermé";
+"TunnelUnexpectedlyTerminated" = "Le tunnel a quitté inopinément. Il ne sera pas relancé.";
+"TunnelTerminatedAndCouldNotBeRestarted" = "Le tunnel a quitté inopinément et n'a pu être relancé.";
 
 "ActiveTunnel" = "Tunnel ouvert";
 "ActiveTunnels" = "Tunnels ouverts";
 "NoActiveTunnels" = "Aucun tunnel ouvert";
 
 "ConfirmationPanelTitle" = "Confirmation requise";
-"ConfirmationPanelText" = "Un client essaye d'utiliser vos cl√©s. Voulez-vous l'autoriser ?";
+"ConfirmationPanelText" = "Un client essaye d'utiliser vos clés. Voulez-vous l'autoriser ?";
 
-"Preferences" = "Pr√©f√©rences";
-"General" = "G√©n√©ral";
+"Preferences" = "Préférences";
+"General" = "Général";
 "Display" = "Affichage";
-"Security" = "S√©curit√©";
+"Security" = "Sécurité";
 "Environment" = "Environnement";
-"SSH Keys" = "Cl√©s SSH";
+"SSH Keys" = "Clés SSH";
 "Tunnels" = "Tunnels";
-
