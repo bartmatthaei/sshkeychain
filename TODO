@@ -2,7 +2,10 @@
 - Don't ask for confirmation when a tunnel is launched. (SCM_CREDS ?)
 - Keys per location
 - Tunnels per location
+- Only add keys from keychain event if keychain holds keys
+- Admin wrapper for tunnel ports < 1024
 
 1.0 TODO:
 - Comment & Clean up
-- Implement Exceptions instead of NSLog :)
+- Implement Exceptions instead of NSLog
+- Package
