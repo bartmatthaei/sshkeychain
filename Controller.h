@@ -40,7 +40,7 @@
 - (void)setToolTip:(NSString *)tooltip;
 
 - (IBAction)checkForUpdatesFromUI:(id)sender;
-- (void)checkForUpdatesWithVersionInfo:(NSDictionary *)remoteVersionInfo andWarnings:(BOOL)warnings;
+- (void)checkForUpdatesWithWarnings:(BOOL)warnings;
 - (IBAction)preferences:(id)sender;
 
 - (IBAction)toggleAppleKeychainLock:(id)sender;
