@@ -5,7 +5,7 @@
 - Only add keys from keychain event if keychain holds keys
 - Admin wrapper for tunnel ports < 1024
 - Allow remote connections to a local tunneled port (Sep 28 - Kevin Ballard - SSHKeychain modifications)
-
+- The option to not display messages regarding tunnels (Nov 05 - Marc Liyanage  - Feature suggestion for SSHKeychain)
 
 1.0 TODO:
 - Comment & Clean up
