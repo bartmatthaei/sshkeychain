@@ -1,5 +1,4 @@
 0.8 TODO:
-- Don't ask for confirmation when a tunnel is launched. (SCM_CREDS ?)
 - Keys per location
 - Tunnels per location
 - Only add keys from keychain event if keychain holds keys
