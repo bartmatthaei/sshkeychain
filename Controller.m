@@ -300,68 +300,34 @@ NSString *local(NSString *theString)
 - (void)retrieveVersionFile
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSURL *url;
-	NSDictionary *remoteVersionInfo;
 		
-	url = [[NSURL alloc] initWithString:remoteVersionURL];
-		
-	if(!url)
-	{
-		return;
-	}
-
-	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:url];
-		
-	if(!remoteVersionInfo)
-	{
-		return;
-	}
-		
-	[url dealloc];
-		
-	[self checkForUpdatesWithVersionInfo:remoteVersionInfo andWarnings:NO];
+	[self checkForUpdatesWithWarnings:NO];
 
 	[pool release];
 }
 
 - (IBAction)checkForUpdatesFromUI:(id)sender
 {
-	NSURL *url;
-	NSDictionary *remoteVersionInfo;
-	
-	url = [[NSURL alloc] initWithString:remoteVersionURL];
-	
-	if(!url)
-	{
-		[self warningPanelWithTitle:local(@"CheckForUpdates")
-				 andMessage:local(@"FailedToRetrieveXMLVersionInfo")];
-		return;
-	}
-
-	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:url];
-	
-	if(!remoteVersionInfo)
-	{		
-		[self warningPanelWithTitle:local(@"CheckForUpdates")
-				 andMessage:local(@"FailedToRetrieveXMLVersionInfo")];
-		return;
-	}
-	
-	[url dealloc];
-
-	[self checkForUpdatesWithVersionInfo:remoteVersionInfo andWarnings:YES];
+	[self checkForUpdatesWithWarnings:YES];
 }
 
-- (void)checkForUpdatesWithVersionInfo:(NSDictionary *)remoteVersionInfo andWarnings:(BOOL)warnings
+- (void)checkForUpdatesWithWarnings:(BOOL)warnings
 {
 	NSString *latestVersion, *currentVersion;
+	NSDictionary *remoteVersionInfo;
 	NSURL *downloadURL, *changesURL;
 	int r;
 
-	if(remoteVersionInfo == NULL)
+	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:[NSURL URLWithString:remoteVersionURL]];
+
+	if(!remoteVersionInfo)
 	{
-		[self warningPanelWithTitle:local(@"CheckForUpdates")
+		if(warnings == YES) 
+		{
+			[self warningPanelWithTitle:local(@"CheckForUpdates")
 				 andMessage:local(@"FailedToRetrieveXMLVersionInfo")];
+		}
+
 		return;
 	}
 
