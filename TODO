@@ -5,6 +5,7 @@
 - Admin wrapper for tunnel ports < 1024
 - The option to not display messages regarding tunnels (Nov 05 - Marc Liyanage  - Feature suggestion for SSHKeychain)
 - Listen to local forwarded ports and start up the tunnel on demand (that's going to require some hacking with random ports to have ssh listening on)
+- SSH v2 support for tunnels
 
 0.8 DONE:
 - Option for screensaver check interval (bart)
