@@ -3,10 +3,12 @@
 - Tunnels per location
 - Only add keys from keychain event if keychain holds keys
 - Admin wrapper for tunnel ports < 1024
-- Option for screensaver check interval
 - Option to unload keys after a period of time
 - The option to not display messages regarding tunnels (Nov 05 - Marc Liyanage  - Feature suggestion for SSHKeychain)
 - Listen to local forwarded ports and start up the tunnel on demand (that's going to require some hacking with random ports to have ssh listening on)
+
+0.8 DONE:
+- Option for screensaver check interval (bart)
 
 1.0 TODO:
 - Comment & Clean up
