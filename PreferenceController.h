@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import <Cocoa/Cocoa.h>
 
 #import "PreferenceView.h"

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "PreferenceView.h"
 
 #import "SSHKeychain.h"

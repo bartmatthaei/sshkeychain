@@ -1,5 +1,3 @@
-/* $Id: Controller.m,v 1.40 2004/06/23 08:12:20 bart Exp $ */
-
 #import "Controller.h"
 
 #include <sys/types.h>
@@ -419,7 +417,6 @@ NSString *local(NSString *theString)
 - (IBAction)preferences:(id)sender
 {
 	/* The preferences class can handle things itself. Just tell it to open. */
-	//[Preferences openPreferencesWindow];
 	[PreferenceController openPreferencesWindow];
 }
 

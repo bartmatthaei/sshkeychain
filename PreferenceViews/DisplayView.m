@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "DisplayView.h"
 
 #include <utime.h>

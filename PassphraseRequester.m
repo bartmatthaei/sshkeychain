@@ -1,5 +1,3 @@
-/* $Id: PassphraseRequester.m,v 1.11 2003/11/28 13:09:34 bart Exp $ */
-
 #import "Controller.h"
 
 int main(int argc, const char *argv[])

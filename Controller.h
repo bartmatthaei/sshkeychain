@@ -1,5 +1,3 @@
-/* $Id: Controller.h,v 1.21 2004/06/23 08:12:20 bart Exp $ */
-
 #import <Cocoa/Cocoa.h>
 #import <Security/Security.h>
 

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "KeysView.h"
 
 #import "PreferenceController.h"
