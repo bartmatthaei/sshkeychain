@@ -8,10 +8,13 @@
 
 	NSString *agentSocketPath;
 	BOOL addingKeys;
+	
+	int lastAdded;
 
 	/* Locks */
 	NSLock *keychainLock;
 	NSLock *addingKeysLock;
+	NSLock *lastAddedLock;
 }
 
 + (id)currentKeychain;
@@ -36,6 +39,7 @@
 
 - (BOOL)addKeysToAgent;
 - (BOOL)addKeysToAgentWithInteraction:(BOOL)interaction;
+- (void)removeKeysAfterTimeout:(id)object;
 - (BOOL)removeKeysFromAgent;
 
 @end

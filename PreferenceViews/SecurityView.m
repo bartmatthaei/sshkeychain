@@ -12,6 +12,7 @@
 
 	[minutesOfSleepTextfield setRefusesFirstResponder:YES];
 	[checkScreensaverIntervalTextfield setRefusesFirstResponder:YES];
+	[keyTimeoutTextfield setRefusesFirstResponder:YES];
 
 	[addKeysOnConnection setState:[[NSUserDefaults standardUserDefaults] boolForKey:addKeysOnConnectionString]];
 	[askForConfirmation setState:[[NSUserDefaults standardUserDefaults] boolForKey:askForConfirmationString]];
@@ -49,6 +50,9 @@
 
 	[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
 	[checkScreensaverInterval setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+	
+	[keyTimeoutTextfield setIntValue:[prefs integerForKey:keyTimeoutString]];
+	[keyTimeout setIntValue:[prefs integerForKey:keyTimeoutString]];
 
 	[useCustomSecuritySettings setState:[[NSUserDefaults standardUserDefaults] boolForKey:useCustomSecuritySettingsString]];
 
@@ -78,6 +82,8 @@
 		[prefs setInteger:[minutesOfSleepTextfield intValue] forKey:minutesOfSleepString];
 		
 		[prefs setInteger:[checkScreensaverIntervalTextfield intValue] forKey:checkScreensaverIntervalString];
+		[prefs setInteger:[keyTimeoutTextfield intValue] forKey:keyTimeoutString];
+
 	} 
 
 	else
@@ -90,6 +96,7 @@
 		[prefs setInteger:4 forKey:followKeychainString];
 		[prefs setInteger:0 forKey:minutesOfSleepString];
 		[prefs setInteger:30 forKey:checkScreensaverIntervalString];
+		[prefs setInteger:0 forKey:keyTimeoutString];
 	}
 
 	[prefs synchronize];
@@ -142,6 +149,7 @@
 		[prefs setInteger:4 forKey:followKeychainString];
 		[prefs setInteger:0 forKey:minutesOfSleepString];		
 		[prefs setInteger:30 forKey:checkScreensaverIntervalString];
+		[prefs setInteger:0 forKey:keyTimeoutString];
 
 		[prefs synchronize];
 
@@ -181,6 +189,9 @@
 		
 		[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
 		[checkScreensaverInterval setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+		
+		[keyTimeoutTextfield setIntValue:[prefs integerForKey:keyTimeoutString]];
+		[keyTimeout setIntValue:[prefs integerForKey:keyTimeoutString]];
 
 	}
 }
@@ -249,5 +260,21 @@
 		[checkScreensaverInterval setIntValue:seconds];
 	}
 }
+
+/* The key timeout slidebar has changed. */
+- (IBAction)changeKeyTimeout:(id)sender
+{
+	if(sender == keyTimeout)
+	{
+		[keyTimeoutTextfield setIntValue:[sender intValue]];
+	}
+	
+	else if(sender == keyTimeoutTextfield)
+	{
+		[keyTimeoutTextfield setIntValue:[sender intValue]];
+		[keyTimeout setIntValue:[sender intValue]];
+	}
+}
+
 
 @end

@@ -77,10 +77,10 @@
         {
             ACTIONS = {
                 changeCheckScreensaverInterval = id; 
+                changeKeyTimeout = id; 
                 changeMinutesOfSleep = id; 
                 changeOnScreensaver = id; 
                 changeOnSleep = id; 
-                myAction = id; 
                 toggleCustomSecuritySettings = id; 
             }; 
             CLASS = SecurityView; 
@@ -92,6 +92,8 @@
                 checkScreensaverIntervalTextfield = id; 
                 customSecuritySettingsView = id; 
                 followKeychain = id; 
+                keyTimeout = id; 
+                keyTimeoutTextfield = id; 
                 minutesOfSleep = id; 
                 minutesOfSleepTextfield = id; 
                 onScreensaver = id; 

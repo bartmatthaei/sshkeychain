@@ -1,7 +1,10 @@
 #import "SSHKeychain.h"
+#import "PreferenceController.h"
 
 #import "SSHKey.h"
 #import "SSHTool.h"
+
+#include <unistd.h>
 
 SSHKeychain *currentKeychain;
 
@@ -49,7 +52,11 @@ SSHKeychain *currentKeychain;
 	}
 
 	[keychainLock unlock];
-
+	
+	[lastAddedLock lock];
+	lastAdded = -1;
+	[lastAddedLock unlock];
+	
 	currentKeychain = self;
 	
 	return self;
@@ -64,6 +71,7 @@ SSHKeychain *currentKeychain;
 
 	addingKeysLock = [[NSLock alloc] init];
 	keychainLock = [[NSLock alloc] init];
+	lastAddedLock = [[NSLock alloc] init];
 
 	return self;
 }
@@ -86,7 +94,8 @@ SSHKeychain *currentKeychain;
 	[keychainLock unlock];
 
 	[addingKeysLock dealloc];
-
+	[lastAddedLock dealloc];
+	
 	[super dealloc];
 }
 
@@ -241,7 +250,7 @@ SSHKeychain *currentKeychain;
 {
 	NSMutableArray *paths;
 	SSHTool *theTool;
-	int i;
+	int i, ts;
 
 	paths = [self arrayOfPaths];
 
@@ -299,6 +308,17 @@ SSHKeychain *currentKeychain;
 			[addingKeysLock unlock];
 			return NO;
 		}
+		
+		if([[NSUserDefaults standardUserDefaults] integerForKey:keyTimeoutString] > 0)
+		{
+			ts = time(nil);
+			[lastAddedLock lock];
+			lastAdded = ts;
+			[lastAddedLock unlock];
+			
+			[NSThread detachNewThreadSelector:@selector(removeKeysAfterTimeout:) toTarget:self 
+									withObject:[NSNumber numberWithInt:ts]];
+		}
 
 		[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentFilled" object:nil];
 
@@ -315,10 +335,36 @@ SSHKeychain *currentKeychain;
 	return YES;
 }
 
+/* Remove all keys from the ssh-agent from a NSTimer object. */
+- (void)removeKeysAfterTimeout:(id)object
+{
+	int ts;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	ts = [object intValue];
+	
+	sleep([[NSUserDefaults standardUserDefaults] integerForKey:keyTimeoutString] * 60);
+	
+	[lastAddedLock lock];
+	if(ts == lastAdded) 
+	{
+		[lastAddedLock unlock];
+		[self removeKeysFromAgent];
+	}
+	
+	[lastAddedLock unlock];
+	
+	[pool release];
+}
+
 /* Remove all keys from the ssh-agent. */
 - (BOOL)removeKeysFromAgent
 {
 	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
+	
+	[lastAddedLock lock];
+	lastAdded = -1;
+	[lastAddedLock unlock];
 
 	if((!agentSocketPath) || ([[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath] == NO))
 	{
