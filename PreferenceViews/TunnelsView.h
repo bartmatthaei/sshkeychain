@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "PreferenceView.h"
 
 @interface TunnelsView : PreferenceView

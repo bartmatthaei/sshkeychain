@@ -1,5 +1,3 @@
-/* $Id: main.m,v 1.9 2004/06/23 08:12:20 bart Exp $ */
-
 #import <Cocoa/Cocoa.h>
 #import <IOKit/IOMessage.h>
 #import <IOKit/pwr_mgt/IOPMLib.h>

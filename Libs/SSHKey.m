@@ -1,5 +1,3 @@
-/* $Id: SSHKey.m,v 1.6 2004/06/23 08:12:21 bart Exp $ */
-
 #import "SSHKey.h"
 
 @implementation SSHKey

@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "SecurityView.h"
 
 #import "PreferenceController.h"

@@ -1,5 +1,3 @@
-/* $Id: TunnelController.h,v 1.1 2004/06/23 08:12:20 bart Exp $ */
-
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 

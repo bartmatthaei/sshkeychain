@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "GeneralView.h"
 
 #include <unistd.h>

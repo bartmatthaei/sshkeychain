@@ -1,5 +1,3 @@
-/* $Id: AgentController.m,v 1.22 2004/06/23 08:12:20 bart Exp $ */
-
 #import "AgentController.h"
 
 #include <unistd.h>

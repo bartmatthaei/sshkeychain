@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #import "EnvironmentView.h"
 
 #import "PreferenceController.h"
