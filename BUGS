@@ -110,14 +110,3 @@
 - Screensaver Bug
 
 	Some users experience a total system lockdown after a screensaver displays the login window.
-
-- Preference bug
-
-	Only reported once by Sally Whitehead.
-
-	Console log:
-
-	2004-11-14 16:45:50.085 SSHKeychain[883] *** -[NSToolbar
-	setSelectedItemIdentifier:]: selector not recognized
-	2004-11-14 16:45:50.091 SSHKeychain[883] *** -[NSToolbar
-	setSelectedItemIdentifier:]: selector not recognized
