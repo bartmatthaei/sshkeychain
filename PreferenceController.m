@@ -115,13 +115,7 @@ PreferenceController *sharedPreferenceController;
 	frame.origin.y += frame.size.height;
 	frame.origin.y -= newHeight + toolbarHeight;
 	frame.size.height = newHeight + toolbarHeight;
-	// We only resized larger to fit the Dynamic Ports tab, but that tab is gone on Jaguar
-	// So lets use the old size on Jaguar as well
-	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) {
-		frame.size.width = 475;
-	} else {
-		frame.size.width = 500;
-	}
+	frame.size.width = 475;
 	
 	frame = [NSWindow frameRectForContentRect:frame styleMask:[window styleMask]];
 	

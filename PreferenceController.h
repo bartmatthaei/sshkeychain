@@ -16,6 +16,7 @@
 #define tunnelsString @"Tunnels"
 #define useGlobalEnvironmentString @"Use Global Environment ~/.MacOSX/environment.plist"
 #define useCustomSecuritySettingsString @"Use Custom Security Settings"
+#define checkScreensaverIntervalString @"Check Screensaver Interval"
 
 @interface PreferenceController : NSObject 
 {

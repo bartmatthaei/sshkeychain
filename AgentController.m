@@ -691,6 +691,7 @@ AgentController *sharedAgentController;
 	NSTask *task;
 	NSPipe *thePipe;
 	NSString *theOutput;
+	int interval;
 	
 	while(1)
 	{
@@ -730,7 +731,19 @@ AgentController *sharedAgentController;
 			}
 		}
 		
-		sleep(30);
+		interval = [[NSUserDefaults standardUserDefaults] integerForKey:checkScreensaverIntervalString];
+				
+		if(interval < 5)
+		{
+			interval = 5;
+		}
+		
+		if(interval > 100)
+		{
+			interval = 100;
+		}
+		
+		sleep(interval);
 		[pool release];
 	}
 }

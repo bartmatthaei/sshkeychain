@@ -11,6 +11,7 @@
 	prefs = [NSUserDefaults standardUserDefaults];
 
 	[minutesOfSleepTextfield setRefusesFirstResponder:YES];
+	[checkScreensaverIntervalTextfield setRefusesFirstResponder:YES];
 
 	[addKeysOnConnection setState:[[NSUserDefaults standardUserDefaults] boolForKey:addKeysOnConnectionString]];
 	[askForConfirmation setState:[[NSUserDefaults standardUserDefaults] boolForKey:askForConfirmationString]];
@@ -22,15 +23,32 @@
 	if([prefs integerForKey:onSleepString] == 1)
 	{
 		[minutesOfSleep setEnabled:YES];
+		[minutesOfSleepTextfield setEnabled:YES];
 	}
 	
 	else
 	{
 		[minutesOfSleep setEnabled:NO];
+		[minutesOfSleepTextfield setEnabled:NO];
 	}
 	
 	[minutesOfSleepTextfield setIntValue:[prefs integerForKey:minutesOfSleepString]];
 	[minutesOfSleep setIntValue:[prefs integerForKey:minutesOfSleepString]];
+	
+	if([prefs integerForKey:onScreensaverString] > 1)
+	{
+		[checkScreensaverInterval setEnabled:YES];
+		[checkScreensaverIntervalTextfield setEnabled:YES];
+	}
+	
+	else
+	{
+		[checkScreensaverInterval setEnabled:NO];
+		[checkScreensaverIntervalTextfield setEnabled:NO];
+	}
+
+	[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+	[checkScreensaverInterval setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
 
 	[useCustomSecuritySettings setState:[[NSUserDefaults standardUserDefaults] boolForKey:useCustomSecuritySettingsString]];
 
@@ -58,6 +76,8 @@
 		[prefs setInteger:[[onScreensaver selectedItem] tag] forKey:onScreensaverString];
 		[prefs setInteger:[[followKeychain selectedItem] tag] forKey:followKeychainString];
 		[prefs setInteger:[minutesOfSleepTextfield intValue] forKey:minutesOfSleepString];
+		
+		[prefs setInteger:[checkScreensaverIntervalTextfield intValue] forKey:checkScreensaverIntervalString];
 	} 
 
 	else
@@ -69,6 +89,7 @@
 		[prefs setInteger:4 forKey:onScreensaverString];
 		[prefs setInteger:4 forKey:followKeychainString];
 		[prefs setInteger:0 forKey:minutesOfSleepString];
+		[prefs setInteger:30 forKey:checkScreensaverIntervalString];
 	}
 
 	[prefs synchronize];
@@ -119,7 +140,8 @@
 		[prefs setInteger:1 forKey:onSleepString];
 		[prefs setInteger:4 forKey:onScreensaverString];
 		[prefs setInteger:4 forKey:followKeychainString];
-		[prefs setInteger:0 forKey:minutesOfSleepString];
+		[prefs setInteger:0 forKey:minutesOfSleepString];		
+		[prefs setInteger:30 forKey:checkScreensaverIntervalString];
 
 		[prefs synchronize];
 
@@ -133,15 +155,33 @@
 		if([prefs integerForKey:onSleepString] == 1)
 		{
 			[minutesOfSleep setEnabled:YES];
+			[minutesOfSleepTextfield setEnabled:YES];
 		}
 	
 		else
 		{
 			[minutesOfSleep setEnabled:NO];
+			[minutesOfSleepTextfield setEnabled:NO];
 		}
 	
 		[minutesOfSleepTextfield setIntValue:[prefs integerForKey:minutesOfSleepString]];
 		[minutesOfSleep setIntValue:[prefs integerForKey:minutesOfSleepString]];
+		
+		if([prefs integerForKey:onScreensaverString] > 1)
+		{
+			[checkScreensaverInterval setEnabled:YES];
+			[checkScreensaverIntervalTextfield setEnabled:YES];
+		}
+	
+		else
+		{
+			[checkScreensaverInterval setEnabled:NO];
+			[checkScreensaverIntervalTextfield setEnabled:NO];
+		}
+		
+		[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+		[checkScreensaverInterval setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+
 	}
 }
 
@@ -164,6 +204,49 @@
 	{
 		[minutesOfSleepTextfield setIntValue:[sender intValue]];
 		[minutesOfSleep setIntValue:[sender intValue]];
+	}
+}
+
+/* When the On Screensaver option is toggled, the checkScreensaverInterval box needs to be greyed out or displayed. */
+- (IBAction)changeOnScreensaver:(id)sender
+{
+	if([[sender selectedItem] tag] > 1) 
+	{
+		[checkScreensaverInterval setEnabled:YES];
+		[checkScreensaverIntervalTextfield setEnabled:YES];
+	}
+	
+	else
+	{
+		[checkScreensaverInterval setEnabled:NO];
+		[checkScreensaverIntervalTextfield setEnabled:NO];
+	}
+}
+
+/* The seconds of screensaver check interval slidebar has changed. */
+- (IBAction)changeCheckScreensaverInterval:(id)sender
+{
+	int seconds = [sender intValue];
+	
+	if(seconds < 5)
+	{
+		seconds = 5;
+	}
+	
+	if(seconds > 100) 
+	{
+		seconds = 100;
+	}
+	
+	if(sender == checkScreensaverInterval)
+	{
+		[checkScreensaverIntervalTextfield setIntValue:seconds];
+	}
+	
+	else if(sender == checkScreensaverIntervalTextfield)
+	{
+		[checkScreensaverIntervalTextfield setIntValue:seconds];
+		[checkScreensaverInterval setIntValue:seconds];
 	}
 }
 

@@ -76,8 +76,11 @@
         }, 
         {
             ACTIONS = {
+                changeCheckScreensaverInterval = id; 
                 changeMinutesOfSleep = id; 
+                changeOnScreensaver = id; 
                 changeOnSleep = id; 
+                myAction = id; 
                 toggleCustomSecuritySettings = id; 
             }; 
             CLASS = SecurityView; 
@@ -85,6 +88,8 @@
             OUTLETS = {
                 addKeysOnConnection = id; 
                 askForConfirmation = id; 
+                checkScreensaverInterval = id; 
+                checkScreensaverIntervalTextfield = id; 
                 customSecuritySettingsView = id; 
                 followKeychain = id; 
                 minutesOfSleep = id; 

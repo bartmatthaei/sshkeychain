@@ -57,6 +57,7 @@ NSString *local(NSString *theString)
 			@"3",
 			[NSArray arrayWithObjects:@"~/.ssh/identity", @"~/.ssh/id_dsa", nil],
 			@"NO",
+			@"30",
 			nil
 		]
 		forKeys:
@@ -73,6 +74,7 @@ NSString *local(NSString *theString)
 			displayString,
 			@"Keys",
 			manageGlobalEnvironmentString,
+			checkScreensaverIntervalString,
 			nil
 		]
 	];
