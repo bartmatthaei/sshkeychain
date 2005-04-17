@@ -187,10 +187,11 @@
 		I don't know) is broken wrt. dynamic ports */
 	// Of course, since the build of ssh only works on Panther, we have to disable Dynamic Ports
 	// entirely under Jaguar
+	// SSH under Tiger works fine. Don't use the workaround then
 	NSString *toolPath;
 	NSString *sshPathString = [[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString];
-	if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_2) {
-		// It's Jaguar
+	if (floor(NSAppKitVersionNumber) != NSAppKitVersionNumber10_3) {
+		// It's not Panther (i.e. either Jaguar or Tiger)
 		toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
 	} else {
 		if([dynamicPortForwards count] > 0 && [[sshPathString stringByStandardizingPath] isEqualToString:@"/usr/bin"]) {
