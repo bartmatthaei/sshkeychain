@@ -312,7 +312,8 @@ extern NSString *local(NSString *theString);
 	struct sockaddr_un lsa;
 	struct sockaddr_un rsa;
 
-	int i, used, allocated, ssa, a, hfd, lfd, rfd ,r;
+	int i, used, allocated, a, hfd, lfd, rfd ,r;
+	socklen_t ssa;
 	int *fds;
 	fd_set rfds;
 
@@ -382,7 +383,7 @@ extern NSString *local(NSString *theString);
 
 	hfd = s;
 
-	ssa = sizeof(struct sockaddr);
+	ssa = (socklen_t) sizeof(struct sockaddr);
 
 	/* Run a select over all available fd's. */
 	while((a = select(hfd + 1, &rfds, (fd_set *) 0, (fd_set *) 0, nil)))

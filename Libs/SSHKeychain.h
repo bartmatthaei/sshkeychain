@@ -34,7 +34,7 @@
 - (BOOL)addKey:(SSHKey *)key;
 - (BOOL)addKeyWithPath:(NSString *)path;
 
-- (NSMutableArray *)arrayOfPaths;
+- (NSArray *)arrayOfPaths;
 - (int)count;
 
 - (BOOL)addKeysToAgent;

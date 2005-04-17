@@ -141,12 +141,23 @@
 
 	/* Set the launchpath to the path instance variable. */
 	[task setLaunchPath:toolPath];
-
-	if([task launch]) {
-		return YES;
-	}
 	
-	return NO;
+	BOOL retValue = YES;
+	NS_DURING
+		[task launch];
+	NS_HANDLER
+		if([[localException name] isEqualToString:NSInvalidArgumentException])
+		{
+			retValue = NO;
+		}
+		
+		else
+		{
+			[localException raise];
+		}
+	NS_ENDHANDLER
+	
+	return retValue;
 }
 
 /* Terminate. */

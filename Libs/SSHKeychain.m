@@ -252,7 +252,7 @@ SSHKeychain *currentKeychain;
 	SSHTool *theTool;
 	int i, ts;
 
-	paths = [self arrayOfPaths];
+	paths = [[self arrayOfPaths] mutableCopy];
 
 	if([self addingKeys])
 	{
