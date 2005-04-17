@@ -24,7 +24,7 @@
 	/* Get all tunnels. */
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	tunnels = [[NSMutableArray alloc] initWithArray:
-					[[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString]];
+					[[NSUserDefaults standardUserDefaults] arrayForKey:TunnelsString]];
 	
 	if(!tunnels) {
 		tunnels = [[NSMutableArray alloc] init];
@@ -50,7 +50,7 @@
 - (void)savePreferences
 {
 	NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
-	[prefs setObject:tunnels forKey:tunnelsString];
+	[prefs setObject:tunnels forKey:TunnelsString];
 	[prefs synchronize];
 }
 

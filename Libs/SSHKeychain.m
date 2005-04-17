@@ -309,7 +309,7 @@ SSHKeychain *currentKeychain;
 			return NO;
 		}
 		
-		if([[NSUserDefaults standardUserDefaults] integerForKey:keyTimeoutString] > 0)
+		if([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)
 		{
 			ts = time(nil);
 			[lastAddedLock lock];
@@ -343,7 +343,7 @@ SSHKeychain *currentKeychain;
 	
 	ts = [object intValue];
 	
-	sleep([[NSUserDefaults standardUserDefaults] integerForKey:keyTimeoutString] * 60);
+	sleep([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] * 60);
 	
 	[lastAddedLock lock];
 	if(ts == lastAdded) 

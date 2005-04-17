@@ -14,14 +14,14 @@
 	[checkScreensaverIntervalTextfield setRefusesFirstResponder:YES];
 	[keyTimeoutTextfield setRefusesFirstResponder:YES];
 
-	[addKeysOnConnection setState:[[NSUserDefaults standardUserDefaults] boolForKey:addKeysOnConnectionString]];
-	[askForConfirmation setState:[[NSUserDefaults standardUserDefaults] boolForKey:askForConfirmationString]];
+	[addKeysOnConnection setState:[[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString]];
+	[askForConfirmation setState:[[NSUserDefaults standardUserDefaults] boolForKey:AskForConfirmationString]];
 
-	[onSleep selectItemAtIndex:[onSleep indexOfItemWithTag:[prefs integerForKey:onSleepString]]];
-	[onScreensaver selectItemAtIndex:[onScreensaver indexOfItemWithTag:[prefs integerForKey:onScreensaverString]]];
-	[followKeychain selectItemAtIndex:[followKeychain indexOfItemWithTag:[prefs integerForKey:followKeychainString]]];
+	[onSleep selectItemAtIndex:[onSleep indexOfItemWithTag:[prefs integerForKey:OnSleepString]]];
+	[onScreensaver selectItemAtIndex:[onScreensaver indexOfItemWithTag:[prefs integerForKey:OnScreensaverString]]];
+	[followKeychain selectItemAtIndex:[followKeychain indexOfItemWithTag:[prefs integerForKey:FollowKeychainString]]];
 
-	if([prefs integerForKey:onSleepString] == 1)
+	if([prefs integerForKey:OnSleepString] == 1)
 	{
 		[minutesOfSleep setEnabled:YES];
 		[minutesOfSleepTextfield setEnabled:YES];
@@ -33,10 +33,10 @@
 		[minutesOfSleepTextfield setEnabled:NO];
 	}
 	
-	[minutesOfSleepTextfield setIntValue:[prefs integerForKey:minutesOfSleepString]];
-	[minutesOfSleep setIntValue:[prefs integerForKey:minutesOfSleepString]];
+	[minutesOfSleepTextfield setIntValue:[prefs integerForKey:MinutesOfSleepString]];
+	[minutesOfSleep setIntValue:[prefs integerForKey:MinutesOfSleepString]];
 	
-	if([prefs integerForKey:onScreensaverString] > 1)
+	if([prefs integerForKey:OnScreensaverString] > 1)
 	{
 		[checkScreensaverInterval setEnabled:YES];
 		[checkScreensaverIntervalTextfield setEnabled:YES];
@@ -48,15 +48,15 @@
 		[checkScreensaverIntervalTextfield setEnabled:NO];
 	}
 
-	[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
-	[checkScreensaverInterval setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+	[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:CheckScreensaverIntervalString]];
+	[checkScreensaverInterval setIntValue:[prefs integerForKey:CheckScreensaverIntervalString]];
 	
-	[keyTimeoutTextfield setIntValue:[prefs integerForKey:keyTimeoutString]];
-	[keyTimeout setIntValue:[prefs integerForKey:keyTimeoutString]];
+	[keyTimeoutTextfield setIntValue:[prefs integerForKey:KeyTimeoutString]];
+	[keyTimeout setIntValue:[prefs integerForKey:KeyTimeoutString]];
 
-	[useCustomSecuritySettings setState:[[NSUserDefaults standardUserDefaults] boolForKey:useCustomSecuritySettingsString]];
+	[useCustomSecuritySettings setState:[[NSUserDefaults standardUserDefaults] boolForKey:UseCustomSecuritySettingsString]];
 
-	if([[NSUserDefaults standardUserDefaults] boolForKey:useCustomSecuritySettingsString]) 
+	if([[NSUserDefaults standardUserDefaults] boolForKey:UseCustomSecuritySettingsString]) 
 	{
 		NSSize securitySize = [customSecuritySettingsView frame].size;
 		securitySize.width = [self viewSize].width;
@@ -69,34 +69,34 @@
 {
 	NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
 
-	[prefs setBool:[useCustomSecuritySettings state] forKey:useCustomSecuritySettingsString];
+	[prefs setBool:[useCustomSecuritySettings state] forKey:UseCustomSecuritySettingsString];
 	
 	if([useCustomSecuritySettings state])
 	{
-		[prefs setBool:[addKeysOnConnection state] forKey:addKeysOnConnectionString];
-		[prefs setBool:[askForConfirmation state] forKey:askForConfirmationString];
+		[prefs setBool:[addKeysOnConnection state] forKey:AddKeysOnConnectionString];
+		[prefs setBool:[askForConfirmation state] forKey:AskForConfirmationString];
 
-		[prefs setInteger:[[onSleep selectedItem] tag] forKey:onSleepString];
-		[prefs setInteger:[[onScreensaver selectedItem] tag] forKey:onScreensaverString];
-		[prefs setInteger:[[followKeychain selectedItem] tag] forKey:followKeychainString];
-		[prefs setInteger:[minutesOfSleepTextfield intValue] forKey:minutesOfSleepString];
+		[prefs setInteger:[[onSleep selectedItem] tag] forKey:OnSleepString];
+		[prefs setInteger:[[onScreensaver selectedItem] tag] forKey:OnScreensaverString];
+		[prefs setInteger:[[followKeychain selectedItem] tag] forKey:FollowKeychainString];
+		[prefs setInteger:[minutesOfSleepTextfield intValue] forKey:MinutesOfSleepString];
 		
-		[prefs setInteger:[checkScreensaverIntervalTextfield intValue] forKey:checkScreensaverIntervalString];
-		[prefs setInteger:[keyTimeoutTextfield intValue] forKey:keyTimeoutString];
+		[prefs setInteger:[checkScreensaverIntervalTextfield intValue] forKey:CheckScreensaverIntervalString];
+		[prefs setInteger:[keyTimeoutTextfield intValue] forKey:KeyTimeoutString];
 
 	} 
 
 	else
 	{
-		[prefs setBool:YES forKey:addKeysOnConnectionString];
-		[prefs setBool:NO forKey:askForConfirmationString];
+		[prefs setBool:YES forKey:AddKeysOnConnectionString];
+		[prefs setBool:NO forKey:AskForConfirmationString];
 
-		[prefs setInteger:1 forKey:onSleepString];
-		[prefs setInteger:4 forKey:onScreensaverString];
-		[prefs setInteger:4 forKey:followKeychainString];
-		[prefs setInteger:0 forKey:minutesOfSleepString];
-		[prefs setInteger:30 forKey:checkScreensaverIntervalString];
-		[prefs setInteger:0 forKey:keyTimeoutString];
+		[prefs setInteger:1 forKey:OnSleepString];
+		[prefs setInteger:4 forKey:OnScreensaverString];
+		[prefs setInteger:4 forKey:FollowKeychainString];
+		[prefs setInteger:0 forKey:MinutesOfSleepString];
+		[prefs setInteger:30 forKey:CheckScreensaverIntervalString];
+		[prefs setInteger:0 forKey:KeyTimeoutString];
 	}
 
 	[prefs synchronize];
@@ -106,7 +106,7 @@
 {
 	NSSize size = [view frame].size;
 
-	if([[NSUserDefaults standardUserDefaults] boolForKey:useCustomSecuritySettingsString])
+	if([[NSUserDefaults standardUserDefaults] boolForKey:UseCustomSecuritySettingsString])
 	{
 		size.height = (70 + [customSecuritySettingsView frame].size.height);
 	}
@@ -124,7 +124,7 @@
 	NSUserDefaults *prefs;
 
 	prefs = [NSUserDefaults standardUserDefaults];
-	[prefs setBool:[sender state] forKey:useCustomSecuritySettingsString];
+	[prefs setBool:[sender state] forKey:UseCustomSecuritySettingsString];
 	[prefs synchronize];
 
 	if([sender state] == YES)
@@ -141,26 +141,26 @@
 		[customSecuritySettingsView removeFromSuperview];
 		[[PreferenceController sharedController] resizeWindowToSize:[self viewSize]];
 
-		[prefs setBool:YES forKey:addKeysOnConnectionString];
-		[prefs setBool:NO forKey:askForConfirmationString];
+		[prefs setBool:YES forKey:AddKeysOnConnectionString];
+		[prefs setBool:NO forKey:AskForConfirmationString];
 
-		[prefs setInteger:1 forKey:onSleepString];
-		[prefs setInteger:4 forKey:onScreensaverString];
-		[prefs setInteger:4 forKey:followKeychainString];
-		[prefs setInteger:0 forKey:minutesOfSleepString];		
-		[prefs setInteger:30 forKey:checkScreensaverIntervalString];
-		[prefs setInteger:0 forKey:keyTimeoutString];
+		[prefs setInteger:1 forKey:OnSleepString];
+		[prefs setInteger:4 forKey:OnScreensaverString];
+		[prefs setInteger:4 forKey:FollowKeychainString];
+		[prefs setInteger:0 forKey:MinutesOfSleepString];		
+		[prefs setInteger:30 forKey:CheckScreensaverIntervalString];
+		[prefs setInteger:0 forKey:KeyTimeoutString];
 
 		[prefs synchronize];
 
-		[addKeysOnConnection setState:[prefs boolForKey:addKeysOnConnectionString]];
-		[askForConfirmation setState:[prefs boolForKey:askForConfirmationString]];
+		[addKeysOnConnection setState:[prefs boolForKey:AddKeysOnConnectionString]];
+		[askForConfirmation setState:[prefs boolForKey:AskForConfirmationString]];
 
-		[onSleep selectItemAtIndex:[onSleep indexOfItemWithTag:[prefs integerForKey:onSleepString]]];
-		[onScreensaver selectItemAtIndex:[onScreensaver indexOfItemWithTag:[prefs integerForKey:onScreensaverString]]];
-		[followKeychain selectItemAtIndex:[followKeychain indexOfItemWithTag:[prefs integerForKey:followKeychainString]]];
+		[onSleep selectItemAtIndex:[onSleep indexOfItemWithTag:[prefs integerForKey:OnSleepString]]];
+		[onScreensaver selectItemAtIndex:[onScreensaver indexOfItemWithTag:[prefs integerForKey:OnScreensaverString]]];
+		[followKeychain selectItemAtIndex:[followKeychain indexOfItemWithTag:[prefs integerForKey:FollowKeychainString]]];
 
-		if([prefs integerForKey:onSleepString] == 1)
+		if([prefs integerForKey:OnSleepString] == 1)
 		{
 			[minutesOfSleep setEnabled:YES];
 			[minutesOfSleepTextfield setEnabled:YES];
@@ -172,10 +172,10 @@
 			[minutesOfSleepTextfield setEnabled:NO];
 		}
 	
-		[minutesOfSleepTextfield setIntValue:[prefs integerForKey:minutesOfSleepString]];
-		[minutesOfSleep setIntValue:[prefs integerForKey:minutesOfSleepString]];
+		[minutesOfSleepTextfield setIntValue:[prefs integerForKey:MinutesOfSleepString]];
+		[minutesOfSleep setIntValue:[prefs integerForKey:MinutesOfSleepString]];
 		
-		if([prefs integerForKey:onScreensaverString] > 1)
+		if([prefs integerForKey:OnScreensaverString] > 1)
 		{
 			[checkScreensaverInterval setEnabled:YES];
 			[checkScreensaverIntervalTextfield setEnabled:YES];
@@ -187,11 +187,11 @@
 			[checkScreensaverIntervalTextfield setEnabled:NO];
 		}
 		
-		[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
-		[checkScreensaverInterval setIntValue:[prefs integerForKey:checkScreensaverIntervalString]];
+		[checkScreensaverIntervalTextfield setIntValue:[prefs integerForKey:CheckScreensaverIntervalString]];
+		[checkScreensaverInterval setIntValue:[prefs integerForKey:CheckScreensaverIntervalString]];
 		
-		[keyTimeoutTextfield setIntValue:[prefs integerForKey:keyTimeoutString]];
-		[keyTimeout setIntValue:[prefs integerForKey:keyTimeoutString]];
+		[keyTimeoutTextfield setIntValue:[prefs integerForKey:KeyTimeoutString]];
+		[keyTimeout setIntValue:[prefs integerForKey:KeyTimeoutString]];
 
 	}
 }

@@ -22,9 +22,9 @@
 	environmentKeys = [[NSMutableArray arrayWithArray:[environment allKeys]] retain];
 	[environmentKeys retain];
 
-	[manageGlobalEnvironment setState:[[NSUserDefaults standardUserDefaults] boolForKey:manageGlobalEnvironmentString]];
+	[manageGlobalEnvironment setState:[[NSUserDefaults standardUserDefaults] boolForKey:ManageGlobalEnvironmentString]];
 
-	if([[NSUserDefaults standardUserDefaults] boolForKey:manageGlobalEnvironmentString]) 
+	if([[NSUserDefaults standardUserDefaults] boolForKey:ManageGlobalEnvironmentString]) 
 	{
 		NSSize environmentSize = [environmentTableView frame].size;
 		environmentSize.width = [self viewSize].width;
@@ -39,7 +39,7 @@
 {
 	NSSize size = [view frame].size;
 
-	if([[NSUserDefaults standardUserDefaults] boolForKey:manageGlobalEnvironmentString])
+	if([[NSUserDefaults standardUserDefaults] boolForKey:ManageGlobalEnvironmentString])
 	{
 		size.height = (54 + [environmentTableView frame].size.height);
 	}
@@ -58,7 +58,7 @@
 	NSUserDefaults *prefs;
 
 	prefs = [NSUserDefaults standardUserDefaults];
-	[prefs setBool:[sender state] forKey:manageGlobalEnvironmentString];
+	[prefs setBool:[sender state] forKey:ManageGlobalEnvironmentString];
 	[prefs synchronize];
 
 	if([sender state] == YES)
@@ -67,7 +67,7 @@
 			[environment setObject:@"ssh" forKey:@"CVS_RSH"];
 		}
 
-		[environment setObject:[[NSUserDefaults standardUserDefaults] stringForKey:socketPathString] forKey:@"SSH_AUTH_SOCK"];
+		[environment setObject:[[NSUserDefaults standardUserDefaults] stringForKey:SocketPathString] forKey:@"SSH_AUTH_SOCK"];
 
 		[self syncEnvironment];
 

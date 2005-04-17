@@ -1,8 +1,48 @@
 #import "PreferenceController.h"
 
-PreferenceController *sharedPreferenceController;
+NSString *SSHToolsPathString = @"SSH Tools Path";
+NSString *SocketPathString = @"Authentication Socket Path";
+NSString *DisplayString = @"Display";
+NSString *AddKeysOnConnectionString = @"Add Keys On Connection";
+NSString *AskForConfirmationString = @"Ask for Confirmation";
+NSString *OnSleepString = @"On Sleep";
+NSString *OnScreensaverString = @"On Screensaver";
+NSString *FollowKeychainString = @"Follow Keychain";
+NSString *MinutesOfSleepString = @"Minutes of Sleep";
+NSString *ManageGlobalEnvironmentString = @"Manage Global Environment";
+NSString *CheckForUpdatesOnStartupString = @"Check For Updates On Startup";
+NSString *TunnelsString = @"Tunnels";
+NSString *UseGlobalEnvironmentString = @"Use Global Environment ~/.MacOSX/environment.plist";
+NSString *UseCustomSecuritySettingsString = @"Use Custom Security Settings";
+NSString *CheckScreensaverIntervalString = @"Check Screensaver Interval";
+NSString *KeyTimeoutString = @"Key Timeout";
+
+PreferenceController *sharedPreferenceController = nil;
 
 @implementation PreferenceController
+
+
++ (PreferenceController *)sharedController
+{
+	if(!sharedPreferenceController) {
+		return [[PreferenceController alloc] init];
+	}
+	
+	return sharedPreferenceController;
+}
+
++ (void)openPreferencesWindow
+{
+	PreferenceController *preferenceController = [PreferenceController sharedController];
+	
+	if(preferenceController) 
+	{
+		[NSApp activateIgnoringOtherApps:YES];
+		[preferenceController showWindow];
+	}
+}
+
+#pragma mark -
 
 - (id)init
 {
@@ -30,30 +70,15 @@ PreferenceController *sharedPreferenceController;
 						name:@"NSWindowWillCloseNotification" object:NSApp];
 
 	/* Set the required information for all preference sections. */
-	preferenceItems = [[NSDictionary dictionaryWithObjects:
-						
-					[NSArray arrayWithObjects: 
-						[NSArray arrayWithObjects:@"preference_general", generalController, local(@"General"), nil], 
-						[NSArray arrayWithObjects:@"preference_display", displayController, local(@"Display"), nil], 
-						[NSArray arrayWithObjects:@"preference_environment", environmentController, local(@"Environment"), nil], 
-						[NSArray arrayWithObjects:@"preference_keys", keysController, local(@"SSH Keys"), nil], 
-						[NSArray arrayWithObjects:@"preference_tunnels", tunnelsController, local(@"Tunnels"), nil], 
-						[NSArray arrayWithObjects:@"preference_security", securityController, local(@"Security"), nil], 
-						nil 
-					] 
-					
-				forKeys:
-
-					[NSArray arrayWithObjects: 
-						@"General",  
-						@"Display", 
-						@"Environment", 
-						@"SSH Keys", 
-						@"Tunnels", 
-						@"Security", 
-						nil 
-					] 
-	] retain];
+	preferenceItems = [[NSDictionary dictionaryWithObjectsAndKeys:
+			[NSArray arrayWithObjects:@"preference_general", generalController, local(@"General"), nil], @"General",
+			[NSArray arrayWithObjects:@"preference_display", displayController, local(@"Display"), nil], @"Display",
+			[NSArray arrayWithObjects:@"preference_environment", environmentController, local(@"Environment"), nil], @"Environment",
+			[NSArray arrayWithObjects:@"preference_keys", keysController, local(@"SSH Keys"), nil], @"SSH Keys",
+			[NSArray arrayWithObjects:@"preference_tunnels", tunnelsController, local(@"Tunnels"), nil], @"Tunnels",
+			[NSArray arrayWithObjects:@"preference_security", securityController, local(@"Security"), nil], @"Security",
+			nil]
+		retain];
 
 	/* Define the precedence of the sections. */
 	preferenceItemsKeys = [[NSArray arrayWithObjects:@"General", @"Display", @"SSH Keys", @"Tunnels", @"Security", @"Environment", nil] retain];
@@ -67,26 +92,6 @@ PreferenceController *sharedPreferenceController;
 	[self switchToView:@"General"];
 
 	[[NSColorPanel sharedColorPanel] setShowsAlpha:YES];
-}
-
-+ (PreferenceController *)sharedController
-{
-	if(!sharedPreferenceController) {
-		return [[PreferenceController alloc] init];
-	}
-
-	return sharedPreferenceController;
-}
-
-+ (void)openPreferencesWindow
-{
-	PreferenceController *preferenceController = [PreferenceController sharedController];
-
-	if(preferenceController) 
-	{
-		[NSApp activateIgnoringOtherApps:YES];
-		[preferenceController showWindow];
-	}
 }
 
 - (void)showWindow

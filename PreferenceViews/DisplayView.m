@@ -10,7 +10,7 @@
 {
 	NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
 
-	[display selectItemAtIndex:[display indexOfItemWithTag:[prefs integerForKey:displayString]]];
+	[display selectItemAtIndex:[display indexOfItemWithTag:[prefs integerForKey:DisplayString]]];
 }
 
 - (void)savePreferences
@@ -20,7 +20,7 @@
 	NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
 
 	/* If the display has changed, warn the user, and write stuff to Info.plist in case it's needed. */
-	if([[display selectedItem] tag] != [prefs integerForKey:displayString])
+	if([[display selectedItem] tag] != [prefs integerForKey:DisplayString])
 	{
 		path = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Info.plist"];
 		dict = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease];
@@ -28,7 +28,7 @@
 		/* If we can't write Info.plist, don't allow the change. */
 		if(![[NSFileManager defaultManager] isWritableFileAtPath:path]) {
 			[self warningPanelWithTitle:local(@"DisplayPanelTitle") andMessage:local(@"DisplayChangeNotAllowed")];
-			[display selectItemAtIndex:[display indexOfItemWithTag:[prefs integerForKey:displayString]]];
+			[display selectItemAtIndex:[display indexOfItemWithTag:[prefs integerForKey:DisplayString]]];
 		
 		} else {
 		
@@ -51,7 +51,7 @@
 				NSLog(@"DEBUG: utime on bundlePath failed.");
 			}
 			
-			[prefs setInteger:[[display selectedItem] tag] forKey:displayString];
+			[prefs setInteger:[[display selectedItem] tag] forKey:DisplayString];
 			[prefs synchronize];
 			
 			[self warningPanelWithTitle:local(@"DisplayPanelTitle") andMessage:local(@"DisplayPanelText")];

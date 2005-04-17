@@ -81,7 +81,7 @@ TunnelController *sharedTunnelController;
 	if(!tunnels) { return; }
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
-	newTunnels = [[NSUserDefaults standardUserDefaults] arrayForKey:tunnelsString];
+	newTunnels = [[NSUserDefaults standardUserDefaults] arrayForKey:TunnelsString];
 	
 	// Because we're adding UUIDs, we should give them to all tunnels that don't yet have them
 	BOOL setUUID = NO;
@@ -101,7 +101,7 @@ TunnelController *sharedTunnelController;
 	}
 	if (setUUID) {
 		newTunnels = [NSArray arrayWithArray:modifiedTunnels];
-		[[NSUserDefaults standardUserDefaults] setObject:newTunnels forKey:tunnelsString];
+		[[NSUserDefaults standardUserDefaults] setObject:newTunnels forKey:TunnelsString];
 	}
 	
 	e = [newTunnels objectEnumerator];

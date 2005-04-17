@@ -91,9 +91,9 @@ AgentController *sharedAgentController;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	NSString *path = [[NSUserDefaults standardUserDefaults] stringForKey:socketPathString];
+	NSString *path = [[NSUserDefaults standardUserDefaults] stringForKey:SocketPathString];
 
-	NSString *agentPath = [[[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString] stringByAppendingPathComponent:@"ssh-agent"];
+	NSString *agentPath = [[[NSUserDefaults standardUserDefaults] stringForKey:SSHToolsPathString] stringByAppendingPathComponent:@"ssh-agent"];
 		
 	SecKeychainStatus status;
 	SecKeychainGetStatus(nil, &status);
@@ -123,8 +123,8 @@ AgentController *sharedAgentController;
 	}
 	
 	if((status & 1)
-	&& (([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 3)
-	|| ([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 4))
+	&& (([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 3)
+	|| ([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 4))
 	&& (![keychain addingKeys]))
 	{
 		
@@ -168,9 +168,9 @@ AgentController *sharedAgentController;
 		[[TunnelController sharedController] launchAfterSleepTunnels];
 	}
 	
-	if(([[NSUserDefaults standardUserDefaults] integerForKey:onSleepString] == 1) && ([[agent keysOnAgent] count] > 0))
+	if(([[NSUserDefaults standardUserDefaults] integerForKey:OnSleepString] == 1) && ([[agent keysOnAgent] count] > 0))
 	{
-		int minutes = [[NSUserDefaults standardUserDefaults] integerForKey:minutesOfSleepString];
+		int minutes = [[NSUserDefaults standardUserDefaults] integerForKey:MinutesOfSleepString];
 
 		if([[notification name] isEqualToString:@"SKSleep"])
 		{
@@ -199,8 +199,8 @@ AgentController *sharedAgentController;
 	SecKeychainStatus status;
 	
 	if(([[notification name] isEqualToString:@"AppleKeychainLocked"])
-	&& (([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 2)
-	|| ([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 4)))
+	&& (([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 2)
+	|| ([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 4)))
 	{
 		if([[agent keysOnAgent] count] > 0)
 		{
@@ -209,8 +209,8 @@ AgentController *sharedAgentController;
 	}
 
 	else if(([[notification name] isEqualToString:@"AppleKeychainUnlocked"])
-	&& (([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 3)
-	|| ([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 4))
+	&& (([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 3)
+	|| ([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 4))
 	&& (![keychain addingKeys]))
 	{
 
@@ -338,8 +338,8 @@ AgentController *sharedAgentController;
 
 		SecKeychainGetStatus(nil, &status);
 
-		if((([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 3)
-			|| ([[NSUserDefaults standardUserDefaults] integerForKey:followKeychainString] == 4))
+		if((([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 3)
+			|| ([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 4))
 			&& (![keychain addingKeys]) && (status & 1) && ([agent isRunning]))
 		{
 			[NSThread detachNewThreadSelector:@selector(addKeysToAgentWithoutInteractionInNewThread)
@@ -427,7 +427,7 @@ AgentController *sharedAgentController;
 	}
 
 	else {
-		path = [[NSUserDefaults standardUserDefaults] stringForKey:socketPathString];
+		path = [[NSUserDefaults standardUserDefaults] stringForKey:SocketPathString];
 
 		[agent setSocketPath:path];
 
@@ -697,7 +697,7 @@ AgentController *sharedAgentController;
 	{
 		pool = [[NSAutoreleasePool alloc] init];
 		
-		if(([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] > 1)
+		if(([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] > 1)
 		&& ([[NSFileManager defaultManager] isExecutableFileAtPath:@"/bin/ps"]))
 		{
 			task = [[[NSTask alloc] init] autorelease];
@@ -715,15 +715,15 @@ AgentController *sharedAgentController;
 	
 			if(strstr([theOutput cString], "ScreenSaverEngine.app") != nil)
 			{
-				if((([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] == 2)
-				|| ([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] == 4))
+				if((([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 2)
+				|| ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
 				&& ([[agent keysOnAgent] count] > 0))
 				{
 					[object removeKeysFromAgent:nil];
 				}
 
-				if(([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] == 3)
-				|| ([[NSUserDefaults standardUserDefaults] integerForKey:onScreensaverString] == 4))
+				if(([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 3)
+				|| ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
 				{
 					SecKeychainLockAll();
 				}
@@ -731,7 +731,7 @@ AgentController *sharedAgentController;
 			}
 		}
 		
-		interval = [[NSUserDefaults standardUserDefaults] integerForKey:checkScreensaverIntervalString];
+		interval = [[NSUserDefaults standardUserDefaults] integerForKey:CheckScreensaverIntervalString];
 				
 		if(interval < 5)
 		{

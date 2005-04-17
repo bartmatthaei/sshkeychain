@@ -592,7 +592,7 @@ extern NSString *local(NSString *theString);
 	len = [[object objectAtIndex:2] intValue];
 	src = [[object objectAtIndex:3] intValue];
 
-	if([[NSUserDefaults standardUserDefaults] boolForKey:askForConfirmationString]) 
+	if([[NSUserDefaults standardUserDefaults] boolForKey:AskForConfirmationString]) 
 	{
 		/* Dictionary for the panel. */
 		dict = [NSMutableDictionary dictionary];
@@ -633,7 +633,7 @@ extern NSString *local(NSString *theString);
 		}
 	}
 
-	if(([[self keysOnAgent] count] < 1) && ([[NSUserDefaults standardUserDefaults] boolForKey:addKeysOnConnectionString])) 
+	if(([[self keysOnAgent] count] < 1) && ([[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString])) 
 	{
 
 		keychain = [SSHKeychain currentKeychain];

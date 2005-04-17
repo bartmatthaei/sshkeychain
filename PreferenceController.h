@@ -2,22 +2,22 @@
 
 #import "PreferenceView.h"
 
-#define sshToolsPathString @"SSH Tools Path"
-#define socketPathString @"Authentication Socket Path"
-#define displayString @"Display"
-#define addKeysOnConnectionString @"Add Keys On Connection"
-#define askForConfirmationString @"Ask for Confirmation"
-#define onSleepString @"On Sleep"
-#define onScreensaverString @"On Screensaver"
-#define followKeychainString @"Follow Keychain"
-#define minutesOfSleepString @"Minutes of Sleep"
-#define manageGlobalEnvironmentString @"Manage Global Environment"
-#define checkForUpdatesOnStartupString @"Check For Updates On Startup"
-#define tunnelsString @"Tunnels"
-#define useGlobalEnvironmentString @"Use Global Environment ~/.MacOSX/environment.plist"
-#define useCustomSecuritySettingsString @"Use Custom Security Settings"
-#define checkScreensaverIntervalString @"Check Screensaver Interval"
-#define keyTimeoutString @"Key Timeout"
+extern NSString *SSHToolsPathString;
+extern NSString *SocketPathString;
+extern NSString *DisplayString;
+extern NSString *AddKeysOnConnectionString;
+extern NSString *AskForConfirmationString;
+extern NSString *OnSleepString;
+extern NSString *OnScreensaverString;
+extern NSString *FollowKeychainString;
+extern NSString *MinutesOfSleepString;
+extern NSString *ManageGlobalEnvironmentString;
+extern NSString *CheckForUpdatesOnStartupString;
+extern NSString *TunnelsString;
+extern NSString *UseGlobalEnvironmentString;
+extern NSString *UseCustomSecuritySettingsString;
+extern NSString *CheckScreensaverIntervalString;
+extern NSString *KeyTimeoutString;
 
 @interface PreferenceController : NSObject 
 {

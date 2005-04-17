@@ -12,7 +12,7 @@
 	SSHTool *tool = [[[self alloc] init] autorelease];
 	
 	[tool setPath:[[[NSUserDefaults standardUserDefaults] 
-			stringForKey:sshToolsPathString] 
+			stringForKey:SSHToolsPathString] 
 			stringByAppendingPathComponent:toolname]];
 	
 	return tool;

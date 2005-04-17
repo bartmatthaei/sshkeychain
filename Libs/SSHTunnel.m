@@ -182,14 +182,14 @@
 			stringByAppendingPathComponent:@"TunnelRunner"]] retain];
 
 	
-	/*  We want to use our internal build of ssh if we have dynamic ports and the sshToolsPathString
+	/*  We want to use our internal build of ssh if we have dynamic ports and the SSHToolsPathString
 		is /usr/bin. This is because the Panther-provided copy of ssh (and perhaps Jaguar-provided,
 		I don't know) is broken wrt. dynamic ports */
 	// Of course, since the build of ssh only works on Panther, we have to disable Dynamic Ports
 	// entirely under Jaguar
 	// SSH under Tiger works fine. Don't use the workaround then
 	NSString *toolPath;
-	NSString *sshPathString = [[NSUserDefaults standardUserDefaults] stringForKey:sshToolsPathString];
+	NSString *sshPathString = [[NSUserDefaults standardUserDefaults] stringForKey:SSHToolsPathString];
 	if (floor(NSAppKitVersionNumber) != NSAppKitVersionNumber10_3) {
 		// It's not Panther (i.e. either Jaguar or Tiger)
 		toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
@@ -270,7 +270,7 @@
 	[tunnel setEnvironmentVariable:@"DISPLAY" withValue:@":0"];
 	[tunnel setEnvironmentVariable:@"INTERACTION" withValue:@"1"];
 	[tunnel setEnvironmentVariable:@"SSH_AUTH_SOCK" 
-			     withValue:[[NSUserDefaults standardUserDefaults] stringForKey:socketPathString]];
+			     withValue:[[NSUserDefaults standardUserDefaults] stringForKey:SocketPathString]];
 
 	if((closeSelector) && (closeObject)) {
 		[tunnel handleTerminateWithSelector:closeSelector toObject:closeObject withInfo:closeInfo];

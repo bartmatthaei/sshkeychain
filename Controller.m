@@ -63,20 +63,20 @@ NSString *local(NSString *theString)
 		]
 		forKeys:
 		[NSArray arrayWithObjects:
-			sshToolsPathString,
-			socketPathString,
-			addKeysOnConnectionString,
-			askForConfirmationString,
-			onSleepString,
-			onScreensaverString,
-			followKeychainString,
-			minutesOfSleepString,
-			checkForUpdatesOnStartupString,
-			displayString,
+			SSHToolsPathString,
+			SocketPathString,
+			AddKeysOnConnectionString,
+			AskForConfirmationString,
+			OnSleepString,
+			OnScreensaverString,
+			FollowKeychainString,
+			MinutesOfSleepString,
+			CheckForUpdatesOnStartupString,
+			DisplayString,
 			@"Keys",
-			manageGlobalEnvironmentString,
-			checkScreensaverIntervalString,
-			keyTimeoutString,
+			ManageGlobalEnvironmentString,
+			CheckScreensaverIntervalString,
+			KeyTimeoutString,
 			nil
 		]
 	];
@@ -92,7 +92,7 @@ NSString *local(NSString *theString)
 		dict = [NSMutableDictionary dictionary];
 	}
 		
-	if([[NSUserDefaults standardUserDefaults] integerForKey:displayString] == 1)
+	if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] == 1)
 	{
 		if((![[dict objectForKey:@"LSUIElement"] isEqualToString:@"1"]) &&
 		   ([[NSFileManager defaultManager] isWritableFileAtPath:path]))
@@ -193,7 +193,7 @@ NSString *local(NSString *theString)
 	NSStatusBar *statusbar;
 
 	/* Create a statusbar item if needed. */
-	int display = [[NSUserDefaults standardUserDefaults] integerForKey:displayString];
+	int display = [[NSUserDefaults standardUserDefaults] integerForKey:DisplayString];
 	
 	if((display == 1) || (display == 3))
 	{
@@ -237,10 +237,10 @@ NSString *local(NSString *theString)
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	if([[NSUserDefaults standardUserDefaults] boolForKey:useGlobalEnvironmentString] == YES)
+	if([[NSUserDefaults standardUserDefaults] boolForKey:UseGlobalEnvironmentString] == YES)
 	{
 		NSString *path = [[NSString stringWithString:@"~/.MacOSX/environment.plist"] stringByExpandingTildeInPath];
-		NSString *socketPath = [[NSUserDefaults standardUserDefaults] stringForKey:socketPathString];
+		NSString *socketPath = [[NSUserDefaults standardUserDefaults] stringForKey:SocketPathString];
 		NSString *macOSXDir = [[NSString stringWithString:@"~/.MacOSX"] stringByExpandingTildeInPath];
 		NSMutableDictionary *dict; 
 
@@ -282,7 +282,7 @@ NSString *local(NSString *theString)
 		}
 	}
 
-	if([[NSUserDefaults standardUserDefaults] boolForKey:checkForUpdatesOnStartupString] == YES)
+	if([[NSUserDefaults standardUserDefaults] boolForKey:CheckForUpdatesOnStartupString] == YES)
 	{
 		[[UpdateController sharedController] checkForUpdatesWithWarnings:NO];
 	}
@@ -335,7 +335,7 @@ NSString *local(NSString *theString)
 	{
 		[appleKeychainUnlockedLock unlock];
 
-		if([[NSUserDefaults standardUserDefaults] integerForKey:displayString] != 1)
+		if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] != 1)
 		{
 			giveFocusBack = YES;
 			GetFrontProcess(&focusSerialNumber);
@@ -396,7 +396,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 		
 		if(!appleKeychainUnlocked)
 		{
-			if([[NSUserDefaults standardUserDefaults] integerForKey:displayString] != 1)
+			if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] != 1)
 			{
 				giveFocusBack = YES;
 				GetFrontProcess(&focusSerialNumber);
@@ -494,7 +494,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 
 				if(!appleKeychainUnlocked)
 				{
-					if([[NSUserDefaults standardUserDefaults] integerForKey:displayString] != 1)
+					if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] != 1)
 					{
 						giveFocusBack = YES;
 						GetFrontProcess(&focusSerialNumber);
