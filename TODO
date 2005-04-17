@@ -17,12 +17,12 @@
 - Package
 
 The Early Spring Code Cleanup:
-
-- #define NSStrings is rubbish
-- Constants should start uppercase
 - Check retain/release
 - Implement dealloc for all classes containing iVars
 - Use objectEnumerator for arrays, instead of indexes
 - Check for repeating code
 - Move local() to a macro (http://developer.apple.com/intl/localization/tools.html)
 
+The Early Spring Code Cleanup DONE:
+- #define NSStrings is rubbish
+- Constants should start uppercase

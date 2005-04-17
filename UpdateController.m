@@ -2,6 +2,8 @@
 
 #include "SSHKeychain_Prefix.pch"
 
+NSString *RemoteVersionURL = @"http://www.sshkeychain.org/latestversion.xml";
+
 UpdateController *sharedUpdateController;
 
 /* This function resides in Controller.m. */
@@ -44,7 +46,7 @@ extern NSString *local(NSString *theString);
 	int r;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:[NSURL URLWithString:remoteVersionURL]];
+	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:[NSURL URLWithString:RemoteVersionURL]];
 
 	if(!remoteVersionInfo)
 	{
