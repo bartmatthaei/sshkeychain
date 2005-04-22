@@ -107,9 +107,9 @@
 	36  ???                         0x00007d30 0x1000 + 0x6d30
 	37  ???                         0x00007ba4 0x1000 + 0x6ba4
 
-- Screensaver Bug
+- Screensaver/Sleep + Password Bug
 
-	Some users experience a total system lockdown after a screensaver displays the login window.
+	Some users experience a total system lockdown after a screensaver or system wakup displays sks for a password.
 
 - Multiple Users Bugs
 
