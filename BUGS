@@ -114,3 +114,5 @@
 - Multiple Users Bugs
 
 	Using SSHKeychain while not being an admin on the machine generates headache. And using it between multiple users and multiple display options is impossible.
+
+- Crashes on-start when webserver isn't available for xml file
