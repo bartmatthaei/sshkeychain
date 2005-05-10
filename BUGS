@@ -4,23 +4,6 @@
 
 	Example Logs:
 
-	Thread 6 Crashed:
-	0   libobjc.A.dylib             0x90831204 objc_msgSend + 0x24
-	1   com.apple.CoreFoundation    0x90197f30 CFDictionaryRemoveAllValues +
-	0x200
-	2   com.apple.CoreFoundation    0x901a5fd0 __CFDictionaryDeallocate + 0x54
-	3   com.apple.CoreFoundation    0x90190cf8 CFRelease + 0x1e8
-	4   com.apple.CoreFoundation    0x9019440c __CFArrayReleaseValues + 0x214
-	5   com.apple.CoreFoundation    0x90195394 __CFArrayDeallocate + 0x3c
-	6   com.apple.CoreFoundation    0x90190cf8 CFRelease + 0x1e8
-	7   com.apple.Foundation        0x909f15d4 NSPopAutoreleasePool + 0x164
-	8   SSHKeychain                 0x0000d194 -[Controller
-	retrieveVersionFile] + 0xc4 (AgentController.m:794)
-	9   com.apple.Foundation        0x90a39b74 forkThreadForFunction + 0x6c
-	10  libSystem.B.dylib           0x900246e8 _pthread_body + 0x28
-
-	And
-
 	Thread 0 Crashed:
 	0   libobjc.A.dylib             0x908311f4 objc_msgSend + 0x14
 	1   com.apple.Foundation        0x90b073ac -[NSHTTPCookieDiskStorage(NSInternal) _checkForCookieExpiration] + 0xac
