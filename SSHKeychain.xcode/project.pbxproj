@@ -35,6 +35,20 @@
 //0A2
 //0A3
 //0A4
+		0A3310590830A54500A9B20E = {
+			fileEncoding = 4;
+			isa = PBXFileReference;
+			lastKnownFileType = text;
+			path = BUGS;
+			refType = 4;
+			sourceTree = "<group>";
+		};
+		0A33105A0830A54500A9B20E = {
+			fileRef = 0A3310590830A54500A9B20E;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		0A5AA8A0075F2CBD007668AB = {
 			fileEncoding = 4;
 			isa = PBXFileReference;
@@ -239,6 +253,7 @@
 		29B97314FDCFA39411CA2CEA = {
 			children = (
 				CCC9E33706A58FA800422E9E,
+				0A3310590830A54500A9B20E,
 				080E96DDFE201D6D7F000001,
 				29B97315FDCFA39411CA2CEA,
 				29B97317FDCFA39411CA2CEA,
@@ -484,6 +499,7 @@
 				CC341D0C06AD012C00E32630,
 				CC604C2406AE6B1700B9CEBB,
 				0A925563075F22B800B98A2B,
+				0A33105A0830A54500A9B20E,
 			);
 			isa = PBXResourcesBuildPhase;
 			runOnlyForDeploymentPostprocessing = 0;
