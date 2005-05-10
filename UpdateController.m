@@ -2,8 +2,6 @@
 
 #include "SSHKeychain_Prefix.pch"
 
-NSString *RemoteVersionURL = @"http://www.sshkeychain.org/latestversion.xml";
-
 UpdateController *sharedUpdateController;
 
 /* This function resides in Controller.m. */
@@ -40,14 +38,31 @@ extern NSString *local(NSString *theString);
 
 - (void)_checkForUpdatesWithWarnings:(NSNumber *)warnings
 {
-	NSString *latestVersion, *currentVersion;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSString *versionPath = [[NSBundle mainBundle] pathForResource:@"version" ofType:@"plist"];
+	NSDictionary *versionDict = [NSDictionary dictionaryWithContentsOfFile:versionPath];
+	NSString *remoteVersionURL = [versionDict objectForKey:@"RemoteVersionURL"];
 	NSDictionary *remoteVersionInfo;
+
+	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:[NSURL URLWithString:remoteVersionURL]];
+
+	NSMethodSignature *methodSig = [self methodSignatureForSelector:@selector(_processVersionInfo:withWarnings:)];
+	NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSig];
+	[invocation setSelector:@selector(_processVersionInfo:withWarnings:)];
+	[invocation setArgument:&remoteVersionInfo atIndex:2];
+	[invocation setArgument:&warnings atIndex:3];
+	[invocation retainArguments];
+	[invocation performSelectorOnMainThread:@selector(invokeWithTarget:) withObject:self waitUntilDone:NO];
+	
+	[pool release];
+}
+
+- (void)_processVersionInfo:(NSDictionary *)remoteVersionInfo withWarnings:(NSNumber *)warnings
+{
+	NSString *latestVersion, *currentVersion;
 	NSURL *downloadURL, *changesURL;
 	int r;
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-	remoteVersionInfo = [NSDictionary dictionaryWithContentsOfURL:[NSURL URLWithString:RemoteVersionURL]];
-
+	
 	if(!remoteVersionInfo)
 	{
 		if([warnings boolValue] == YES) 
@@ -55,8 +70,6 @@ extern NSString *local(NSString *theString);
 			[self warningPanelWithTitle:local(@"CheckForUpdates")
 				 andMessage:local(@"FailedToRetrieveXMLVersionInfo")];
 		}
-
-		[pool release];
 		return;
 	}
 
@@ -105,8 +118,6 @@ extern NSString *local(NSString *theString);
 	{
 		[self warningPanelWithTitle:local(@"NewVersion") andMessage:local(@"NoNewVersion")];
 	}
-
-	[pool release];
 
 	return;
 }
