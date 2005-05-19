@@ -500,9 +500,9 @@ TunnelController *sharedTunnelController;
 	{
 		for(i=0; i < [[dict objectForKey:@"RemotePortForwards"] count]; i++)
 		{
-			[tunnel addRemotePortForwardWithPort:[[[[dict objectForKey:@"LocalPortForwards"] objectAtIndex:i] objectForKey:@"RemotePort"] intValue]
-						localHost:[[[dict objectForKey:@"LocalPortForwards"] objectAtIndex:i] objectForKey:@"LocalHost"]
-						localPort:[[[[dict objectForKey:@"LocalPortForwards"] objectAtIndex:i] objectForKey:@"LocalPort"] intValue]
+			[tunnel addRemotePortForwardWithPort:[[[[dict objectForKey:@"RemotePortForwards"] objectAtIndex:i] objectForKey:@"RemotePort"] intValue]
+						localHost:[[[dict objectForKey:@"RemotePortForwards"] objectAtIndex:i] objectForKey:@"LocalHost"]
+						localPort:[[[[dict objectForKey:@"RemotePortForwards"] objectAtIndex:i] objectForKey:@"LocalPort"] intValue]
 			];
 		}
 	}
