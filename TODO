@@ -1,22 +1,7 @@
-0.8 TODO:
-- Keys per location
-- Tunnels per location
-- Only add keys from keychain event if keychain holds keys
-- Admin wrapper for tunnel ports < 1024
-- The option to not display messages regarding tunnels (Nov 05 - Marc Liyanage  - Feature suggestion for SSHKeychain)
-- Listen to local forwarded ports and start up the tunnel on demand (that's going to require some hacking with random ports to have ssh listening on)
-- SSH v2 support for tunnels
-- Only start tunnels when there's a working internet connection.
 
-0.8 DONE:
-- Option for screensaver check interval (bart)
-- Option to unload keys after a period of time (bart) 
+### All TODO items have moved to Trac. You can view the list at http://trac.sshkeychain.org/cgi-bin/trac.cgi/report/1
 
-1.0 TODO:
-- Comment & Clean up
-- Implement Exceptions instead of NSLog
-- Package
-- Growl support
+### The cleanup stuff remains here for now.
 
 The Early Spring Code Cleanup:
 - Check retain/release
