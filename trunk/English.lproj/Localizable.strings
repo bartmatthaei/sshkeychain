@@ -1,0 +1,111 @@
+/* $Id: Localizable.strings,v 1.6 2004/06/23 08:12:20 bart Exp $ */
+
+"Yes" = "Yes";
+"No" = "No";
+
+"Download" = "Download";
+"Cancel" = "Cancel";
+"Changes" = "Changes";
+
+"LockAppleKeychain" = "Lock Apple Keychain";
+"UnlockAppleKeychain" = "Unlock Apple Keychain";
+
+"AddedAuthsockToEnvironment" = "Added the SSH_AUTH_SOCK variable to ~/.MacOSX/environment.plist.\nIt will be effective the next time you log in.";
+"ChangedAuthsockInEnvironment" = "Changed the SSH_AUTH_SOCK variable in ~/.MacOSX/environment.plist.\nIt will be effective the next time you log in.";
+
+"CheckForUpdates" = "Check for Updates";
+"FailedToRetrieveXMLVersionInfo" = "Failed to retrieve XML version information.";
+
+"Can'tFigureOutOwnVersion" = "Can't figure out my own version.";
+
+"NewVersion" = "New Version";
+"NewVersionAvailable" = "There is a new version of SSHKeychain available.";
+"NoNewVersion" = "There is no new version available.";
+
+"AgentTerminatedPanelTitle" = "Agent Terminated";
+"AgentTerminatedPanelText" = "The agent has unexpectedly terminated. Would you like to restart it ?";
+
+"PreferencesNotSavedPanelTitle" = "Preferences Not Saved";
+"PreferencesNotSavedPanelText" = "Would you like to save the preferences?";
+
+"DisplayPanelTitle" = "Display";
+"DisplayPanelText" = "Changes to the display will be activated the next time this program is started.";
+"DisplayChangeNotAllowed" = "You do not have write permissions on the SSHKeychain bundle, so the Display option can't be changed.";
+
+"NewSocketpathPanelTitle" = "New Socket Path";
+"NewSocketpathPanelText" = "The new socket path will be used by the agent the next time it's started.\nThe global environment SSH_AUTH_SOCK variable will be affected next time you log in.";
+
+"InvalidKey" = "Invalid Key";
+"KeyAlreadyOnList" = "Key is already on the list";
+
+"ReadPermissionToKeyDenied" = "Read Permission to Key Denied";
+
+"InvalidPrivateKey" = "Invalid Private Key";
+
+"StartAgent" = "Start Agent";
+"StopAgent" = "Stop Agent";
+
+"FailedToStartAgent" = "Failed to start ssh-agent.";
+"FailedToStopAgent" = "Failed to stop ssh-agent.";
+"FailedToStartAgentSocketpathInvalid" = "Failed to start ssh-agent. Socket path invalid.";
+"AgentNotFound" = "Couldn't find ssh-agent in given tools path.";
+
+"AddAllKeysToAgent" = "Add all keys to agent";
+"AddAllKeysToAgentFailed" = "Failed to add all keys to the agent.";
+"AddSingleKeyToAgent" = "Add single key to agent";
+"AddSingleKeyToAgentFailed" = "Failed to add the key to the agent.";
+"AgentNotRunning" = "Agent not running.";
+
+"RemoveAllKeysFromAgent" = "Remove All Keys From Agent";
+"RemoveAllKeysFromAgentFailed" = "Failed to remove all keys from the agent.";
+
+"AgentNotStarted" = "Agent Not Started";
+"InternalInconsistency" = "Internal Inconsistency";
+
+"SocketpathDirectory" = "The socket path seems to be a directory.";
+"PleaseChangeSocketpath" = "Please change the socket path in the preferences.";
+
+"Can'tWriteSocketInDirectory" = "Can't write socket in directory.";
+"PleaseCheckPermissions" = "Please check the permissions.";
+
+"Couldn'tCreateSocketDirectory" = "Couldn't create the directory where the socket should reside.";
+"PleaseCreateItManually" = "Please create it manually.";
+
+
+"PleaseSelectAPath" = "Please select a path.";
+"AlreadyExists" = "already exists.";
+"KeyTypeUnknown" = "Key type unknown.";
+"NumberOfBitsInvalid" = "Number of bits invalid.";
+"PassphraseTooShort" = "Passphrase too short (min 5 chars).";
+"Generating" = "Generating...";
+"KeyGenerationFailed" = "Key generation failed.";
+
+"WhereWouldYouLikeToSaveThePrivateKey" = "Where would you like to save the private key?";
+
+"AddPassphraseToAppleKeychain" = "Add passphrase to the Apple keychain";
+"Passphrase" = "Passphrase";
+
+"TunnelForwardingFailed" = "Tunnel Forwarding Failed";
+
+"ForwardingFailedDuringInitialization" = "Forwarding failed during initialization.";
+
+"TunnelSetupFailed" = "Tunnel Setup Failed";
+
+"TunnelTerminated" = "Tunnel Terminated";
+"TunnelUnexpectedlyTerminated" = "The tunnel has unexpectedly terminated repeatedly. It will not be restarted.";
+"TunnelTerminatedAndCouldNotBeRestarted" = "The tunnel has unexpectedly terminated and could not be restarted.";
+
+"ActiveTunnel" = "Active tunnel";
+"ActiveTunnels" = "Active tunnels";
+"NoActiveTunnels" = "No active tunnels";
+
+"ConfirmationPanelTitle" = "Confirmation Needed";
+"ConfirmationPanelText" = "A client is trying to use your keys. Do you want to allow this?";
+
+"Preferences" = "Preferences";
+"General" = "General";
+"Display" = "Display";
+"Security" = "Security";
+"Environment" = "Environment";
+"SSH Keys" = "SSH Keys";
+"Tunnels" = "Tunnels";
