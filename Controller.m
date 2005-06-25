@@ -407,8 +407,18 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 		
 		[appleKeychainUnlockedLock unlock];
 
-		status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
-
+		if(!interaction)
+		{
+			SecKeychainSetUserInteractionAllowed(NO);
+			status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
+			SecKeychainSetUserInteractionAllowed(YES);
+		}
+		
+		else
+		{
+			status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
+		}
+		
 		if(giveFocusBack)
 		{
 			SetFrontProcess(&focusSerialNumber);
