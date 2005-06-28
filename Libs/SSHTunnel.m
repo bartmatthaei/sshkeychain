@@ -2,6 +2,10 @@
 
 #import "PreferenceController.h"
 
+#ifndef NSAppKitVersionNumber10_3
+#define NSAppKitVersionNumber10_3 743
+#endif
+
 @implementation SSHTunnel
 
 - (id)init
