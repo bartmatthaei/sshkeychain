@@ -109,3 +109,5 @@
 "Environment" = "Environment";
 "SSH Keys" = "SSH Keys";
 "Tunnels" = "Tunnels";
+
+"UnknownHostKey" = "Unknown Host Key";

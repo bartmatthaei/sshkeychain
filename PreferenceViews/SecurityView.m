@@ -16,6 +16,7 @@
 
 	[addKeysOnConnection setState:[[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString]];
 	[askForConfirmation setState:[[NSUserDefaults standardUserDefaults] boolForKey:AskForConfirmationString]];
+        [addInteractivePasswordsToKeychain setState:[[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString]];
 
 	[onSleep selectItemAtIndex:[onSleep indexOfItemWithTag:[prefs integerForKey:OnSleepString]]];
 	[onScreensaver selectItemAtIndex:[onScreensaver indexOfItemWithTag:[prefs integerForKey:OnScreensaverString]]];
@@ -75,6 +76,7 @@
 	{
 		[prefs setBool:[addKeysOnConnection state] forKey:AddKeysOnConnectionString];
 		[prefs setBool:[askForConfirmation state] forKey:AskForConfirmationString];
+                [prefs setBool:[addInteractivePasswordsToKeychain state] forKey:AddInteractivePasswordString];
 
 		[prefs setInteger:[[onSleep selectedItem] tag] forKey:OnSleepString];
 		[prefs setInteger:[[onScreensaver selectedItem] tag] forKey:OnScreensaverString];
@@ -90,6 +92,7 @@
 	{
 		[prefs setBool:YES forKey:AddKeysOnConnectionString];
 		[prefs setBool:NO forKey:AskForConfirmationString];
+                [prefs setBool:NO forKey:AddInteractivePasswordString];
 
 		[prefs setInteger:1 forKey:OnSleepString];
 		[prefs setInteger:4 forKey:OnScreensaverString];
@@ -143,6 +146,7 @@
 
 		[prefs setBool:YES forKey:AddKeysOnConnectionString];
 		[prefs setBool:NO forKey:AskForConfirmationString];
+                [prefs setBool:NO forKey:AddInteractivePasswordString];
 
 		[prefs setInteger:1 forKey:OnSleepString];
 		[prefs setInteger:4 forKey:OnScreensaverString];
@@ -155,6 +159,7 @@
 
 		[addKeysOnConnection setState:[prefs boolForKey:AddKeysOnConnectionString]];
 		[askForConfirmation setState:[prefs boolForKey:AskForConfirmationString]];
+                [addInteractivePasswordsToKeychain setState:[prefs boolForKey:AddInteractivePasswordString]];
 
 		[onSleep selectItemAtIndex:[onSleep indexOfItemWithTag:[prefs integerForKey:OnSleepString]]];
 		[onScreensaver selectItemAtIndex:[onScreensaver indexOfItemWithTag:[prefs integerForKey:OnScreensaverString]]];

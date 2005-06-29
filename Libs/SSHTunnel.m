@@ -2,6 +2,10 @@
 
 #import "PreferenceController.h"
 
+#ifndef NSAppKitVersionNumber10_3
+#define NSAppKitVersionNumber10_3 743
+#endif
+
 @implementation SSHTunnel
 
 - (id)init
@@ -250,6 +254,9 @@
 	{
 		[arguments addObject:@"-g"];
 	}
+        
+        [arguments addObject:@"-o"];
+        [arguments addObject:@"PreferredAuthentications=hostbased,publickey,password,keyboard-interactive"];
 	
 	if((tunnelUser) && (![tunnelUser isEqualToString:@""]))
 	{

@@ -16,6 +16,7 @@ NSString *UseGlobalEnvironmentString = @"Use Global Environment ~/.MacOSX/enviro
 NSString *UseCustomSecuritySettingsString = @"Use Custom Security Settings";
 NSString *CheckScreensaverIntervalString = @"Check Screensaver Interval";
 NSString *KeyTimeoutString = @"Key Timeout";
+NSString *AddInteractivePasswordString = @"Add Interactive Passwords to Keychain";
 
 PreferenceController *sharedPreferenceController = nil;
 
