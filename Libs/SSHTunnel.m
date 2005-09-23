@@ -217,8 +217,7 @@
 	
 	for(i=0; i < [remotePortForwards count]; i++)
 	{
-		[arguments addObject:@"-L"];
-		[arguments addObject:[NSString stringWithFormat:@"%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
+		[arguments addObject:[NSString stringWithFormat:@"-R%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
 									[[remotePortForwards objectAtIndex:i] objectAtIndex:1],
 									[[[remotePortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
 			];
