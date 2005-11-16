@@ -614,7 +614,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"Cleaning up unneeded files...\"\nfind $BUILD_ROOT/$WRAPPER_NAME '(' -name '.svn' -or -name '.DS_Store' ')' -prune -exec rm -rf '{}' ';'";
+			shellScript = "";
 		};
 /* End PBXShellScriptBuildPhase section */
 

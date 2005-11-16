@@ -409,6 +409,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 
 		if(!interaction)
 		{
+			NSLog(@"NO INTERACTION);
 			SecKeychainSetUserInteractionAllowed(NO);
 			status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
 			SecKeychainSetUserInteractionAllowed(YES);
