@@ -86,6 +86,7 @@
             CLASS = SecurityView; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                addInteractivePasswordsToKeychain = id; 
                 addKeysOnConnection = id; 
                 askForConfirmation = id; 
                 checkScreensaverInterval = id; 

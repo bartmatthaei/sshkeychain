@@ -365,8 +365,9 @@ NSString *local(NSString *theString)
 	CFOptionFlags response;
 	CFStringRef enteredPassphrase;
 
-	NSString *passphrase, *firstQuestion;
+	NSString *passphrase, *firstQuestion, *secondQuestion;
 	NSMutableDictionary *dict;
+        BOOL consultKeychain = NO;
 
 	ProcessSerialNumber focusSerialNumber;
 	BOOL giveFocusBack = NO;
@@ -383,11 +384,48 @@ NSString *local(NSString *theString)
 	[passphraseIsRequestedLock unlock];
 
 	firstQuestion = @"Enter passphrase for ";
+        secondQuestion = @"'s password: ";
 
 	if([question hasPrefix:firstQuestion])
 	{
+                consultKeychain = YES;
 		accountName = [[[[question substringFromIndex:[firstQuestion length]]
-componentsSeparatedByString:@": "] objectAtIndex:0] cString];
+                        componentsSeparatedByString:@": "] objectAtIndex:0] cString];
+        }
+        else
+        {
+                if ([question hasSuffix:secondQuestion])
+                {
+                        consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
+                        accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] cString];
+                }
+                else
+                {
+                        if ([question hasPrefix:@"The authenticity of host"])
+                        {
+                                [passphraseIsRequestedLock lock];
+                                passphraseIsRequested = NO;
+                                [passphraseIsRequestedLock unlock];
+                                if (interaction)
+                                {
+                                        int r = NSRunAlertPanel(local(@"UnknownHostKey"),
+                                                question,
+                                                local(@"No"),
+                                                local(@"Yes"),
+                                                nil);
+                                        NSString *response = ( r == NSAlertAlternateReturn) ? @"yes" : @"no";
+                                        return response;
+                                }
+                                else
+                                {
+                                        return @"no";
+                                }
+                        }
+                } 
+        }
+        
+        if(consultKeychain)
+        {
 		serviceName = "SSHKeychain";
 
 		SecKeychainGetStatus(nil, &status);
@@ -409,7 +447,6 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 
 		if(!interaction)
 		{
-			NSLog(@"NO INTERACTION);
 			SecKeychainSetUserInteractionAllowed(NO);
 			status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
 			SecKeychainSetUserInteractionAllowed(YES);
@@ -446,7 +483,7 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 		[dict setObject:local(@"Passphrase") forKey:(NSString *)kCFUserNotificationAlertHeaderKey];
 		[dict setObject:question forKey:(NSString *)kCFUserNotificationAlertMessageKey];
 
-		if([question hasPrefix:firstQuestion])
+		if(consultKeychain)
 		{
 			[dict setObject:local(@"AddPassphraseToAppleKeychain") forKey:(NSString *)kCFUserNotificationCheckBoxTitlesKey];
 		}
@@ -496,9 +533,8 @@ componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 			passphrase = [NSString stringWithString:(NSString *)enteredPassphrase];
 			CFRelease(notification);
 			
-			if(([question hasPrefix:firstQuestion]) && (response & CFUserNotificationCheckBoxChecked(0)))
+			if(consultKeychain && (response & CFUserNotificationCheckBoxChecked(0)))
 			{
-				accountName = [[[[question substringFromIndex:[firstQuestion length]] componentsSeparatedByString:@": "] objectAtIndex:0] cString];
 				serviceName = "SSHKeychain";
 				
 				[appleKeychainUnlockedLock lock];

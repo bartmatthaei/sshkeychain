@@ -18,6 +18,7 @@ extern NSString *UseGlobalEnvironmentString;
 extern NSString *UseCustomSecuritySettingsString;
 extern NSString *CheckScreensaverIntervalString;
 extern NSString *KeyTimeoutString;
+extern NSString *AddInteractivePasswordString;
 
 @interface PreferenceController : NSObject 
 {
