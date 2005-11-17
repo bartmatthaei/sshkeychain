@@ -335,20 +335,12 @@ NSString *local(NSString *theString)
 	{
 		[appleKeychainUnlockedLock unlock];
 
-		if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] != 1)
-		{
-			giveFocusBack = YES;
-			GetFrontProcess(&focusSerialNumber);
-		}
+		GetFrontProcess(&focusSerialNumber);
 
 		[NSApp activateIgnoringOtherApps:YES];
 		SecKeychainUnlock(nil, 0, nil, 0);
 
-		if(giveFocusBack)
-		{
-			SetFrontProcess(&focusSerialNumber);
-			giveFocusBack = NO;
-		}
+		SetFrontProcess(&focusSerialNumber);
 	}
 }
 
@@ -358,19 +350,26 @@ NSString *local(NSString *theString)
 	const char *accountName;
 	char *kcPassword;
 	UInt32 passwordLength;
-	SecKeychainStatus status;
+	SecKeychainStatus keychainStatus;
+	OSStatus returnStatus;
+	SecKeychainRef keychain;
+
+	CFArrayRef searchList;
 
 	SInt32 error;
 	CFUserNotificationRef notification;
 	CFOptionFlags response;
 	CFStringRef enteredPassphrase;
 
-	NSString *passphrase, *firstQuestion, *secondQuestion;
+	NSString *passphrase, *firstQuestion;
 	NSMutableDictionary *dict;
         BOOL consultKeychain = NO;
 
 	ProcessSerialNumber focusSerialNumber;
-	BOOL giveFocusBack = NO;
+
+	SecKeychainSetUserInteractionAllowed(TRUE);
+
+	int i;
 		
 	[passphraseIsRequestedLock lock];
 	if(passphraseIsRequested == YES)
@@ -384,38 +383,37 @@ NSString *local(NSString *theString)
 	[passphraseIsRequestedLock unlock];
 
 	firstQuestion = @"Enter passphrase for ";
-        secondQuestion = @"'s password: ";
 
 	if([question hasPrefix:firstQuestion])
 	{
                 consultKeychain = YES;
 		accountName = [[[[question substringFromIndex:[firstQuestion length]]
-                        componentsSeparatedByString:@": "] objectAtIndex:0] cString];
+                        			componentsSeparatedByString:@": "] objectAtIndex:0] cString];
         }
+
         else
         {
-                if ([question hasSuffix:secondQuestion])
+                if([question hasSuffix:@"'s password: "])
                 {
                         consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
                         accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] cString];
                 }
+
                 else
                 {
-                        if ([question hasPrefix:@"The authenticity of host"])
+                        if([question hasPrefix:@"The authenticity of host"])
                         {
                                 [passphraseIsRequestedLock lock];
                                 passphraseIsRequested = NO;
                                 [passphraseIsRequestedLock unlock];
-                                if (interaction)
+
+                                if(interaction)
                                 {
-                                        int r = NSRunAlertPanel(local(@"UnknownHostKey"),
-                                                question,
-                                                local(@"No"),
-                                                local(@"Yes"),
-                                                nil);
+                                        int r = NSRunAlertPanel(local(@"UnknownHostKey"), question, local(@"No"), local(@"Yes"), nil);
                                         NSString *response = ( r == NSAlertAlternateReturn) ? @"yes" : @"no";
                                         return response;
                                 }
+
                                 else
                                 {
                                         return @"no";
@@ -428,46 +426,41 @@ NSString *local(NSString *theString)
         {
 		serviceName = "SSHKeychain";
 
-		SecKeychainGetStatus(nil, &status);
-
-		[appleKeychainUnlockedLock lock];
-		
-		if(!appleKeychainUnlocked)
-		{
-			if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] != 1)
-			{
-				giveFocusBack = YES;
-				GetFrontProcess(&focusSerialNumber);
-			}
-
-			[NSApp activateIgnoringOtherApps:YES];
-		}
-		
-		[appleKeychainUnlockedLock unlock];
+		GetFrontProcess(&focusSerialNumber);
 
 		if(!interaction)
 		{
-			SecKeychainSetUserInteractionAllowed(NO);
-			status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
-			SecKeychainSetUserInteractionAllowed(YES);
+			SecKeychainCopySearchList(&searchList);
+			
+			for(i=0; i < [(NSArray *)searchList count]; i++) {
+				keychain = (SecKeychainRef)[(NSArray *)searchList objectAtIndex:i];
+
+				SecKeychainGetStatus(keychain, &keychainStatus);
+				
+				if(keychainStatus & 1) {
+					returnStatus = SecKeychainFindGenericPassword(keychain, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
+					
+					if(returnStatus == 0) {
+						break;
+					} 
+				}
+			}
+			
+			CFRelease(searchList);
 		}
 		
 		else
 		{
-			status = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
+			returnStatus = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
 		}
 		
-		if(giveFocusBack)
-		{
-			SetFrontProcess(&focusSerialNumber);
-			giveFocusBack = NO;
-		}
+		SetFrontProcess(&focusSerialNumber);
 		
 		[passphraseIsRequestedLock lock];
 		passphraseIsRequested = NO;
 		[passphraseIsRequestedLock unlock];
 		
-		if(status == 0)
+		if(returnStatus == 0)
 		{
 			kcPassword[passwordLength] = '\0';
 			
@@ -537,28 +530,11 @@ NSString *local(NSString *theString)
 			{
 				serviceName = "SSHKeychain";
 				
-				[appleKeychainUnlockedLock lock];
-
-				if(!appleKeychainUnlocked)
-				{
-					if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] != 1)
-					{
-						giveFocusBack = YES;
-						GetFrontProcess(&focusSerialNumber);
-					}
-					
-					[NSApp activateIgnoringOtherApps:YES];
-				}
-				
-				[appleKeychainUnlockedLock unlock];
+				GetFrontProcess(&focusSerialNumber);
 				
 				SecKeychainAddGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, [passphrase length], (const void *)[passphrase cString], nil);
 				
-				if(giveFocusBack)
-				{
-					SetFrontProcess(&focusSerialNumber);
-					giveFocusBack = NO;
-				}
+				SetFrontProcess(&focusSerialNumber);
 			}
 			
 			[passphraseIsRequestedLock lock];

@@ -224,13 +224,8 @@ AgentController *sharedAgentController;
 
 		[allKeysOnAgentLock unlock];
 
-		SecKeychainGetStatus(nil, &status);
-
-		if((status & 1) && ([agent isRunning]))
-		{
-			[NSThread detachNewThreadSelector:@selector(addKeysToAgentWithoutInteractionInNewThread)
+		[NSThread detachNewThreadSelector:@selector(addKeysToAgentWithoutInteractionInNewThread)
 								toTarget:self withObject:self];
-		}
 	}
 }
 
