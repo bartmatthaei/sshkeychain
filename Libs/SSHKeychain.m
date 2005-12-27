@@ -80,21 +80,14 @@ SSHKeychain *currentKeychain;
 {
 	currentKeychain = nil;
 
-	int i;
-	for(i=0; i < [keychain count]; i++)
-	{
-		[[keychain objectAtIndex:i] release];
-	}
-
 	[keychainLock lock];
-
 	[keychain release];
-	keychain = nil;
-
 	[keychainLock unlock];
 
-	[addingKeysLock dealloc];
-	[lastAddedLock dealloc];
+	[keychainLock release];
+	[addingKeysLock release];
+	[lastAddedLock release];
+	[agentSocketPath release];
 	
 	[super dealloc];
 }
@@ -131,7 +124,9 @@ SSHKeychain *currentKeychain;
 /* Set the socket path we should use for ssh-add. */
 - (void)setAgentSocketPath:(NSString *)path
 {
-	agentSocketPath = [[NSString stringWithString:path] retain];
+	NSString *oldAgentSocketPath = agentSocketPath;
+	agentSocketPath = [path copy];
+	[oldAgentSocketPath release];
 }
 
 /* Tell the receiver if we're adding keys. */
