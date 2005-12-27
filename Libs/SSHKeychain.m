@@ -13,10 +13,8 @@ SSHKeychain *currentKeychain;
 /* Return the global keychain, if set. */
 + (id)currentKeychain
 {
-	if(currentKeychain == nil)
-	{
-		[self keychainWithPaths:[[NSUserDefaults standardUserDefaults] arrayForKey:@"Keys"]];
-	}
+	if (! currentKeychain)
+		currentKeychain = [[self keychainWithPaths:[[NSUserDefaults standardUserDefaults] arrayForKey:@"Keys"]] retain];
 
 	return currentKeychain;
 }
@@ -24,52 +22,21 @@ SSHKeychain *currentKeychain;
 /* Construct a SSHKeychain object with thePaths as SSHKey's. */
 + (id)keychainWithPaths:(NSArray *)paths
 {
-	return [[self alloc] initWithPaths:paths];
+	return [[[self alloc] initWithPaths:paths] autorelease];
 }
 
 - (id)initWithPaths:(NSArray *)paths
 {
-	SSHKey *theKey;
-
-	if((self = [super init]) == nil)
-	{
+	if (!(self = [super init]))
 		return nil;
-	}
 
-	[keychainLock lock];
-	keychain = [[NSMutableArray array] retain];
-
-	int i;
-
-	for(i=0; i < [paths count]; i++)
-	{
-		/* If the key is valid, add it to the keychain array. */
-		theKey = [SSHKey keyWithPath:[paths objectAtIndex:i]];
-		if(theKey != nil)
-		{
-			[keychain addObject:theKey];
-		}
-	}
-
-	[keychainLock unlock];
+	keychainLock = [[NSLock alloc] init];
+	addingKeysLock = [[NSLock alloc] init];
+	lastScheduledLock = [[NSLock alloc] init];
 	lastScheduled = -1;
 	
-	currentKeychain = self;
+	[self resetToKeysWithPaths:paths];
 	
-	return self;
-}
-
-- (id)init
-{
-	if((self = [super init]) == nil)
-	{
-		return nil;
-	}
-
-	addingKeysLock = [[NSLock alloc] init];
-	keychainLock = [[NSLock alloc] init];
-	lastScheduledLock = [[NSLock alloc] init];
-
 	return self;
 }
 
@@ -89,33 +56,31 @@ SSHKeychain *currentKeychain;
 	[super dealloc];
 }
 
+- (void) setKeychain:(NSMutableArray *)newKeychain
+{
+	[keychainLock lock];
+	NSMutableArray *oldKeychain = keychain;
+	keychain = [newKeychain retain];
+	[oldKeychain release];
+	[keychainLock unlock];
+}
+
 /* Reset the keychain, and add thePaths as keys. */
 - (void)resetToKeysWithPaths:(NSArray *)paths
 {
-	SSHKey *theKey;
+	NSMutableArray *newKeychain = [NSMutableArray array];
 
-	[keychainLock lock];
-
-	if(keychain != nil)
-	{
-		[keychain release];
-	}
-	
-	keychain = [[NSMutableArray array] retain];
-
-	int i;
-
-	for(i=0; i < [paths count]; i++)
+	NSEnumerator *e = [paths objectEnumerator];
+	NSString *path;
+	while (path = [e nextObject])
 	{
 		/* If the key is valid, add it to the keychain array. */
-		theKey = [SSHKey keyWithPath:[paths objectAtIndex:i]];
-		if(theKey != nil)
-		{
-			[keychain addObject:theKey];
-		}
+		SSHKey *theKey = [SSHKey keyWithPath:path];
+		if (theKey)
+			[newKeychain addObject:theKey];
 	}
 
-	[keychainLock unlock];
+	[self setKeychain:newKeychain];
 }
 
 /* Set the socket path we should use for ssh-add. */
@@ -129,13 +94,18 @@ SSHKeychain *currentKeychain;
 /* Tell the receiver if we're adding keys. */
 - (BOOL)addingKeys
 {
-	BOOL returnBool;
-
 	[addingKeysLock lock];
-	returnBool = addingKeys;
+	BOOL returnBool = addingKeys;
 	[addingKeysLock unlock];
 
 	return returnBool;
+}
+
+- (void) setAddingKeys:(BOOL)adding
+{
+	[addingKeysLock lock];
+	addingKeys = adding;
+	[addingKeysLock unlock];
 }
 
 - (int) lastScheduled
@@ -143,7 +113,7 @@ SSHKeychain *currentKeychain;
 	[lastScheduledLock lock];
 	int returnInt = lastScheduled;
 	[lastScheduledLock unlock];
-	
+
 	return returnInt;
 }
 
@@ -154,22 +124,13 @@ SSHKeychain *currentKeychain;
 	[lastScheduledLock unlock];
 }
 
-
 /* Returns the SSHKey at Index nr. */
 - (SSHKey *)keyAtIndex:(int)nr
 {
-	SSHKey *returnKey;
-
 	[keychainLock lock];
-
-	if (nr < 0 || nr >= [keychain count])
-	{
-		[keychainLock unlock];
-		return nil;
-	}
-
-	returnKey = [keychain objectAtIndex:nr];
-	
+	SSHKey *returnKey = nil;
+	if (nr >= 0 && nr < [keychain count])
+		returnKey = [keychain objectAtIndex:nr];
 	[keychainLock unlock];
 	
 	return returnKey;
@@ -203,46 +164,32 @@ SSHKeychain *currentKeychain;
 - (BOOL)addKeyWithPath:(NSString *)path
 {
 	SSHKey *key = [SSHKey keyWithPath:path];
-
-	if(key == nil)
-	{
+	if (!key)
 		return NO;
-	}
 
-	[keychainLock lock];
-	[keychain addObject:key];
-	[keychainLock unlock];
-
-	[[NSNotificationCenter defaultCenter]  postNotificationName:@"KeychainChanged" object:nil];
-
-	return YES;
+	return [self addKey:key];
 }
 
 /* Return an array of paths for all keys on the keychain. */
 - (NSArray *)arrayOfPaths
 {
 	NSMutableArray *paths = [NSMutableArray array];
-	int i;
 	
 	[keychainLock lock];
-
-	for(i=0; i < [keychain count]; i++)
-	{
-		[paths addObject:[[keychain objectAtIndex:i] path]];
-	}
-
+	NSEnumerator *e = [keychain objectEnumerator];
+	SSHKey *key;
+	while (key = [e nextObject])
+		[paths addObject:[key path]];
 	[keychainLock unlock];
 
 	return paths;
 }
 
-/* Return the number of keys on the chain. */	
+/* Return the number of keys on the chain. */
 - (int)count
 {
-	int returnInt = 0;
-	
 	[keychainLock lock];
-	returnInt = [keychain count];
+	int returnInt = [keychain count];
 	[keychainLock unlock];
 
 	return returnInt;
@@ -257,39 +204,28 @@ SSHKeychain *currentKeychain;
 /* Add all keys from the keychain to the ssh-agent. */
 - (BOOL)addKeysToAgentWithInteraction:(BOOL)interaction
 {
-	NSMutableArray *paths = [NSMutableArray array];
-	NSString *path;
-	NSEnumerator *e;
-	SSHTool *theTool;
-	int ts;
-
-	if([self addingKeys])
-	{
+	if ([self addingKeys])
 		return YES;
-	}
 
-	if((!agentSocketPath) || ([[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath] == NO))
-	{
+	if (!agentSocketPath || ![[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath])
 		return NO;
-	}
 	
-	e = [[self arrayOfPaths] objectEnumerator];
+	NSMutableArray *paths = [NSMutableArray array];
+	NSEnumerator *e = [[self arrayOfPaths] objectEnumerator];
+	NSString *path;
 	while (path = [e nextObject])
 	{
 		if ([[NSFileManager defaultManager] isReadableFileAtPath:path])
 			[paths addObject:path];
 	}
 		
-	if([paths count] < 1)
-	{
+	if ([paths count] < 1)
 		return NO;
-	}
 
-	[addingKeysLock lock];
-	addingKeys = YES;
-	[addingKeysLock unlock];
+	[self setAddingKeys:YES];
 	
-	theTool =  [SSHTool toolWithName:@"ssh-add"];
+	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
+	[theTool setArguments:paths];
 
 	/* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
 	[theTool setEnvironmentVariable:@"SSH_ASKPASS" withValue:
@@ -298,63 +234,45 @@ SSHKeychain *currentKeychain;
 	[theTool setEnvironmentVariable:@"DISPLAY" withValue:@":0"];
 
 	/* If we want user interaction, we set the environment variable so PassphraseRequester knows this. */
-	if(interaction)
-	{
+	if (interaction)
 		[theTool setEnvironmentVariable:@"INTERACTION" withValue:@"1"];
-	}
 
 	/* Set the SSH_AUTH_SOCK environment variable so the tool can talk to the real agent. */
 	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:agentSocketPath];
 
-	if((paths != nil) && ([paths count] > 0))
+	if (![theTool launchAndWait])
 	{
-		[theTool setArguments:paths];
-
-		if([theTool launchAndWait] == NO)
-		{
-			[addingKeysLock lock];
-			addingKeys = NO;
-			[addingKeysLock unlock];
-			return NO;
-		}
-		
-		if([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)
-		{
-			ts = time(nil);
-			[self setLastScheduled:ts];
-			
-			[NSThread detachNewThreadSelector:@selector(removeKeysAfterTimeout:) toTarget:self 
-									withObject:[NSNumber numberWithInt:ts]];
-		}
-
-		[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentFilled" object:nil];
-
-		[addingKeysLock lock];
-		addingKeys = NO;
-		[addingKeysLock unlock];
-		return YES;
+		[self setAddingKeys:NO];
+		return NO;
 	}
 	
-	[addingKeysLock lock];
-	addingKeys = NO;
-	[addingKeysLock unlock];
+	if ([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)
+	{
+		int timeScheduled = time(nil);
+		[self setLastScheduled:timeScheduled];
+		
+		[NSThread detachNewThreadSelector:@selector(removeKeysAfterTimeout:) toTarget:self 
+								withObject:[NSNumber numberWithInt:timeScheduled]];
+	}
 
+	[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentFilled" object:nil];
+	
+	[self setAddingKeys:NO];
 	return YES;
 }
 
 /* Remove all keys from the ssh-agent from a NSTimer object. */
 - (void)removeKeysAfterTimeout:(id)object
 {
-	int ts;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	ts = [object intValue];
+	int timeScheduled = [object intValue];
 	
 	sleep([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] * 60);
 	
-	if (ts == [self lastScheduled]) 
+	/* If the time this timeout was scheduled is still the most recent, go ahead and remove the keys */
+	if (timeScheduled == [self lastScheduled]) 
 		[self removeKeysFromAgent];
-
+	
 	[pool release];
 }
 
@@ -362,13 +280,11 @@ SSHKeychain *currentKeychain;
 - (BOOL)removeKeysFromAgent
 {
 	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
-	
+
 	[self setLastScheduled:-1];
 
-	if((!agentSocketPath) || ([[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath] == NO))
-	{
+	if (!agentSocketPath || ![[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath])
 		return NO;
-	}
 
 	[theTool setArgument:@"-D"];
 	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:agentSocketPath];
