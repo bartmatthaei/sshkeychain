@@ -248,11 +248,11 @@ SSHKeychain *currentKeychain;
 /* Add all keys from the keychain to the ssh-agent. */
 - (BOOL)addKeysToAgentWithInteraction:(BOOL)interaction
 {
-	NSMutableArray *paths;
+	NSMutableArray *paths = [NSMutableArray array];
+	NSString *path;
+	NSEnumerator *e;
 	SSHTool *theTool;
-	int i, ts;
-
-	paths = [[self arrayOfPaths] mutableCopy];
+	int ts;
 
 	if([self addingKeys])
 	{
@@ -264,11 +264,11 @@ SSHKeychain *currentKeychain;
 		return NO;
 	}
 	
-	for(i=0; i < [paths count]; i++) {
-		if([[NSFileManager defaultManager] isReadableFileAtPath:[paths objectAtIndex:i]] == NO) {
-			[paths removeObjectAtIndex:i];
-			i--;
-		}
+	e = [[self arrayOfPaths] objectEnumerator];
+	while (path = [e nextObject])
+	{
+		if ([[NSFileManager defaultManager] isReadableFileAtPath:path])
+			[paths addObject:path];
 	}
 		
 	if([paths count] < 1)
@@ -282,7 +282,7 @@ SSHKeychain *currentKeychain;
 	
 	theTool =  [SSHTool toolWithName:@"ssh-add"];
 
-        /* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
+	/* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
 	[theTool setEnvironmentVariable:@"SSH_ASKPASS" withValue:
 		[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"PassphraseRequester"]];
 		
