@@ -52,10 +52,7 @@ SSHKeychain *currentKeychain;
 	}
 
 	[keychainLock unlock];
-	
-	[lastAddedLock lock];
-	lastAdded = -1;
-	[lastAddedLock unlock];
+	lastScheduled = -1;
 	
 	currentKeychain = self;
 	
@@ -71,7 +68,7 @@ SSHKeychain *currentKeychain;
 
 	addingKeysLock = [[NSLock alloc] init];
 	keychainLock = [[NSLock alloc] init];
-	lastAddedLock = [[NSLock alloc] init];
+	lastScheduledLock = [[NSLock alloc] init];
 
 	return self;
 }
@@ -86,7 +83,7 @@ SSHKeychain *currentKeychain;
 
 	[keychainLock release];
 	[addingKeysLock release];
-	[lastAddedLock release];
+	[lastScheduledLock release];
 	[agentSocketPath release];
 	
 	[super dealloc];
@@ -140,6 +137,23 @@ SSHKeychain *currentKeychain;
 
 	return returnBool;
 }
+
+- (int) lastScheduled
+{
+	[lastScheduledLock lock];
+	int returnInt = lastScheduled;
+	[lastScheduledLock unlock];
+	
+	return returnInt;
+}
+
+- (void) setLastScheduled:(int) scheduledTime
+{
+	[lastScheduledLock lock];
+	lastScheduled = scheduledTime;
+	[lastScheduledLock unlock];
+}
+
 
 /* Returns the SSHKey at Index nr. */
 - (SSHKey *)keyAtIndex:(int)nr
@@ -307,9 +321,7 @@ SSHKeychain *currentKeychain;
 		if([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)
 		{
 			ts = time(nil);
-			[lastAddedLock lock];
-			lastAdded = ts;
-			[lastAddedLock unlock];
+			[self setLastScheduled:ts];
 			
 			[NSThread detachNewThreadSelector:@selector(removeKeysAfterTimeout:) toTarget:self 
 									withObject:[NSNumber numberWithInt:ts]];
@@ -340,15 +352,9 @@ SSHKeychain *currentKeychain;
 	
 	sleep([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] * 60);
 	
-	[lastAddedLock lock];
-	if(ts == lastAdded) 
-	{
-		[lastAddedLock unlock];
+	if (ts == [self lastScheduled]) 
 		[self removeKeysFromAgent];
-	}
-	
-	[lastAddedLock unlock];
-	
+
 	[pool release];
 }
 
@@ -357,9 +363,7 @@ SSHKeychain *currentKeychain;
 {
 	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
 	
-	[lastAddedLock lock];
-	lastAdded = -1;
-	[lastAddedLock unlock];
+	[self setLastScheduled:-1];
 
 	if((!agentSocketPath) || ([[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath] == NO))
 	{

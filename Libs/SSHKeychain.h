@@ -9,12 +9,12 @@
 	NSString *agentSocketPath;
 	BOOL addingKeys;
 	
-	int lastAdded;
+	int lastScheduled;
 
 	/* Locks */
 	NSLock *keychainLock;
 	NSLock *addingKeysLock;
-	NSLock *lastAddedLock;
+	NSLock *lastScheduledLock;
 }
 
 + (id)currentKeychain;
