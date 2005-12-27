@@ -7,7 +7,6 @@
 
 	NSString *socketPath;
 	NSString *agentSocketPath;
-
 	NSArray *keysOnAgent;
 
 	NSLock *agentLock;

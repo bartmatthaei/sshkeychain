@@ -25,22 +25,16 @@ extern NSString *local(NSString *theString);
 /* Return the current agent, if set. */
 + (id)currentAgent
 {
-	if(currentAgent == nil)
-	{
+	if (!currentAgent)
 		currentAgent = [[SSHAgent alloc] init];
-	}
 	
 	return currentAgent;
 }
 
 - (id)init
 {
-	if((self = [super init]) == nil)
-	{
+	if (!(self = [super init]))
 		return nil;
-	}
-
-	currentAgent = self;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 		selector:@selector(keysOnAgentStatusChange:) name:@"AgentFilled" object:nil];
@@ -161,10 +155,7 @@ extern NSString *local(NSString *theString);
 /* Start the agent. */
 - (BOOL)start
 {
-	NSString *theOutput;
-	SSHTool *theTool;
-	NSArray *lines, *columns;
-	int i;
+	NSString *line;
 
 	if ([self isRunning])
 	{
@@ -181,25 +172,24 @@ extern NSString *local(NSString *theString);
 	}
 
 	/* Initialize a ssh-agent SSHTool, set the arguments to -c for c-shell output. */
-	theTool = [SSHTool toolWithName:@"ssh-agent"];
+	SSHTool *theTool = [SSHTool toolWithName:@"ssh-agent"];
 	[theTool setArgument:@"-c"];
 
 	/* Launch the agent and retrieve stdout. */
-	theOutput = [theTool launchForStandardOutput];
-
-	if(theOutput == nil)
+	NSString *theOutput = [theTool launchForStandardOutput];
+	if (!theOutput)
 	{
 		NSLog(@"ssh-agent didn't launch");
 		return NO;
 	}
 
 	/* Split the lines with delimiter ";\n". */
-	lines = [theOutput componentsSeparatedByString:@";\n"];
-
-	for(i=0; i < [lines count]; i++)
+	NSArray *lines = [theOutput componentsSeparatedByString:@";\n"];
+	NSEnumerator *e = [lines objectEnumerator];
+	while (line = [e nextObject])
 	{
 		/* Split the line with delimiter " ". */
-		columns = [[lines objectAtIndex:i] componentsSeparatedByString:@" "];
+		NSArray *columns = [line componentsSeparatedByString:@" "];
 		if ([columns count] != 3)
 			continue;
 
@@ -226,7 +216,6 @@ extern NSString *local(NSString *theString);
 
 	/* Check if agent is alive in a seperate thread. */
 	[NSThread detachNewThreadSelector:@selector(checkAgent) toTarget:self withObject:nil];
-
 	[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentStarted" object:nil];
 
 	return YES;
@@ -660,69 +649,57 @@ extern NSString *local(NSString *theString);
 /* Get current keys on agent. */
 - (NSArray *)currentKeysOnAgent
 {
-	int i;
-	NSString *theOutput, *type;
-	SSHTool *theTool;
-	NSMutableArray *keys;
-	NSArray *columns, *key, *lines;
+	NSString *line;
 
 	if (![self isRunning])
 		return nil;
 
 	/* Initialize a ssh-add SSHTool, set the arguments to -l for a list of keys. */
-	theTool = [SSHTool toolWithName:@"ssh-add"];
+	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
 	[theTool setArgument:@"-l"];
 
 	/* Set the SSH_AUTH_SOCK environment variable so ssh-add can talk to the real agent. */
 	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:[self agentSocketPath]];
 
 	/* Launch the tool and retrieve stdout. */
-	theOutput = [theTool launchForStandardOutput];
-
-	if(theOutput == nil)
-	{
+	NSString *theOutput = [theTool launchForStandardOutput];
+	if (!theOutput)
 		return nil;
-	}
 
-	if([theOutput isEqualToString:@"The agent has no identities.\n"])
-	{
+	if ([theOutput isEqualToString:@"The agent has no identities.\n"])
 		return nil;
-	}
 
-	/* Split the lines with delimiter "\n". */
-	lines = [theOutput componentsSeparatedByString:@"\n"];
+	NSMutableArray *keys = [NSMutableArray array];
+	NSArray *lines = [theOutput componentsSeparatedByString:@"\n"];
 
-	keys = [NSMutableArray array];
-
-	for(i=0; i < [lines count]; i++)
+	NSEnumerator *e = [lines objectEnumerator];
+	while (line = [e nextObject])
 	{
 		/* Split the line with delimiter " ". */
-		columns = [[lines objectAtIndex:i] componentsSeparatedByString:@" "];
+		NSArray *columns = [line componentsSeparatedByString:@" "];
 
-		if([columns count] == 4)
-		{
-			if([[columns objectAtIndex:3] isEqualToString:@"(RSA1)"])
-				type = @"RSA1";
-			else if([[columns objectAtIndex:3] isEqualToString:@"(RSA)"])
-				type = @"RSA";
-			else if([[columns objectAtIndex:3] isEqualToString:@"(DSA)"])
-				type = @"DSA";
-			else
-				type = @"?";
+		if ([columns count] != 4)
+			continue;
+		
+		NSString *rawKeyType = [columns objectAtIndex:3];
+		NSString *parsedKeyType = @"?";
+		if ([rawKeyType isEqualToString:@"(RSA1)"])
+			parsedKeyType = @"RSA1";
+		else if ([rawKeyType isEqualToString:@"(RSA)"])
+			parsedKeyType = @"RSA";
+		else if([rawKeyType isEqualToString:@"(DSA)"])
+			parsedKeyType = @"DSA";
 
-			key = [NSArray arrayWithObjects:
+		NSArray *key = [NSArray arrayWithObjects:
 					[NSString stringWithString:[[columns objectAtIndex:2] stringByAbbreviatingWithTildeInPath]],
 					[NSString stringWithString:[columns objectAtIndex:1]], 
-					[NSString stringWithString:type],
+					[NSString stringWithString:parsedKeyType],
 					nil];
-			[keys addObject:key];
-		}
+		[keys addObject:key];
 	}
 
-	if([keys count] > 0)
-	{
+	if ([keys count])
 		return [NSArray arrayWithArray:keys];
-	}
 
 	return nil;
 }
