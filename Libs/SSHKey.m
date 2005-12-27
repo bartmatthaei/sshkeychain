@@ -20,10 +20,10 @@
 		return nil;
 	}
 
-	fullpath = [[NSString stringWithString:thePath] retain];
+	fullPath = [thePath copy];
 
 	/* Read the file and determine what type we're working with. */
-	handle = [NSFileHandle fileHandleForReadingAtPath:fullpath];
+	handle = [NSFileHandle fileHandleForReadingAtPath:fullPath];
 	lines = [[[[NSString alloc] initWithData:[handle availableData] encoding:NSASCIIStringEncoding] autorelease] componentsSeparatedByString:@"\n"];
 
 	if([[lines objectAtIndex:0] isEqualToString:@"SSH PRIVATE KEY FILE FORMAT 1.1"])
@@ -36,6 +36,12 @@
 		type = 0;
 
 	return self;
+}
+
+- (void) dealloc
+{
+	[fullPath release];
+	[super dealloc];
 }
 
 /* Return the type of the private key as integer. */
@@ -70,7 +76,7 @@
 /* Return the path of the private key. */
 - (NSString *)path
 {
-	return fullpath;
+	return fullPath;
 }
 
 @end

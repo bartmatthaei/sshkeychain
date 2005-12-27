@@ -6,7 +6,7 @@
 
 @interface SSHKey : NSObject 
 {
-	NSString *fullpath;
+	NSString *fullPath;
 	int type;
 }
 
