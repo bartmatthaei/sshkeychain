@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
 			}
 		}
 
-		printf("%s\n", [passphrase cString]);
+		printf("%s\n", [passphrase UTF8String]);
 
 		[pool release];
 

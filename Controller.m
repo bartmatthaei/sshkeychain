@@ -388,7 +388,7 @@ NSString *local(NSString *theString)
 	{
 		consultKeychain = YES;
 		accountName = [[[[question substringFromIndex:[firstQuestion length]]
-						componentsSeparatedByString:@": "] objectAtIndex:0] cString];
+						componentsSeparatedByString:@": "] objectAtIndex:0] UTF8String];
 	}
 
 	else
@@ -396,7 +396,7 @@ NSString *local(NSString *theString)
 		if([question hasSuffix:@"'s password: "])
 		{
 			consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
-			accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] cString];
+			accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] UTF8String];
 		}
 
 		else
@@ -532,7 +532,7 @@ NSString *local(NSString *theString)
 				
 				GetFrontProcess(&focusSerialNumber);
 				
-				SecKeychainAddGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, [passphrase length], (const void *)[passphrase cString], nil);
+				SecKeychainAddGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, [passphrase length], (const void *)[passphrase UTF8String], nil);
 				
 				SetFrontProcess(&focusSerialNumber);
 			}
