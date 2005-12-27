@@ -17,33 +17,30 @@
 		dynamicPortForwardTable = nil;
 		delDynamicPortForwardButton = nil;
 	}
-}
-
-- (void)loadPreferences
-{
-	/* Get all tunnels. */
-	[[NSUserDefaults standardUserDefaults] synchronize];
-	tunnels = [[NSMutableArray alloc] initWithArray:
-					[[NSUserDefaults standardUserDefaults] arrayForKey:TunnelsString]];
 	
-	if(!tunnels) {
-		tunnels = [[NSMutableArray alloc] init];
-	}
-
 	tunnelIndex = -1;
-
+	
 	[tunnelTable setDataSource:self];
 	[remotePortForwardTable setDataSource:self];
 	[localPortForwardTable setDataSource:self];
 	[dynamicPortForwardTable setDataSource:self];
 }
 
+- (void)loadPreferences
+{
+	/* Get all tunnels. */
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	[tunnels release];
+	tunnels = [[[NSUserDefaults standardUserDefaults] arrayForKey:TunnelsString] mutableCopy];
+	if (!tunnels)
+		tunnels = [[NSMutableArray alloc] init];
+	
+	[self updateUI];
+}
+
 - (void)closePreferences
 {
-	[tunnelTable deselectAll:self];
-	
 	[self saveTunnelDetails];
-	[self hideTunnelDetails];
 	[self savePreferences];
 }
 
