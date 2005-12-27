@@ -10,17 +10,14 @@
 
 	path = [[NSString stringWithString:@"~/.MacOSX/environment.plist"] stringByExpandingTildeInPath];
 
-	environment = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease];
-	if(environment == nil)
-	{
-		environment = [NSMutableDictionary dictionary];
-	}
-
-	[environment retain];
+	[environment release];
+	environment = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+	if (! environment)
+		environment = [[NSMutableDictionary alloc] init];
 
 	/* Put all the environment variable names and put them into the environmentKeys array. */
-	environmentKeys = [[NSMutableArray arrayWithArray:[environment allKeys]] retain];
-	[environmentKeys retain];
+	[environmentKeys release];
+	environmentKeys = [[environment allKeys] mutableCopy];
 
 	[manageGlobalEnvironment setState:[[NSUserDefaults standardUserDefaults] boolForKey:ManageGlobalEnvironmentString]];
 
