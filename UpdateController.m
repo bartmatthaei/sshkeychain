@@ -88,7 +88,7 @@ extern NSString *local(NSString *theString);
 		}
 	}
 
-	else if(strcmp([latestVersion cString], [currentVersion cString]) > 0)
+	else if ([latestVersion compare:currentVersion] == NSOrderedDescending)
 	{
 		if((downloadURL) && (changesURL))
 		{

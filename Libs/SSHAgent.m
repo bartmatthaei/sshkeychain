@@ -182,9 +182,11 @@ extern NSString *local(NSString *theString);
 	{
 		/* Split the line with delimiter " ". */
 		columns = [[lines objectAtIndex:i] componentsSeparatedByString:@" "];
+		if ([columns count] != 3)
+			continue;
 
 		/* If 2nd column matches "SSH_AUTH_SOCK", then 3rd column is the socket path. */
-		if(([columns count] == 3) && (strcmp([[columns objectAtIndex:1] cString], "SSH_AUTH_SOCK") == 0))
+		if ([@"SSH_AUTH_SOCK" isEqualToString:[columns objectAtIndex:1]])
 		{
 			[agentSocketPathLock lock];
 			agentSocketPath = [[NSString stringWithString:[columns objectAtIndex:2]] retain];
@@ -192,7 +194,7 @@ extern NSString *local(NSString *theString);
 		}
 
 		/* If 2nd column matches "SSH_AGENT_PID", then 3rd column is the PID. */
-		if(([columns count] == 3) && (strcmp([[columns objectAtIndex:1] cString], "SSH_AGENT_PID") == 0))
+		if ([@"SSH_AGENT_PID" isEqualToString:[columns objectAtIndex:1]])
 		{
 			[thePidLock lock];
 			thePid = [[columns objectAtIndex:2] intValue];

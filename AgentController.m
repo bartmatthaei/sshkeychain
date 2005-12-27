@@ -708,7 +708,7 @@ AgentController *sharedAgentController;
 			/* Put the data from thePipe to theOutput. */
 			theOutput = [[[NSString alloc] initWithData:[[thePipe fileHandleForReading] readDataToEndOfFile] encoding:NSASCIIStringEncoding] autorelease];
 	
-			if(strstr([theOutput cString], "ScreenSaverEngine.app") != nil)
+			if ([theOutput rangeOfString:@"ScreenSaverEngine.app"].location != NSNotFound)
 			{
 				if((([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 2)
 				|| ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
