@@ -59,7 +59,11 @@ extern NSString *local(NSString *theString);
 - (void)dealloc
 {
 	currentAgent = nil;
-
+	[agentLock lock];
+	[socketPath release];
+	[agentSocketPath release];
+	[keysOnAgent release];
+	[agentLock unlock];
 	[agentLock release];
 
 	[super dealloc];
