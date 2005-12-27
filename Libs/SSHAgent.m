@@ -42,14 +42,14 @@ extern NSString *local(NSString *theString);
 
 	currentAgent = self;
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                selector:@selector(keysOnAgentStatusChange:) name:@"AgentFilled" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keysOnAgentStatusChange:) name:@"AgentFilled" object:nil];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                selector:@selector(keysOnAgentStatusChange:) name:@"AgentEmptied" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keysOnAgentStatusChange:) name:@"AgentEmptied" object:nil];
 
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                selector:@selector(keysOnAgentStatusChange:) name:@"KeysOnAgentUnknown" object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(keysOnAgentStatusChange:) name:@"KeysOnAgentUnknown" object:nil];
 	
 	socketPathLock = [[NSLock alloc] init];
 	agentSocketPathLock = [[NSLock alloc] init];
@@ -791,8 +791,8 @@ extern NSString *local(NSString *theString);
 /* This method is called when keys are added/removed from the agent. */
 - (void)keysOnAgentStatusChange:(NSNotification *)notification
 {
- 	if([[notification name] isEqualToString:@"AgentEmptied"])
- 	{
+	if([[notification name] isEqualToString:@"AgentEmptied"])
+	{
 		[keysOnAgentLock lock];
 		if(keysOnAgent)
 		{
@@ -802,10 +802,10 @@ extern NSString *local(NSString *theString);
 		keysOnAgent = nil;
 		
 		[keysOnAgentLock unlock];
- 	}
+	}
 
 	else if([[notification name] isEqualToString:@"AgentFilled"])
- 	{
+	{
 		[keysOnAgentLock lock];
 		keysOnAgent = [[[SSHAgent currentAgent] currentKeysOnAgent] retain];
 		[keysOnAgentLock unlock];

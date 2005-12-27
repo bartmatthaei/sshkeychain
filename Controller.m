@@ -81,17 +81,17 @@ NSString *local(NSString *theString)
 		]
 	];
 
-												
+
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaults];
 
 	path = [[[NSBundle mainBundle] bundlePath] stringByAppendingString:@"/Contents/Info.plist"];
 	dict = [[[NSMutableDictionary alloc] initWithContentsOfFile:path] autorelease];
-		
+
 	if(dict == nil)
 	{
 		dict = [NSMutableDictionary dictionary];
 	}
-		
+
 	if([[NSUserDefaults standardUserDefaults] integerForKey:DisplayString] == 1)
 	{
 		if((![[dict objectForKey:@"LSUIElement"] isEqualToString:@"1"]) &&
@@ -110,7 +110,7 @@ NSString *local(NSString *theString)
 			{
 				NSLog(@"DEBUG: utime on bundlePath failed.");
 				exit(0);
-			}			
+			}
 
 			theTask = [[NSTask alloc] init];
 			[theTask setLaunchPath:@"/usr/bin/open"];
@@ -249,14 +249,14 @@ NSString *local(NSString *theString)
 		/* If ~/.MacOSX/ doesn't exists, create a directory. */
 		if(![[NSFileManager defaultManager] fileExistsAtPath:macOSXDir isDirectory:&isDirectory])
 		{
-        		[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil];
+			[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil];
 		}
 
 		/* If ~/.MacOSX is a file, instead of a directory, remove it and create a directory. */
 		else if(isDirectory == NO)
 		{
 			[[NSFileManager defaultManager] removeFileAtPath:macOSXDir handler:nil];
-        		[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil];
+			[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil];
 		}
 
 		/* If ~/.MacOSX/environment.plist doesn't exists, make a new dictionary. */
@@ -363,7 +363,7 @@ NSString *local(NSString *theString)
 
 	NSString *passphrase, *firstQuestion;
 	NSMutableDictionary *dict;
-        BOOL consultKeychain = NO;
+	BOOL consultKeychain = NO;
 
 	ProcessSerialNumber focusSerialNumber;
 
@@ -386,44 +386,44 @@ NSString *local(NSString *theString)
 
 	if([question hasPrefix:firstQuestion])
 	{
-                consultKeychain = YES;
+		consultKeychain = YES;
 		accountName = [[[[question substringFromIndex:[firstQuestion length]]
-                        			componentsSeparatedByString:@": "] objectAtIndex:0] cString];
-        }
+						componentsSeparatedByString:@": "] objectAtIndex:0] cString];
+	}
 
-        else
-        {
-                if([question hasSuffix:@"'s password: "])
-                {
-                        consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
-                        accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] cString];
-                }
+	else
+	{
+		if([question hasSuffix:@"'s password: "])
+		{
+			consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
+			accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] cString];
+		}
 
-                else
-                {
-                        if([question hasPrefix:@"The authenticity of host"])
-                        {
-                                [passphraseIsRequestedLock lock];
-                                passphraseIsRequested = NO;
-                                [passphraseIsRequestedLock unlock];
+		else
+		{
+			if([question hasPrefix:@"The authenticity of host"])
+			{
+				[passphraseIsRequestedLock lock];
+				passphraseIsRequested = NO;
+				[passphraseIsRequestedLock unlock];
 
-                                if(interaction)
-                                {
-                                        int r = NSRunAlertPanel(local(@"UnknownHostKey"), question, local(@"No"), local(@"Yes"), nil);
-                                        NSString *response = ( r == NSAlertAlternateReturn) ? @"yes" : @"no";
-                                        return response;
-                                }
+				if(interaction)
+				{
+					int r = NSRunAlertPanel(local(@"UnknownHostKey"), question, local(@"No"), local(@"Yes"), nil);
+					NSString *response = ( r == NSAlertAlternateReturn) ? @"yes" : @"no";
+					return response;
+				}
 
-                                else
-                                {
-                                        return @"no";
-                                }
-                        }
-                } 
-        }
-        
-        if(consultKeychain)
-        {
+				else
+				{
+					return @"no";
+				}
+			}
+		} 
+	}
+	
+	if(consultKeychain)
+	{
 		serviceName = "SSHKeychain";
 
 		GetFrontProcess(&focusSerialNumber);

@@ -112,7 +112,7 @@ extern NSString *local(NSString *theString);
 			[self warningPanelWithTitle:local(@"NewVersion")
 				andMessage:local(@"NewVersionAvailable")];
 		}
-     	}
+	}
 
 	else if([warnings boolValue] == YES)
 	{

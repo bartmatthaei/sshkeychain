@@ -32,7 +32,7 @@
 }
 
 - (void)warningPanelWithTitle:(NSString *)title andMessage:(NSString *)message
-{       
+{
 	NSRunAlertPanel(title, message, nil, nil, nil);
 }
 

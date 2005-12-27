@@ -253,9 +253,9 @@
 	{
 		[arguments addObject:@"-g"];
 	}
-        
-        [arguments addObject:@"-o"];
-        [arguments addObject:@"PreferredAuthentications=hostbased,publickey,password,keyboard-interactive"];
+	
+	[arguments addObject:@"-o"];
+	[arguments addObject:@"PreferredAuthentications=hostbased,publickey,password,keyboard-interactive"];
 	
 	if((tunnelUser) && (![tunnelUser isEqualToString:@""]))
 	{

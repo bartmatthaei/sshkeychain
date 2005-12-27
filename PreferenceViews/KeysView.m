@@ -250,7 +250,7 @@
 	[newKeyPassphrase setEnabled:YES];
 	[newKeyGenerateButton setEnabled:YES];
 	
-        if([[NSFileManager defaultManager] isReadableFileAtPath:path] == NO)
+	if([[NSFileManager defaultManager] isReadableFileAtPath:path] == NO)
 	{
 		[newKeyProgressText setTextColor:[NSColor redColor]];
 		[newKeyProgressText setStringValue:local(@"ReadPermissionToKeyDenied")];
@@ -335,7 +335,7 @@
 /* Delegated methods from NSSavePanel. */
 
 - (NSString *)panel:(id)sender userEnteredFilename:(NSString *)filename confirmed:(BOOL)okFlag
-{       
+{	
 	if((okFlag == YES) && ([[NSFileManager defaultManager] fileExistsAtPath:[sender filename]]))
 	{
 		return nil;

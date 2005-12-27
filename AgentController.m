@@ -555,7 +555,7 @@ AgentController *sharedAgentController;
 	theTool =  [SSHTool toolWithName:@"ssh-add"];
 	[theTool setArgument:path];
 	
-        /* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
+	/* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
 	[theTool setEnvironmentVariable:@"SSH_ASKPASS" withValue:
 		[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"PassphraseRequester"]];
 
@@ -700,7 +700,7 @@ AgentController *sharedAgentController;
 			
 			[task setLaunchPath:@"/bin/ps"];
 			[task setArguments:[NSArray arrayWithObject:@"wxo command"]];
-        		[task setStandardOutput:thePipe];
+			[task setStandardOutput:thePipe];
 
 			[task launch];
 			[task waitUntilExit];
