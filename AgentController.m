@@ -608,7 +608,7 @@ AgentController *sharedAgentController;
 
 	if([agent isRunning])
 	{
-		[agentPID setIntValue:[agent pid]];
+		[agentPID setIntValue:[agent PID]];
 		[agentGlobalAuthSocket setStringValue:[agent socketPath]];
 		[agentLocalAuthSocket setStringValue:[agent agentSocketPath]];
 	}

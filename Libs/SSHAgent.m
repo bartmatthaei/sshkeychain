@@ -54,7 +54,7 @@ extern NSString *local(NSString *theString);
 	socketPathLock = [[NSLock alloc] init];
 	agentSocketPathLock = [[NSLock alloc] init];
 	keysOnAgentLock = [[NSLock alloc] init];
-	thePidLock = [[NSLock alloc] init];
+	thePIDLock = [[NSLock alloc] init];
 	
 	return self;
 }
@@ -66,67 +66,98 @@ extern NSString *local(NSString *theString);
 	[socketPathLock dealloc];
 	[agentSocketPathLock dealloc];
 	[keysOnAgentLock dealloc];
-	[thePidLock dealloc];
+	[thePIDLock dealloc];
 
 	[super dealloc];
 }
 
 /* Set the socket location for us to bind to. */
-- (BOOL)setSocketPath:(NSString *)path
+- (void)setSocketPath:(NSString *)path
 {
-	if([self isRunning] == YES)
+	if ([self isRunning])
 	{
 		NSLog(@"setSocketPath: can't change path while the agent is running.");
-		return NO;
+		return;
 	}
 
 	[socketPathLock lock];
-
-	/* We don't use the socketPath method here, since we've just locked socketPathLock. */
-	if(socketPath != nil)
-	{
-		[socketPath release];
-		socketPath = nil;
-	}
-
-	socketPath = [[NSString stringWithString:path] retain];
+	NSString *oldPath = socketPath;
+	socketPath = [path copy];
+	[oldPath release];
 	[socketPathLock unlock];
-	
-	return YES;
 }
 
 /* Get the socket path we bind to. */
 - (NSString *)socketPath
 {
-	NSString *returnString = nil;
-	
 	[socketPathLock lock];
-	
-	if(socketPath)
-	{
-		returnString = [NSString stringWithString:socketPath];
-	}
-	
+	NSString *returnString = [[socketPath copy] autorelease];
 	[socketPathLock unlock];
 
 	return returnString;
 }
 
+/* Set the socket location ssh-agent listens to. */
+- (void)setAgentSocketPath:(NSString *)path
+{
+	[agentSocketPathLock lock];
+	NSString *oldPath = agentSocketPath;
+	agentSocketPath = [path copy];
+	[oldPath release];
+	[agentSocketPathLock unlock];
+}
+
 /* Get the socket path the ssh-agent listens to. */
 - (NSString *)agentSocketPath
 {
-	NSString *returnString = nil;
-
 	[agentSocketPathLock lock];
-	
-	if(agentSocketPath)
-	{
-		returnString = [NSString stringWithString:agentSocketPath];
-	}
-	
+	NSString *returnString = [[agentSocketPath copy] autorelease];
 	[agentSocketPathLock unlock];
 
 	return returnString;
+}
+
+
+/* Return YES if the agent is (in theory) running, and NO if not. */
+- (BOOL)isRunning
+{
+	return [self PID] > 0;
+}
+
+/* Get the pid. */
+- (int)PID
+{
+	[thePIDLock lock];
+	int returnInt = thePID;
+	[thePIDLock unlock];
+
+	return returnInt;
+}
+
+- (void) setPID:(int)pid
+{
+	[thePIDLock lock];
+	thePID = pid;
+	[thePIDLock unlock];
+}
+
+/* Return the keys on agent since last notification. */
+- (NSArray *)keysOnAgent
+{
+	[keysOnAgentLock lock];
+	NSArray *returnArray = [[keysOnAgent copy] autorelease];
+	[keysOnAgentLock unlock];
+
+	return returnArray;
+}
+
+- (void) setKeysOnAgent:(NSArray *)keys
+{
+	[keysOnAgentLock lock];
+	NSArray *oldKeys = keysOnAgent;
+	keysOnAgent = [keys copy];
+	[oldKeys release];
+	[keysOnAgentLock unlock];
 }
 
 /* Start the agent. */
@@ -138,7 +169,7 @@ extern NSString *local(NSString *theString);
 	int i;
 
 	/* If the PID is > 0, the agent should (in theory) be running. */
-	if([self pid] > 0)
+	if([self PID] > 0)
 	{
 		NSLog(@"Agent is already started");
 		return NO;
@@ -194,14 +225,14 @@ extern NSString *local(NSString *theString);
 		/* If 2nd column matches "SSH_AGENT_PID", then 3rd column is the PID. */
 		if ([@"SSH_AGENT_PID" isEqualToString:[columns objectAtIndex:1]])
 		{
-			[thePidLock lock];
-			thePid = [[columns objectAtIndex:2] intValue];
-			[thePidLock unlock];
+			[thePIDLock lock];
+			thePID = [[columns objectAtIndex:2] intValue];
+			[thePIDLock unlock];
 		}
 	}
 
 	/* If the PID is > 0 but the socket path isn't filled, stop the agent and return -1. */
-	if(([self pid] > 0) && (([self agentSocketPath] == nil) || ([agentSocketPath length] < 1)))
+	if(([self PID] > 0) && (([self agentSocketPath] == nil) || ([agentSocketPath length] < 1)))
 	{
 		NSLog(@"SSHAgent start: ssh-agent didn't give the output we expected");
 		[self stop];
@@ -209,7 +240,7 @@ extern NSString *local(NSString *theString);
 	}
 
 	/* If there's no PID just return -1. */
-	if([self pid] < 1)
+	if([self PID] < 1)
 	{
 		NSLog(@"SSHAgent start: ssh-agent didn't give the output we expected");
 		return NO;
@@ -230,10 +261,10 @@ extern NSString *local(NSString *theString);
 - (BOOL)stop
 {
 	/* We can't stop something if we haven't got the pid. */
-	if([self pid] > 0)
+	if([self PID] > 0)
 	{
 		/* We don't need to check if this fails. We clean up the variables either way. */
-		kill([self pid], SIGTERM);
+		kill([self PID], SIGTERM);
 
 		[agentSocketPathLock lock];
 		[agentSocketPath release];
@@ -242,9 +273,9 @@ extern NSString *local(NSString *theString);
 
 		[self closeSockets];
 
-		[thePidLock lock];
-		thePid = 0;
-		[thePidLock unlock];
+		[thePIDLock lock];
+		thePID = 0;
+		[thePIDLock unlock];
 
 		[keysOnAgentLock lock];
 		[keysOnAgent release];
@@ -255,42 +286,6 @@ extern NSString *local(NSString *theString);
 	}
 
 	return YES;
-}
-
-/* Return YES if the agent is (in theory) running, and NO if not. */
-- (BOOL)isRunning
-{
-	if([self pid] > 0) { return YES; }
-	else { return NO; }
-}
-
-/* Get the pid. */
-- (int)pid
-{
-	int returnInt;
-
-	[thePidLock lock];
-	returnInt = thePid;
-	[thePidLock unlock];
-
-	return returnInt;
-}
-
-/* Return the keys on agent since last notification. */
-- (NSArray *)keysOnAgent
-{
-	NSArray *returnArray = nil;
-
-	[keysOnAgentLock lock];
-	
-	if(keysOnAgent)
-	{
-		returnArray = [NSArray arrayWithArray:keysOnAgent];
-	}
-	
-	[keysOnAgentLock unlock];
-
-	return returnArray;
 }
 
 /* Close our sockets. */
@@ -639,7 +634,6 @@ extern NSString *local(NSString *theString);
 	if ([[self keysOnAgent] count] < 1 && [[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString])
 	{
 		keychain = [SSHKeychain currentKeychain];
-
 		if ([keychain count] > 0)
 			[keychain addKeysToAgent];
 	}
@@ -654,7 +648,7 @@ extern NSString *local(NSString *theString);
 - (void)checkAgent
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	int currentPID = [self pid];
+	int currentPID = [self PID];
 	while (getpgid(currentPID) != -1)
 	{
 		/* The agent is still alive, so sleep for a while before checking again */
@@ -664,7 +658,7 @@ extern NSString *local(NSString *theString);
 		   In this instance a new thread would have been spawned to monitor the new agent, and the agent
 		   we were monitoring will no longer exist.  Exit early to avoid notifying the user that the old
 		   agent is gone */
-		if (currentPID != [self pid])
+		if (currentPID != [self PID])
 		{
 			[pool release];
 			return;
@@ -714,7 +708,7 @@ extern NSString *local(NSString *theString);
 	NSArray *columns, *key, *lines;
 
 	/* If the PID is < 1, we assume the agent isn't running. */
-	if([self pid] < 1)
+	if([self PID] < 1)
 	{
 		return nil;
 	}

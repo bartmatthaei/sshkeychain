@@ -2,7 +2,7 @@
 
 @interface SSHAgent : NSObject 
 {
-	int thePid;
+	int thePID;
 	int s;
 
 	NSString *socketPath;
@@ -14,12 +14,12 @@
 	NSLock *socketPathLock;
 	NSLock *agentSocketPathLock;
 	NSLock *keysOnAgentLock;
-	NSLock *thePidLock;
+	NSLock *thePIDLock;
 }
 
 + (id)currentAgent;
 
-- (BOOL)setSocketPath:(NSString *)path;
+- (void)setSocketPath:(NSString *)path;
 
 - (NSString *)socketPath;
 - (NSString *)agentSocketPath;
@@ -28,7 +28,7 @@
 - (BOOL)stop;
 
 - (BOOL)isRunning;
-- (int)pid;
+- (int)PID;
 - (NSArray *)keysOnAgent;
 
 - (void)closeSockets;
