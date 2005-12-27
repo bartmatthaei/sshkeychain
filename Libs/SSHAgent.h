@@ -3,7 +3,7 @@
 @interface SSHAgent : NSObject 
 {
 	int thePID;
-	int s;
+	int theSocket;
 
 	NSString *socketPath;
 	NSString *agentSocketPath;

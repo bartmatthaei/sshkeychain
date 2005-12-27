@@ -244,7 +244,7 @@ extern NSString *local(NSString *theString);
 /* Close our sockets. */
 - (void)closeSockets
 {
-	close(s);
+	close(theSocket);
 	if ([[self socketPath] fileSystemRepresentation])
 		unlink([[self socketPath] fileSystemRepresentation]);
 }
@@ -253,30 +253,20 @@ extern NSString *local(NSString *theString);
 - (void)handleAgentConnections
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSArray *array;
-
-	struct sockaddr_un lsa;
-	struct sockaddr_un rsa;
-
-	int i, used, allocated, a, hfd, lfd, rfd ,r;
-	socklen_t ssa;
-	int *fds;
-	fd_set rfds;
-
-	char buf[BUFSIZE];
-	
-	memset(&lsa, 0, sizeof(lsa));
-	memset(&rsa, 0, sizeof(rsa));
 
 	/* Fill the sockaddr_un structs. */
-	lsa.sun_family = AF_UNIX;
-	strncpy(lsa.sun_path, [[self socketPath] fileSystemRepresentation], sizeof(lsa.sun_path));
+	struct sockaddr_un localSocketAddress;
+	memset(&localSocketAddress, 0, sizeof(localSocketAddress));
+	localSocketAddress.sun_family = AF_UNIX;
+	strncpy(localSocketAddress.sun_path, [[self socketPath] fileSystemRepresentation], sizeof(localSocketAddress.sun_path));
 
-	rsa.sun_family = AF_UNIX;
-	strncpy(rsa.sun_path, [[self agentSocketPath] fileSystemRepresentation], sizeof(rsa.sun_path));
+	struct sockaddr_un remoteSocketAddress;
+	memset(&remoteSocketAddress, 0, sizeof(remoteSocketAddress));
+	remoteSocketAddress.sun_family = AF_UNIX;
+	strncpy(remoteSocketAddress.sun_path, [[self agentSocketPath] fileSystemRepresentation], sizeof(remoteSocketAddress.sun_path));
 
 	/* Make a socket. */
-	if((s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+	if ((theSocket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
 	{
 		NSLog(@"handleAgentConnections: socket() failed");
 		[self stop];
@@ -285,13 +275,12 @@ extern NSString *local(NSString *theString);
 	}
 
 	/* Bind it. */
-	if(bind(s, (struct sockaddr *) &lsa, sizeof(lsa)) < 0)
+	if (bind(theSocket, (struct sockaddr *) &localSocketAddress, sizeof(localSocketAddress)) < 0)
 	{
 		unlink([[self socketPath] fileSystemRepresentation]);
-		if(bind(s, (struct sockaddr *) &lsa, sizeof(lsa)) < 0)
+		if (bind(theSocket, (struct sockaddr *) &localSocketAddress, sizeof(localSocketAddress)) < 0)
 		{ 
-			NSLog(@"DEBUG: handleAgentConnections: bind() failed");
-			
+			NSLog(@"handleAgentConnections: bind() failed");
 			[self stop];
 			[pool release];
 			return;
@@ -299,21 +288,19 @@ extern NSString *local(NSString *theString);
 	}
 
 	/* Listen to it. */
-	if(listen(s, 30) < 0)
+	if (listen(theSocket, 30) < 0)
 	{
-		[NSException raise: NSInternalInconsistencyException
-			    format: @"listen() failed (%s)", strerror(errno)];
+		NSLog(@"handleAgentConnections: listen() failed");
 		[self stop];
 		[pool release];
 		return;
 	}
 	
-	allocated = 10;
-	used = 0;
-
+	int usedFileDescriptors = 0;
+	int allocatedFileDescriptors = 10;
 	/* Allocate space for 10 int's, to keep track of fd's in use. */
-	fds = malloc(sizeof(int) * allocated);
-	if(fds == nil)
+	int *allFileDescriptors = malloc(sizeof(int) * allocatedFileDescriptors);
+	if (!allFileDescriptors)
 	{
 		NSLog(@"handleAgentConnections: malloc() failed");
 		[self stop];
@@ -322,46 +309,42 @@ extern NSString *local(NSString *theString);
 	}
 
 	/* Make the listening socket nonblocking. */
-	fcntl(s, F_SETFL, O_NONBLOCK);
+	fcntl(theSocket, F_SETFL, O_NONBLOCK);
 
-	FD_ZERO(&rfds);
-	FD_SET(s, &rfds);
+	fd_set readFileDescriptors;
+	FD_ZERO(&readFileDescriptors);
+	FD_SET(theSocket, &readFileDescriptors);
 
-	hfd = s;
-
-	ssa = (socklen_t) sizeof(struct sockaddr);
+	int largestFileDescriptor = theSocket;
 
 	/* Run a select over all available fd's. */
-	while((a = select(hfd + 1, &rfds, (fd_set *) 0, (fd_set *) 0, nil)))
+	int result;
+	while ((result = select(largestFileDescriptor + 1, &readFileDescriptors, NULL, NULL, NULL)))
 	{
-		/* If a == -1 and errno == EBADF, then we're probably exiting. Stop agent to be sure and return. */
-		if((a == -1) && (errno == EBADF))
-		{
-			[self stop];
-			free(fds);
-			[pool release];
-			return;
-		}
+		if (result == -1 && errno == EINTR)
+			continue;
 
-		/* If a == -1 and errno != EINTR, the shit has probably hit the fan. Exit. */
-		if((a == -1) && (errno != EINTR))
+		/* If result == -1 and errno != EINTR, then shit has probably hit the fan. Exit. */
+		else if (result == -1)
 		{
 			NSLog(@"handleAgentConnections: select() encountered a fatal error");
 			[self stop];
-			free(fds);
+			free(allFileDescriptors);
 			[pool release];
 			return;
 		}
 
 		/* If the listening socket is part of the active set, then accept the connection and add it to the list of fd's. */
-		if((FD_ISSET(s, &rfds)) && ((lfd = accept(s, (struct sockaddr *) &lsa, &ssa)) > -1))
+		socklen_t sockaddrSize = (socklen_t) sizeof(struct sockaddr);
+		int newLocalFileDescriptor;
+		if (FD_ISSET(theSocket, &readFileDescriptors) && (newLocalFileDescriptor = accept(theSocket, (struct sockaddr *) &localSocketAddress, &sockaddrSize)) > -1)
 		{
 		
-			if(allocated < (used + 2))
+			if (allocatedFileDescriptors < usedFileDescriptors + 2)
 			{
-				fds = realloc(fds, ((sizeof(int) * allocated) * 2));
-				allocated = allocated * 2;
-				if(fds == nil)
+				allocatedFileDescriptors *= 2;
+				allFileDescriptors = realloc(allFileDescriptors, (sizeof(int) * allocatedFileDescriptors  * 2));
+				if (!allFileDescriptors)
 				{
 					NSLog(@"handleAgentConnections: realloc() failed");
 					[self stop];
@@ -371,177 +354,142 @@ extern NSString *local(NSString *theString);
 			}
 
 			/* Add the accepted socket to the list. */
-			fds[used] = lfd;
-			used++;
+			allFileDescriptors[usedFileDescriptors++] = newLocalFileDescriptor;
 
 			/* Create a socket. */
-			if((rfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+			int newRemoteFileDescriptor;
+			if ((newRemoteFileDescriptor = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
 			{
 				NSLog(@"handleAgentConnections: Socket creation failed");
-				fds[used - 1] = -1;
-				used--;
-				close(lfd);
+				allFileDescriptors[--usedFileDescriptors] = -1;
+				close(newLocalFileDescriptor);
 				[self stop];
-				free(fds);
+				free(allFileDescriptors);
 				[pool release];
 				return;
 			}
 
 			/* Connect to the ssh-agent. */
-			else if(connect(rfd, (struct sockaddr *) &rsa, sizeof(rsa)) < 0)
+			else if (connect(newRemoteFileDescriptor, (struct sockaddr *) &remoteSocketAddress, sizeof(remoteSocketAddress)) < 0)
 			{
 				NSLog(@"handleAgentConnections: Connecting to ssh-agent failed");
-				fds[used - 1] = -1;
-				used--;
-				close(lfd);
+				allFileDescriptors[--usedFileDescriptors] = -1;
+				close(newLocalFileDescriptor);
+				close(newRemoteFileDescriptor);
 				[self stop];
-				free(fds);
+				free(allFileDescriptors);
 				[pool release];
 				return;
 			}
 
-			/* Add it to the list. */
-			else
-			{
-				fds[used] = rfd;
-				used++;
-			}
+			allFileDescriptors[usedFileDescriptors++] = newRemoteFileDescriptor;
 		}
 
-		/* If we got here, the active fd's are part of a pipe between us and the real ssh-agent. */
-		else
+		/* Check activity of each fd in the list. */
+		int i;
+		for(i = 0; i < usedFileDescriptors; i++)
 		{
-			/* Check activity of each fd in the list. */
-			for(i = 0; i < used; i++)
+			if (!FD_ISSET(allFileDescriptors[i], &readFileDescriptors))
+				continue;
+
+			char readBuffer[BUFSIZE];
+			
+			/* If i is even, forward it's traffic to the agent. */
+			if ((i & 1) == 0 && allFileDescriptors[i+1] > 0)
 			{
-				if(FD_ISSET(fds[i], &rfds))
+				int len = read(allFileDescriptors[i], readBuffer, BUFSIZE);
+
+				/* If len < 1, the connection is closed. Close all fd's of the pipe. */
+				if (len < 1)
 				{
-					/* If i is even, forward it's traffic to the agent. */
-					if(((i & 1) == 0) && (fds[i+1] > 0))
-					{
-						r = read(fds[i], buf, BUFSIZE);
-
-						/* If r < 1, the connection is closed. Close all fd's of the pipe. */
-						if(r < 1)
-						{
-							close(fds[i]);
-							close(fds[i+1]);
-							fds[i] = fds[used-2];
-							fds[i+1] = fds[used-1];
-							used = used - 2;
-						}
-
-						else
-						{
-							/* If read byte is \1 or \11, and there are no keys on the chain, run noKeysForInput:withObject:. */
-							if(((r == 1) && ((buf[0] == 11) || (buf[0] == 1))) || ((r == 5) && ((buf[4] == 11) || (buf[4] == 1)))) 
-							{
-								array = [NSArray arrayWithObjects:[NSNumber numberWithInt:fds[i+1]], 
-									[NSString stringWithCString:buf length:r], [NSNumber numberWithInt:r],
-									[NSNumber numberWithInt:fds[i]], nil];
-
-								[NSThread detachNewThreadSelector:@selector(inputFromClient:) toTarget:self withObject:array]; 
-							}
-
-							/* If read byte is \9 or \19, remove all keys from the agent. (\9 and \19 is a remove_all_keys request) */
-							else if((((r == 1) && ((buf[0] == 9) || (buf[0] == 19))) || ((r ==5) && ((buf[4] == 9) || (buf[4] == 19))))
-								 && ([[self keysOnAgent] count] > 0))
-							{
-								[[SSHKeychain currentKeychain] removeKeysFromAgent];
-								write(fds[i+1], buf, r);
-							}
-
-							/* If the first byte is \8 or \18, a key is removed. */
-							else if(((buf[0] == 8) || (buf[0] == 18)) && ([[self keysOnAgent] count] > 0))
-							{
-								write(fds[i+1], buf, r);
-
-								[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
-								[[NSNotificationCenter defaultCenter]  postNotificationName:@"KeysOnAgentUnknown" object:nil];
-							}
-
-							/* If the first byte is \7 or \17, a key is added. */
-							else if((buf[0] == 7) || (buf[0] == 17))
-							{
-								write(fds[i+1], buf, r);
-
-								[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
-								[[NSNotificationCenter defaultCenter]  postNotificationName:@"KeysOnAgentUnknown" object:nil];
-							}
-
-							else
-							{
-								write(fds[i+1], buf, r);
-							}
-						}
-					}
-
-					/* If i is uneven, forward it's traffic to the client. */
-					else if((i > 0) && (fds[i-1] > 0))
-					{
-						r = read(fds[i], buf, BUFSIZE);
-
-						/* If r < 1, the connection is closed. Close all fd's of the pipe. */
-						if(r < 1)
-						{
-							close(fds[i]);
-							close(fds[i-1]);
-							fds[i] = fds[used-1];
-							fds[i-1] = fds[used-2];
-							used = used - 2;
-						}
-
-						else
-						{
-							write(fds[i-1], buf, r);
-						}
-					}
+					close(allFileDescriptors[i]);
+					close(allFileDescriptors[i+1]);
+					allFileDescriptors[i] = allFileDescriptors[usedFileDescriptors-2];
+					allFileDescriptors[i+1] = allFileDescriptors[usedFileDescriptors-1];
+					usedFileDescriptors -= 2;
+					continue;
 				}
+				
+				/* If read byte is \1 or \11, and there are no keys on the chain, run inputFromClient: */
+				if ((len == 1 && (readBuffer[0] == 11 || readBuffer[0] == 1)) || (len == 5 && (readBuffer[4] == 11 || readBuffer[4] == 1)))
+				{
+					NSArray *array = [NSArray arrayWithObjects:[NSNumber numberWithInt:allFileDescriptors[i+1]], 
+								[NSString stringWithCString:readBuffer length:len], [NSNumber numberWithInt:len],
+								[NSNumber numberWithInt:allFileDescriptors[i]], nil];
+
+					[NSThread detachNewThreadSelector:@selector(inputFromClient:) toTarget:self withObject:array]; 
+					continue;
+				}
+
+				write(allFileDescriptors[i+1], readBuffer, len);
+
+				/* If read byte is \9 or \19, remove all keys from the agent. (\9 and \19 is a remove_all_keys request) */
+				if (((len == 1 && (readBuffer[0] == 9 || readBuffer[0] == 19)) || (len == 5 && (readBuffer[4] == 9 || readBuffer[4] == 19)))
+					 && [[self keysOnAgent] count] > 0)
+				{
+					[[SSHKeychain currentKeychain] removeKeysFromAgent];
+				}
+
+				/* If the first byte is \8 or \18, a key is removed ...
+				   or if the first byte is \7 or \17, a key is added. */
+				else if (((readBuffer[0] == 8 || readBuffer[0] == 18) && [[self keysOnAgent] count] > 0) ||
+					 (readBuffer[0] == 7 || readBuffer[0] == 17))
+				{
+					[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
+					[[NSNotificationCenter defaultCenter]  postNotificationName:@"KeysOnAgentUnknown" object:nil];
+				}
+			}
+
+			/* If i is uneven, forward it's traffic to the client. */
+			else if (allFileDescriptors[i-1] > 0)
+			{
+				int len = read(allFileDescriptors[i], readBuffer, BUFSIZE);
+
+				/* If r < 1, the connection is closed. Close all fd's of the pipe. */
+				if (len < 1)
+				{
+					close(allFileDescriptors[i]);
+					close(allFileDescriptors[i-1]);
+					allFileDescriptors[i] = allFileDescriptors[usedFileDescriptors-1];
+					allFileDescriptors[i-1] = allFileDescriptors[usedFileDescriptors-2];
+					usedFileDescriptors -= 2;
+					continue;
+				}
+				write(allFileDescriptors[i-1], readBuffer, len);
 			}
 		}
 	
 
 		/* Refill the fd_set. */
-		FD_ZERO(&rfds);
-		FD_SET(s, &rfds);
-		hfd = s;
+		FD_ZERO(&readFileDescriptors);
+		FD_SET(theSocket, &readFileDescriptors);
+		largestFileDescriptor = theSocket;
 		
-		for(i = 0; i < used; i++)
+		for (i = 0; i < usedFileDescriptors; i++)
 		{
-			FD_SET(fds[i], &rfds);
-			if(fds[i] > hfd) { hfd = fds[i]; }
+			FD_SET(allFileDescriptors[i], &readFileDescriptors);
+			if (allFileDescriptors[i] > largestFileDescriptor)
+				largestFileDescriptor = allFileDescriptors[i];
 		}
 	}
 
-	free(fds);
+	free(allFileDescriptors);
 	[pool release];
 }
 
 /* When there's a request from a client, this method is called. */
 - (void)inputFromClient:(id)object
 {
-	NSAutoreleasePool *pool;
-	SSHKeychain *keychain;
-	NSMutableDictionary *dict;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
-	int fd, len, src;
-	const char *buf;
+	int destinationFileDescriptor = [[object objectAtIndex:0] intValue];
+	const char *readBuffer = [[object objectAtIndex:1] cString];
+	int len = [[object objectAtIndex:2] intValue];
 
-	SInt32 error;
-	CFUserNotificationRef notification;
-	CFOptionFlags response;
-
-	pool = [[NSAutoreleasePool alloc] init];
-
-	fd = [[object objectAtIndex:0] intValue];
-	buf = [[object objectAtIndex:1] cString];
-	len = [[object objectAtIndex:2] intValue];
-	src = [[object objectAtIndex:3] intValue];
-
-	if([[NSUserDefaults standardUserDefaults] boolForKey:AskForConfirmationString]) 
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:AskForConfirmationString]) 
 	{
 		/* Dictionary for the panel. */
-		dict = [NSMutableDictionary dictionary];
+		NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 		
 		[dict setObject:local(@"ConfirmationPanelTitle") forKey:(NSString *)kCFUserNotificationAlertHeaderKey];
 		[dict setObject:local(@"ConfirmationPanelText") forKey:(NSString *)kCFUserNotificationAlertMessageKey];
@@ -553,25 +501,28 @@ extern NSString *local(NSString *theString);
 		[dict setObject:local(@"No") forKey:(NSString *)kCFUserNotificationAlternateButtonTitleKey];
 		
 		/* Display a passphrase request notification. */
-		notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
+		SInt32 error;
+		CFUserNotificationRef notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
 		
-		/* If we couldn't receive a response, return nil. */
-		if((error) || (CFUserNotificationReceiveResponse(notification, 0, &response))
-				|| ((response & 0x3) != kCFUserNotificationDefaultResponse))
+		/* If we couldn't receive a response, return. */
+		CFOptionFlags response;
+		if (error || CFUserNotificationReceiveResponse(notification, 0, &response) || (response & 0x3) != kCFUserNotificationDefaultResponse)
 		{
-			if(((len == 1) && (buf[0] == 1)) || ((len == 5) && (buf[4] == 1))) 
+			int sourceFileDescriptor = [[object objectAtIndex:3] intValue];
+
+			if ((len == 1 && readBuffer[0] == 1) || (len == 5 && readBuffer[4] == 1))
 			{
 				/* Return \2. */
-				write(src, "\0\0\0\5\2\0\0\0\0", 9);
+				write(sourceFileDescriptor, "\0\0\0\5\2\0\0\0\0", 9);
 
 				[pool release];
 				return;
 			}
 		
-			if(((len == 1) && (buf[0] == 11)) || ((len == 5) && (buf[4] == 11))) 
+			else if ((len == 1 && readBuffer[0] == 11) || (len == 5 && readBuffer[4] == 11))
 			{
 				/* Return \12. */
-				write(src, "\0\0\0\5\f\0\0\0\0", 9);
+				write(sourceFileDescriptor, "\0\0\0\5\f\0\0\0\0", 9);
 
 				[pool release];
 				return;
@@ -581,14 +532,13 @@ extern NSString *local(NSString *theString);
 
 	if ([[self keysOnAgent] count] < 1 && [[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString])
 	{
-		keychain = [SSHKeychain currentKeychain];
+		SSHKeychain *keychain = [SSHKeychain currentKeychain];
 		if ([keychain count] > 0)
 			[keychain addKeysToAgent];
 	}
 
 	/* Write the buffer to the agent. */
-	write(fd, buf, len);
-
+	write(destinationFileDescriptor, readBuffer, len);
 	[pool release];
 }
 
