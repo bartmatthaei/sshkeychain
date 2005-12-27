@@ -769,7 +769,7 @@ AgentController *sharedAgentController;
 
 	else if(([[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory]) && (!isDirectory))
 	{
-		if(access([dir cString], W_OK) != 0)
+		if(access([dir fileSystemRepresentation], W_OK) != 0)
 		{
 			errorString = [NSString stringWithFormat:@"%@ (%@). %@.", local(@"Can'tWriteSocketInDirectory"), dir, local(@"PleaseCheckPermissions")];
 

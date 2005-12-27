@@ -46,7 +46,7 @@
 			
 			/* Change the bundle's modification time to let LaunchServices know we've
 			 * changed something. */
-			if(utime([[[NSBundle mainBundle] bundlePath] cString], nil) == -1)
+			if(utime([[[NSBundle mainBundle] bundlePath] fileSystemRepresentation], nil) == -1)
 			{
 				NSLog(@"DEBUG: utime on bundlePath failed.");
 			}

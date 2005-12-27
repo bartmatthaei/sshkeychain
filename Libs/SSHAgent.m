@@ -297,10 +297,8 @@ extern NSString *local(NSString *theString);
 - (void)closeSockets
 {
 	close(s);
-	if([[self socketPath] cString] != nil)
-	{
-		unlink([[socketPath self] cString]);
-	}
+	if ([[self socketPath] fileSystemRepresentation])
+		unlink([[self socketPath] fileSystemRepresentation]);
 }
 
 /* Handle connections to our socket. */
@@ -324,10 +322,10 @@ extern NSString *local(NSString *theString);
 
 	/* Fill the sockaddr_un structs. */
 	lsa.sun_family = AF_UNIX;
-	strncpy(lsa.sun_path, [[self socketPath] cString], sizeof(lsa.sun_path));
+	strncpy(lsa.sun_path, [[self socketPath] fileSystemRepresentation], sizeof(lsa.sun_path));
 
 	rsa.sun_family = AF_UNIX;
-	strncpy(rsa.sun_path, [[self agentSocketPath] cString], sizeof(rsa.sun_path));
+	strncpy(rsa.sun_path, [[self agentSocketPath] fileSystemRepresentation], sizeof(rsa.sun_path));
 
 	/* Make a socket. */
 	if((s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
@@ -341,7 +339,7 @@ extern NSString *local(NSString *theString);
 	/* Bind it. */
 	if(bind(s, (struct sockaddr *) &lsa, sizeof(lsa)) < 0)
 	{
-		unlink([[self socketPath] cString]);
+		unlink([[self socketPath] fileSystemRepresentation]);
 		if(bind(s, (struct sockaddr *) &lsa, sizeof(lsa)) < 0)
 		{ 
 			NSLog(@"DEBUG: handleAgentConnections: bind() failed");
