@@ -748,7 +748,7 @@ extern NSString *local(NSString *theString);
 	/* Split the lines with delimiter "\n". */
 	lines = [theOutput componentsSeparatedByString:@"\n"];
 
-	keys = [[NSMutableArray array] retain];
+	keys = [NSMutableArray array];
 
 	for(i=0; i < [lines count]; i++)
 	{
@@ -766,12 +766,11 @@ extern NSString *local(NSString *theString);
 			else
 				type = @"?";
 
-			key = [[NSArray arrayWithObjects:
+			key = [NSArray arrayWithObjects:
 					[NSString stringWithString:[[columns objectAtIndex:2] stringByAbbreviatingWithTildeInPath]],
 					[NSString stringWithString:[columns objectAtIndex:1]], 
 					[NSString stringWithString:type],
-					nil] retain];
-
+					nil];
 			[keys addObject:key];
 		}
 	}
