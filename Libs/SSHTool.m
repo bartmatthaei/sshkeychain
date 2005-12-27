@@ -78,6 +78,9 @@
 		return;
 
 	NSMutableDictionary *env = [[task environment] mutableCopy];
+	if (! env)
+		env = [[NSMutableDictionary alloc] init];
+
 	[env setObject:value forKey:variable];
 	[task setEnvironment:env];
 	[env release];
