@@ -10,11 +10,7 @@
 
 	NSArray *keysOnAgent;
 
-	/* Locks */
-	NSLock *socketPathLock;
-	NSLock *agentSocketPathLock;
-	NSLock *keysOnAgentLock;
-	NSLock *thePIDLock;
+	NSLock *agentLock;
 }
 
 + (id)currentAgent;

@@ -51,10 +51,7 @@ extern NSString *local(NSString *theString);
 	[[NSNotificationCenter defaultCenter] addObserver:self
 		selector:@selector(keysOnAgentStatusChange:) name:@"KeysOnAgentUnknown" object:nil];
 	
-	socketPathLock = [[NSLock alloc] init];
-	agentSocketPathLock = [[NSLock alloc] init];
-	keysOnAgentLock = [[NSLock alloc] init];
-	thePIDLock = [[NSLock alloc] init];
+	agentLock = [[NSLock alloc] init];
 	
 	return self;
 }
@@ -63,10 +60,7 @@ extern NSString *local(NSString *theString);
 {
 	currentAgent = nil;
 
-	[socketPathLock dealloc];
-	[agentSocketPathLock dealloc];
-	[keysOnAgentLock dealloc];
-	[thePIDLock dealloc];
+	[agentLock release];
 
 	[super dealloc];
 }
@@ -80,19 +74,19 @@ extern NSString *local(NSString *theString);
 		return;
 	}
 
-	[socketPathLock lock];
+	[agentLock lock];
 	NSString *oldPath = socketPath;
 	socketPath = [path copy];
 	[oldPath release];
-	[socketPathLock unlock];
+	[agentLock unlock];
 }
 
 /* Get the socket path we bind to. */
 - (NSString *)socketPath
 {
-	[socketPathLock lock];
+	[agentLock lock];
 	NSString *returnString = [[socketPath copy] autorelease];
-	[socketPathLock unlock];
+	[agentLock unlock];
 
 	return returnString;
 }
@@ -100,19 +94,19 @@ extern NSString *local(NSString *theString);
 /* Set the socket location ssh-agent listens to. */
 - (void)setAgentSocketPath:(NSString *)path
 {
-	[agentSocketPathLock lock];
+	[agentLock lock];
 	NSString *oldPath = agentSocketPath;
 	agentSocketPath = [path copy];
 	[oldPath release];
-	[agentSocketPathLock unlock];
+	[agentLock unlock];
 }
 
 /* Get the socket path the ssh-agent listens to. */
 - (NSString *)agentSocketPath
 {
-	[agentSocketPathLock lock];
+	[agentLock lock];
 	NSString *returnString = [[agentSocketPath copy] autorelease];
-	[agentSocketPathLock unlock];
+	[agentLock unlock];
 
 	return returnString;
 }
@@ -127,37 +121,37 @@ extern NSString *local(NSString *theString);
 /* Get the pid. */
 - (int)PID
 {
-	[thePIDLock lock];
+	[agentLock lock];
 	int returnInt = thePID;
-	[thePIDLock unlock];
+	[agentLock unlock];
 
 	return returnInt;
 }
 
 - (void) setPID:(int)pid
 {
-	[thePIDLock lock];
+	[agentLock lock];
 	thePID = pid;
-	[thePIDLock unlock];
+	[agentLock unlock];
 }
 
 /* Return the keys on agent since last notification. */
 - (NSArray *)keysOnAgent
 {
-	[keysOnAgentLock lock];
+	[agentLock lock];
 	NSArray *returnArray = [[keysOnAgent copy] autorelease];
-	[keysOnAgentLock unlock];
+	[agentLock unlock];
 
 	return returnArray;
 }
 
 - (void) setKeysOnAgent:(NSArray *)keys
 {
-	[keysOnAgentLock lock];
+	[agentLock lock];
 	NSArray *oldKeys = keysOnAgent;
 	keysOnAgent = [keys copy];
 	[oldKeys release];
-	[keysOnAgentLock unlock];
+	[agentLock unlock];
 }
 
 /* Start the agent. */
