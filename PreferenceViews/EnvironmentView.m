@@ -168,13 +168,8 @@
 
 	[environment writeToFile:path atomically:YES];
 	
-	if(environmentKeys)
-	{
-		[environmentKeys release];
-	}
-
-	environmentKeys = [[NSMutableArray arrayWithArray:[environment allKeys]] retain];
-	[environmentKeys retain];
+	[environmentKeys release];
+	environmentKeys = [[environment allKeys] mutableCopy];
 
 	[self updateUI];
 }
