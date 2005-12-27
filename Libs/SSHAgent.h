@@ -10,13 +10,10 @@
 
 	NSArray *keysOnAgent;
 
-	BOOL openPanel;
-
 	/* Locks */
 	NSLock *socketPathLock;
 	NSLock *agentSocketPathLock;
 	NSLock *keysOnAgentLock;
-	NSLock *openPanelLock;
 	NSLock *thePidLock;
 }
 

@@ -54,7 +54,6 @@ extern NSString *local(NSString *theString);
 	socketPathLock = [[NSLock alloc] init];
 	agentSocketPathLock = [[NSLock alloc] init];
 	keysOnAgentLock = [[NSLock alloc] init];
-	openPanelLock = [[NSLock alloc] init];
 	thePidLock = [[NSLock alloc] init];
 	
 	return self;
@@ -67,7 +66,6 @@ extern NSString *local(NSString *theString);
 	[socketPathLock dealloc];
 	[agentSocketPathLock dealloc];
 	[keysOnAgentLock dealloc];
-	[openPanelLock dealloc];
 	[thePidLock dealloc];
 
 	[super dealloc];
@@ -638,23 +636,12 @@ extern NSString *local(NSString *theString);
 		}
 	}
 
-	if(([[self keysOnAgent] count] < 1) && ([[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString])) 
+	if ([[self keysOnAgent] count] < 1 && [[NSUserDefaults standardUserDefaults] boolForKey:AddKeysOnConnectionString])
 	{
-
 		keychain = [SSHKeychain currentKeychain];
 
-		if((keychain != nil) && ([keychain count] > 0))
-		{
-			[openPanelLock lock];
-			openPanel = YES;
-			[openPanelLock unlock];
-	
+		if ([keychain count] > 0)
 			[keychain addKeysToAgent];
-
-			[openPanelLock lock];
-			openPanel = NO;
-			[openPanelLock unlock];
-		}		
 	}
 
 	/* Write the buffer to the agent. */
