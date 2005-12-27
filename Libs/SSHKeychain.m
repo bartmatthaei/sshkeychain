@@ -148,7 +148,7 @@ SSHKeychain *currentKeychain;
 
 	[keychainLock lock];
 
-	if((nr < 0) || (nr > [keychain count]))
+	if (nr < 0 || nr >= [keychain count])
 	{
 		[keychainLock unlock];
 		return nil;
