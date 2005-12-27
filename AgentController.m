@@ -196,8 +196,6 @@ AgentController *sharedAgentController;
 
 - (void)appleKeychainNotification:(NSNotification *)notification
 {
-	SecKeychainStatus status;
-	
 	if(([[notification name] isEqualToString:@"AppleKeychainLocked"])
 	&& (([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 2)
 	|| ([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 4)))

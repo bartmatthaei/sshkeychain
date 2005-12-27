@@ -322,7 +322,6 @@ NSString *local(NSString *theString)
 - (IBAction)toggleAppleKeychainLock:(id)sender
 {
 	ProcessSerialNumber focusSerialNumber;
-	BOOL giveFocusBack = NO;
 
 	[appleKeychainUnlockedLock lock];
 	if(appleKeychainUnlocked == YES)
@@ -347,11 +346,11 @@ NSString *local(NSString *theString)
 - (NSString *)askPassphrase:(NSString *)question withInteraction:(BOOL)interaction
 {
 	char *serviceName;
-	const char *accountName;
+	const char *accountName = nil;
 	char *kcPassword;
 	UInt32 passwordLength;
 	SecKeychainStatus keychainStatus;
-	OSStatus returnStatus;
+	OSStatus returnStatus = noErr;
 	SecKeychainRef keychain;
 
 	CFArrayRef searchList;
@@ -372,7 +371,7 @@ NSString *local(NSString *theString)
 	int i;
 		
 	[passphraseIsRequestedLock lock];
-	if(passphraseIsRequested == YES)
+	if (passphraseIsRequested)
 	{
 		[passphraseIsRequestedLock unlock];
 		return nil;
@@ -384,43 +383,32 @@ NSString *local(NSString *theString)
 
 	firstQuestion = @"Enter passphrase for ";
 
-	if([question hasPrefix:firstQuestion])
+	if ([question hasPrefix:firstQuestion])
 	{
 		consultKeychain = YES;
 		accountName = [[[[question substringFromIndex:[firstQuestion length]]
 						componentsSeparatedByString:@": "] objectAtIndex:0] UTF8String];
 	}
 
-	else
+	else if ([question hasSuffix:@"'s password: "])
 	{
-		if([question hasSuffix:@"'s password: "])
-		{
-			consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
-			accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] UTF8String];
-		}
-
-		else
-		{
-			if([question hasPrefix:@"The authenticity of host"])
-			{
-				[passphraseIsRequestedLock lock];
-				passphraseIsRequested = NO;
-				[passphraseIsRequestedLock unlock];
-
-				if(interaction)
-				{
-					int r = NSRunAlertPanel(local(@"UnknownHostKey"), question, local(@"No"), local(@"Yes"), nil);
-					NSString *response = ( r == NSAlertAlternateReturn) ? @"yes" : @"no";
-					return response;
-				}
-
-				else
-				{
-					return @"no";
-				}
-			}
-		} 
+		consultKeychain = [[NSUserDefaults standardUserDefaults] boolForKey:AddInteractivePasswordString];
+		accountName = [[[question componentsSeparatedByString:@"'s"] objectAtIndex:0] UTF8String];
 	}
+
+	else if ([question hasPrefix:@"The authenticity of host"])
+	{
+		[passphraseIsRequestedLock lock];
+		passphraseIsRequested = NO;
+		[passphraseIsRequestedLock unlock];
+		
+		if (! interaction)
+			return @"no";
+		
+		int r = NSRunAlertPanel(local(@"UnknownHostKey"), question, local(@"No"), local(@"Yes"), nil);
+		NSString *response = ( r == NSAlertAlternateReturn) ? @"yes" : @"no";
+		return response;
+	} 
 	
 	if(consultKeychain)
 	{
