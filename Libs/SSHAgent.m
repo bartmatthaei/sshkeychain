@@ -392,6 +392,7 @@ extern NSString *local(NSString *theString);
 		if((a == -1) && (errno == EBADF))
 		{
 			[self stop];
+			free(fds);
 			[pool release];
 			return;
 		}
@@ -401,6 +402,7 @@ extern NSString *local(NSString *theString);
 		{
 			NSLog(@"handleAgentConnections: select() encountered a fatal error");
 			[self stop];
+			free(fds);
 			[pool release];
 			return;
 		}
@@ -434,6 +436,7 @@ extern NSString *local(NSString *theString);
 				used--;
 				close(lfd);
 				[self stop];
+				free(fds);
 				[pool release];
 				return;
 			}
@@ -446,6 +449,7 @@ extern NSString *local(NSString *theString);
 				used--;
 				close(lfd);
 				[self stop];
+				free(fds);
 				[pool release];
 				return;
 			}
@@ -567,7 +571,8 @@ extern NSString *local(NSString *theString);
 			if(fds[i] > hfd) { hfd = fds[i]; }
 		}
 	}
-					
+
+	free(fds);
 	[pool release];
 }
 
