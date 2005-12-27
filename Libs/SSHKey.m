@@ -10,30 +10,30 @@
 	return [[[self alloc] initWithPath:thePath] autorelease];
 }
 
++ (SSHKeyType) typeOfKeyAtPath:(NSString *)thePath
+{
+	/* Read the file and determine what type we're working with. */
+	NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:thePath];
+	NSArray *lines = [[[[NSString alloc] initWithData:[handle availableData] encoding:NSUTF8StringEncoding] autorelease] componentsSeparatedByString:@"\n"];
+
+	if ([[lines objectAtIndex:0] isEqualToString:@"SSH PRIVATE KEY FILE FORMAT 1.1"])
+		return SSH_KEYTYPE_RSA1;
+	else if ([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN RSA PRIVATE KEY-----"])
+		return SSH_KEYTYPE_RSA;
+	else if ([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN DSA PRIVATE KEY-----"])
+		return SSH_KEYTYPE_DSA;
+	else
+		return SSH_KEYTYPE_UNKNOWN;
+}
+
 - (id)initWithPath:(NSString *)thePath
 {
-	NSFileHandle *handle;
-	NSArray *lines;
 
-	if((self = [super init]) == nil)
-	{
+	if (!(self = [super init]))
 		return nil;
-	}
 
 	fullPath = [thePath copy];
-
-	/* Read the file and determine what type we're working with. */
-	handle = [NSFileHandle fileHandleForReadingAtPath:fullPath];
-	lines = [[[[NSString alloc] initWithData:[handle availableData] encoding:NSASCIIStringEncoding] autorelease] componentsSeparatedByString:@"\n"];
-
-	if([[lines objectAtIndex:0] isEqualToString:@"SSH PRIVATE KEY FILE FORMAT 1.1"])
-		type = RSA1;
-	else if([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN RSA PRIVATE KEY-----"])
-		type = RSA;
-	else if([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN DSA PRIVATE KEY-----"])
-		type = DSA;
-	else
-		type = 0;
+	type = [[self class] typeOfKeyAtPath:thePath];
 
 	return self;
 }
@@ -45,7 +45,7 @@
 }
 
 /* Return the type of the private key as integer. */
-- (int)type
+- (SSHKeyType)type
 {
 	return type;
 }
@@ -53,30 +53,24 @@
 /* Return the type of the private key as NSString. */
 - (NSString *)typeAsString
 {
-	if(type == RSA1) {
-		return @"RSA1";
-	}
-
-	else if(type == RSA)
+	switch (type)
 	{
-		return @"RSA";
+		case SSH_KEYTYPE_RSA1:
+			return @"RSA1";
+		case SSH_KEYTYPE_RSA:
+			return @"RSA";
+		case SSH_KEYTYPE_DSA:
+			return @"DSA";
+		case SSH_KEYTYPE_UNKNOWN:
+			return nil;
 	}
-
-	else if(type == DSA)
-	{
-		return @"DSA";
-	}
-
-	else
-	{
-		return nil;
-	}
+	return nil;
 }
 
 /* Return the path of the private key. */
 - (NSString *)path
 {
-	return fullPath;
+	return [[fullPath copy] autorelease];
 }
 
 @end

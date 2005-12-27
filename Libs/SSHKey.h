@@ -1,18 +1,22 @@
 #import <Foundation/Foundation.h>
 
-#define RSA1 1
-#define RSA 2
-#define DSA 3
+typedef enum
+{
+	SSH_KEYTYPE_UNKNOWN = 0,
+	SSH_KEYTYPE_RSA1 = 1,
+	SSH_KEYTYPE_RSA = 2,
+	SSH_KEYTYPE_DSA = 3
+} SSHKeyType;
 
 @interface SSHKey : NSObject 
 {
 	NSString *fullPath;
-	int type;
+	SSHKeyType type;
 }
 
 + (id)keyWithPath:(NSString *)fullpath;
 
-- (int)type;
+- (SSHKeyType)type;
 - (NSString *)typeAsString;
 - (NSString *)path;
 
