@@ -666,52 +666,54 @@ extern NSString *local(NSString *theString);
 /* This method is called in a separate thread. It periodically checks if the ssh-agent is still alive. */
 - (void)checkAgent
 {
-	NSAutoreleasePool *pool;
-	NSMutableDictionary *dict;
-	
-	pool = [[NSAutoreleasePool alloc] init];
-
-	SInt32 error;
-	CFUserNotificationRef notification;
-	CFOptionFlags response;
-	
-	while(true)
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	int currentPID = [self pid];
+	while (getpgid(currentPID) != -1)
 	{
-		if(getpgid([self pid]) == -1)
-		{
-			[self stop];
-
-			/* Dictionary for the panel. */
-			dict = [NSMutableDictionary dictionary];
-		
-			[dict setObject:local(@"AgentTerminatedPanelTitle") forKey:(NSString *)kCFUserNotificationAlertHeaderKey];
-			[dict setObject:local(@"AgentTerminatedPanelText") forKey:(NSString *)kCFUserNotificationAlertMessageKey];
-		
-			[dict setObject:[NSURL fileURLWithPath:[[[NSBundle mainBundle] resourcePath]
-						stringByAppendingString:@"/SSHKeychain.icns"]] forKey:(NSString *)kCFUserNotificationIconURLKey];
-		
-			[dict setObject:local(@"Yes") forKey:(NSString *)kCFUserNotificationDefaultButtonTitleKey];
-			[dict setObject:local(@"No") forKey:(NSString *)kCFUserNotificationAlternateButtonTitleKey];
-		
-			/* Display a passphrase request notification. */
-			notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
-		
-			/* If we couldn't receive a response, return nil. */
-			if((error) || (CFUserNotificationReceiveResponse(notification, 0, &response)))
-			{
-				return;
-			}
-		
-			/* If OK was pressed, add the keys. */
-			if((response & 0x3) == kCFUserNotificationDefaultResponse)
-			{
-				[self start];
-			}
-
-			break;
-		}
+		/* The agent is still alive, so sleep for a while before checking again */
 		sleep(30);
+		
+		/* If the PID has changed while we were sleeping then the agent has been stopped and restarted.
+		   In this instance a new thread would have been spawned to monitor the new agent, and the agent
+		   we were monitoring will no longer exist.  Exit early to avoid notifying the user that the old
+		   agent is gone */
+		if (currentPID != [self pid])
+		{
+			[pool release];
+			return;
+		}
 	}
+		
+	[self stop];
+
+	/* Dictionary for the panel. */
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+
+	[dict setObject:local(@"AgentTerminatedPanelTitle") forKey:(NSString *)kCFUserNotificationAlertHeaderKey];
+	[dict setObject:local(@"AgentTerminatedPanelText") forKey:(NSString *)kCFUserNotificationAlertMessageKey];
+
+	[dict setObject:[NSURL fileURLWithPath:[[[NSBundle mainBundle] resourcePath]
+				stringByAppendingString:@"/SSHKeychain.icns"]] forKey:(NSString *)kCFUserNotificationIconURLKey];
+
+	[dict setObject:local(@"Yes") forKey:(NSString *)kCFUserNotificationDefaultButtonTitleKey];
+	[dict setObject:local(@"No") forKey:(NSString *)kCFUserNotificationAlternateButtonTitleKey];
+
+	/* Display a passphrase request notification. */
+	SInt32 error;
+	CFOptionFlags response;
+	CFUserNotificationRef notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
+
+	/* If we couldn't receive a response, return nil. */
+	if (error || CFUserNotificationReceiveResponse(notification, 0, &response))
+	{
+		[pool release];
+		return;
+	}
+
+	/* If OK was pressed, add the keys. */
+	if ((response & 0x3) == kCFUserNotificationDefaultResponse)
+		[self start];
+
 	[pool release];
 }
 
