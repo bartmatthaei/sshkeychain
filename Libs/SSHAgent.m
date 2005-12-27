@@ -168,24 +168,15 @@ extern NSString *local(NSString *theString);
 	NSArray *lines, *columns;
 	int i;
 
-	/* If the PID is > 0, the agent should (in theory) be running. */
-	if([self PID] > 0)
+	if ([self isRunning])
 	{
 		NSLog(@"Agent is already started");
 		return NO;
 	}
 
-	/* Clear the agentSocketPath object. */
-	if([self agentSocketPath]) 
-	{
-		[agentSocketPathLock lock];
-		[agentSocketPath release];
-		agentSocketPath = nil;
-		[agentSocketPathLock unlock];
-	}
+	[self setAgentSocketPath:nil];
 
-
-	if([self socketPath] == nil)
+	if (![self socketPath])
 	{
 		NSLog(@"DEBUG: start: socketPath not set");
 		return NO;
@@ -214,35 +205,21 @@ extern NSString *local(NSString *theString);
 		if ([columns count] != 3)
 			continue;
 
+		NSString *key = [columns objectAtIndex:1];
 		/* If 2nd column matches "SSH_AUTH_SOCK", then 3rd column is the socket path. */
-		if ([@"SSH_AUTH_SOCK" isEqualToString:[columns objectAtIndex:1]])
-		{
-			[agentSocketPathLock lock];
-			agentSocketPath = [[NSString stringWithString:[columns objectAtIndex:2]] retain];
-			[agentSocketPathLock unlock];
-		}
+		if ([key isEqualToString:@"SSH_AUTH_SOCK"])
+			[self setAgentSocketPath:[columns objectAtIndex:2]];
 
 		/* If 2nd column matches "SSH_AGENT_PID", then 3rd column is the PID. */
-		if ([@"SSH_AGENT_PID" isEqualToString:[columns objectAtIndex:1]])
-		{
-			[thePIDLock lock];
-			thePID = [[columns objectAtIndex:2] intValue];
-			[thePIDLock unlock];
-		}
+		else if ([key isEqualToString:@"SSH_AGENT_PID"])
+			[self setPID:[[columns objectAtIndex:2] intValue]];
 	}
 
-	/* If the PID is > 0 but the socket path isn't filled, stop the agent and return -1. */
-	if(([self PID] > 0) && (([self agentSocketPath] == nil) || ([agentSocketPath length] < 1)))
+	/* If the agent is not running, or the socket path is empty then stop the agent and fail */
+	if (![self isRunning] || ![[self agentSocketPath] length])
 	{
 		NSLog(@"SSHAgent start: ssh-agent didn't give the output we expected");
 		[self stop];
-		return NO;
-	}
-
-	/* If there's no PID just return -1. */
-	if([self PID] < 1)
-	{
-		NSLog(@"SSHAgent start: ssh-agent didn't give the output we expected");
 		return NO;
 	}
 
@@ -260,30 +237,19 @@ extern NSString *local(NSString *theString);
 /* Stop the agent. */
 - (BOOL)stop
 {
-	/* We can't stop something if we haven't got the pid. */
-	if([self PID] > 0)
-	{
-		/* We don't need to check if this fails. We clean up the variables either way. */
-		kill([self PID], SIGTERM);
+	/* We can't stop something if we it's not running */
+	if (![self isRunning])
+		return YES;
 
-		[agentSocketPathLock lock];
-		[agentSocketPath release];
-		agentSocketPath = nil;
-		[agentSocketPathLock unlock];
+	/* We don't need to check if this fails. We clean up the variables either way. */
+	kill([self PID], SIGTERM);
 
-		[self closeSockets];
+	[self setAgentSocketPath:nil];
+	[self closeSockets];
+	[self setPID:0];
+	[self setKeysOnAgent:nil];
 
-		[thePIDLock lock];
-		thePID = 0;
-		[thePIDLock unlock];
-
-		[keysOnAgentLock lock];
-		[keysOnAgent release];
-		keysOnAgent = nil;
-		[keysOnAgentLock unlock];
-
-		[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentStopped" object:nil];
-	}
+	[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentStopped" object:nil];
 
 	return YES;
 }
@@ -503,9 +469,7 @@ extern NSString *local(NSString *theString);
 							{
 								write(fds[i+1], buf, r);
 
-								[keysOnAgentLock lock];
-								keysOnAgent = [[[SSHAgent currentAgent] currentKeysOnAgent] retain];
-								[keysOnAgentLock unlock];		
+								[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
 								[[NSNotificationCenter defaultCenter]  postNotificationName:@"KeysOnAgentUnknown" object:nil];
 							}
 
@@ -514,10 +478,7 @@ extern NSString *local(NSString *theString);
 							{
 								write(fds[i+1], buf, r);
 
-								[keysOnAgentLock lock];
-								keysOnAgent = [[[SSHAgent currentAgent] currentKeysOnAgent] retain];
-								[keysOnAgentLock unlock];		
-
+								[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
 								[[NSNotificationCenter defaultCenter]  postNotificationName:@"KeysOnAgentUnknown" object:nil];
 							}
 
@@ -707,11 +668,8 @@ extern NSString *local(NSString *theString);
 	NSMutableArray *keys;
 	NSArray *columns, *key, *lines;
 
-	/* If the PID is < 1, we assume the agent isn't running. */
-	if([self PID] < 1)
-	{
+	if (![self isRunning])
 		return nil;
-	}
 
 	/* Initialize a ssh-add SSHTool, set the arguments to -l for a list of keys. */
 	theTool = [SSHTool toolWithName:@"ssh-add"];
@@ -774,26 +732,11 @@ extern NSString *local(NSString *theString);
 /* This method is called when keys are added/removed from the agent. */
 - (void)keysOnAgentStatusChange:(NSNotification *)notification
 {
-	if([[notification name] isEqualToString:@"AgentEmptied"])
-	{
-		[keysOnAgentLock lock];
-		if(keysOnAgent)
-		{
-			[keysOnAgent release];
-		}
+	if ([[notification name] isEqualToString:@"AgentEmptied"])
+		[self setKeysOnAgent:nil];
 
-		keysOnAgent = nil;
-		
-		[keysOnAgentLock unlock];
-	}
-
-	else if([[notification name] isEqualToString:@"AgentFilled"])
-	{
-		[keysOnAgentLock lock];
-		keysOnAgent = [[[SSHAgent currentAgent] currentKeysOnAgent] retain];
-		[keysOnAgentLock unlock];
-	}
-
+	else if ([[notification name] isEqualToString:@"AgentFilled"])
+		[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
 }
 
 @end
