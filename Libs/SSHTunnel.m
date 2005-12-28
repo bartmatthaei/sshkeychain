@@ -49,16 +49,17 @@
 /* Set the tunnel host, port and user. */
 - (BOOL)setTunnelHost:(NSString *)host withPort:(int)port andUser:(NSString *)user
 {
-	if(open)
-	{
+	if (open)
 		return NO;
-	}
 	
-	[tunnelHost autorelease];
-	tunnelHost = [[NSString stringWithString:host] retain];
+	NSString *oldHost = tunnelHost;
+	tunnelHost = [host copy];
+	[oldHost release];
 	tunnelPort = port;
-	[tunnelUser autorelease];
-	tunnelUser = [[NSString stringWithString:user] retain];
+	
+	NSString *oldUser = tunnelUser;
+	tunnelUser = [user copy];
+	[oldUser release];
 
 	return YES;
 }
@@ -66,95 +67,73 @@
 /* Set compression. */
 - (BOOL)setCompression:(BOOL)theBool
 {
-	if(open)
-	{
+	if (open)
 		return NO;
-	}
 
 	compression = theBool;
-
 	return YES;
 }
 
 /* Set remote access. */
 - (BOOL)setRemoteAccess:(BOOL)theBool
 {
-	if(open)
-	{
+	if (open)
 		return NO;
-	}
 	
 	remoteAccess = theBool;
-	
 	return YES;
 }
 
 /* Add a local port forward. */
 - (BOOL)addLocalPortForwardWithPort:(int)lport remoteHost:(NSString *)rhost remotePort:(int)rport
 {
-	if((open) || (lport < 1) || (lport > 65535) || (rport < 1) || (rport > 65535))
-	{
+	if (open || lport < 1 || lport > 65535 || rport < 1 || rport > 65535)
 		return NO;
-	}
 
 	[localPortForwards addObject:[NSArray arrayWithObjects:[NSNumber numberWithInt:lport], rhost, [NSNumber numberWithInt:rport], nil]];
-
 	return YES;
 }
 
 /* Add a remote port forward. */
 - (BOOL)addRemotePortForwardWithPort:(int)rport localHost:(NSString *)lhost localPort:(int)lport
 {
-	if((open) || (lport < 1) || (lport > 65535) || (rport < 1) || (rport > 65535))
-	{
+	if (open || lport < 1 || lport > 65535 || rport < 1 || rport > 65535)
 		return NO;
-	}
 
 	[remotePortForwards addObject:[NSArray arrayWithObjects:[NSNumber numberWithInt:rport], lhost, [NSNumber numberWithInt:lport], nil]];
-
 	return YES;
 }
 
 /* Add a dynamic port forward. */
 - (BOOL)addDynamicPortForwardWithPort:(int)lport
 {
-	if((open) || (lport < 1) || (lport > 65535))
-	{
+	if (open || lport < 1 || lport > 65535)
 		return NO;
-	}
 	
 	[dynamicPortForwards addObject:[NSNumber numberWithInt:lport]];
-	
 	return YES;
 }
 
 /* Get the output after the task has finished. */
 - (NSString *)getOutput
 {
-	return [[[NSString alloc] initWithData:[[thePipe fileHandleForReading] readDataToEndOfFile] encoding:NSASCIIStringEncoding] autorelease];
+	return [[[NSString alloc] initWithData:[[thePipe fileHandleForReading] readDataToEndOfFile] encoding:NSUTF8StringEncoding] autorelease];
 }
 
 /* Handle closed tunnel notifications. */
 - (void)handleClosedWithSelector:(SEL)theSelector toObject:(id)theObject withInfo:(id)theInfo
 {
 
-	if((!theSelector) || (!theObject))
-	{
+	if (!theSelector || !theObject)
 		return;
-	}
 	
 	closeSelector = theSelector;
 	closeObject = theObject;
 	
-	if(theInfo)
-	{
+	if (theInfo)
 		closeInfo = theInfo;
-	}
-	
 	else
-	{
 		closeInfo = nil;
-	}
 }
 
 /* Return YES if the tunnel is open, and NO if not. */
@@ -165,19 +144,12 @@
 
 - (BOOL)openTunnel
 {
-	int i;
-	NSMutableArray *arguments;
 
-	/* If the PID is > 1, the tunnel should be open. */
-	if([self isOpen])
-	{
+	if ([self isOpen])
 		return NO;
-	}
 
-	if((!tunnelHost) || ([tunnelHost isEqualToString:@""]))
-	{
+	if (!tunnelHost || [tunnelHost isEqualToString:@""])
 		return NO;
-	}
 
 	open = YES;
 
@@ -194,78 +166,74 @@
 	// SSH under Tiger works fine. Don't use the workaround then
 	NSString *toolPath;
 	NSString *sshPathString = [[NSUserDefaults standardUserDefaults] stringForKey:SSHToolsPathString];
-	if (floor(NSAppKitVersionNumber) != NSAppKitVersionNumber10_3) {
+	if (floor(NSAppKitVersionNumber) != NSAppKitVersionNumber10_3)
 		// It's not Panther (i.e. either Jaguar or Tiger)
 		toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
-	} else {
-		if([dynamicPortForwards count] > 0 && [[sshPathString stringByStandardizingPath] isEqualToString:@"/usr/bin"]) {
-			/* Time to use our internal build */
-			toolPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh"];
-		} else {
-			toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
-		}
-	}
-	arguments = [NSMutableArray arrayWithObject:toolPath];
+	else if([dynamicPortForwards count] > 0 && [[sshPathString stringByStandardizingPath] isEqualToString:@"/usr/bin"])
 	
-	for(i=0; i < [localPortForwards count]; i++)
+		/* Time to use our internal build */
+		toolPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"ssh"];
+	else
+		toolPath = [sshPathString stringByAppendingPathComponent:@"ssh"];
+
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:toolPath];
+	NSEnumerator *e = [localPortForwards objectEnumerator];
+	NSArray *portForward;
+	while (portForward = [e nextObject])
 	{
-		[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[[localPortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
-												[[localPortForwards objectAtIndex:i] objectAtIndex:1],
-												[[[localPortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
+		[arguments addObject:[NSString stringWithFormat:@"-L%d:%@:%d", [[portForward objectAtIndex:0] intValue], 
+									       [portForward objectAtIndex:1],
+									       [[portForward objectAtIndex:2] intValue]]
 			];
 	}
 	
-	for(i=0; i < [remotePortForwards count]; i++)
+	e = [remotePortForwards objectEnumerator];
+	while (portForward = [e nextObject])
 	{
-		[arguments addObject:[NSString stringWithFormat:@"-R%d:%@:%d", [[[remotePortForwards objectAtIndex:i] objectAtIndex:0] intValue], 
-									[[remotePortForwards objectAtIndex:i] objectAtIndex:1],
-									[[[remotePortForwards objectAtIndex:i] objectAtIndex:2] intValue]]
+		[arguments addObject:[NSString stringWithFormat:@"-R%d:%@:%d", [[portForward objectAtIndex:0] intValue], 
+									       [portForward objectAtIndex:1],
+									       [[portForward objectAtIndex:2] intValue]]
 			];
 	}
 	
 	// No dynamic ports under Jaguar
-	if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_2) {
-		for(i=0; i < [dynamicPortForwards count]; i++)
+	if (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_2)
+	{
+		e = [dynamicPortForwards objectEnumerator];
+		NSNumber *dynamicPortForward;
+		while (dynamicPortForward = [e nextObject])
 		{
 			[arguments addObject:@"-D"];
 
 			/* A bit awkward, but it makes sure a number is given. */
-			[arguments addObject:[NSString stringWithFormat:@"%d", [[dynamicPortForwards objectAtIndex:i] intValue]]];
+			[arguments addObject:[NSString stringWithFormat:@"%d", [dynamicPortForward intValue]]];
 		}
 	}
 
-	if((tunnelPort > 0) && (tunnelPort < 65535))
+	if (tunnelPort > 0 && tunnelPort < 65535)
 	{
-			[arguments addObject:@"-p"];
-			[arguments addObject:[NSString stringWithFormat:@"%d", tunnelPort]];
+		[arguments addObject:@"-p"];
+		[arguments addObject:[NSString stringWithFormat:@"%d", tunnelPort]];
 	}
 
 	[arguments addObject:@"-N"];
 	[arguments addObject:@"-t"];
 	[arguments addObject:@"-x"];
 
-	if(compression)
-	{
+	if (compression)
 		[arguments addObject:@"-C"];
-	}
 	
-	if(remoteAccess)
-	{
+	if (remoteAccess)
 		[arguments addObject:@"-g"];
-	}
 	
 	[arguments addObject:@"-o"];
 	[arguments addObject:@"PreferredAuthentications=hostbased,publickey,password,keyboard-interactive"];
 	
-	if((tunnelUser) && (![tunnelUser isEqualToString:@""]))
-	{
-			[arguments addObject:[NSString stringWithFormat:@"%@@%@", tunnelUser, tunnelHost]];
-	}
+	if (tunnelUser && ![tunnelUser isEqualToString:@""])
+		[arguments addObject:[NSString stringWithFormat:@"%@@%@", tunnelUser, tunnelHost]];
 
 	else
-	{
-			[arguments addObject:[NSString stringWithFormat:@"%@", tunnelHost]];
-	}
+		[arguments addObject:[NSString stringWithFormat:@"%@", tunnelHost]];
 		
 	[tunnel setArguments:arguments];
 	
@@ -278,29 +246,25 @@
 	[tunnel setEnvironmentVariable:@"SSH_AUTH_SOCK" 
 			     withValue:[[NSUserDefaults standardUserDefaults] stringForKey:SocketPathString]];
 
-	if((closeSelector) && (closeObject)) {
+	if (closeSelector && closeObject)
 		[tunnel handleTerminateWithSelector:closeSelector toObject:closeObject withInfo:closeInfo];
-	}
 	
 	thePipe = [[NSPipe alloc] init];
 
 	[[tunnel task] setStandardOutput:thePipe];
 	
 	/* Launch ssh. */
-	if([tunnel launch] == NO) {
+	if (![tunnel launch])
 		return NO;
-	}
 	
 	open = YES;
-
 	return YES;
 }
 
 - (void)closeTunnel
 {	
-	if((open) && (tunnel)) {
+	if (open && tunnel)
 		[tunnel terminate];
-	}
 
 	[tunnel release];
 	tunnel = nil;
