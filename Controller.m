@@ -350,7 +350,7 @@ NSString *local(NSString *theString)
 	char *kcPassword;
 	UInt32 passwordLength;
 	SecKeychainStatus keychainStatus;
-	OSStatus returnStatus = noErr;
+	OSStatus returnStatus = -1;
 	SecKeychainRef keychain;
 
 	CFArrayRef searchList;

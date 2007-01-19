@@ -186,7 +186,7 @@
 		CCC9E32806A58F9600422E9E /* SSHKeychain.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SSHKeychain.icns; sourceTree = "<group>"; };
 		CCC9E32906A58F9600422E9E /* TunnelRunner.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = TunnelRunner.c; sourceTree = "<group>"; };
 		CCC9E33706A58FA800422E9E /* TODO */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
-		CCC9E3B606A5A3BC00422E9E /* TunnelRunner */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TunnelRunner; sourceTree = BUILT_PRODUCTS_DIR; };
+		CCC9E3B606A5A3BC00422E9E /* TunnelRunner */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = TunnelRunner; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCC9E3CF06A5A3FA00422E9E /* PassphraseRequester */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PassphraseRequester; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCC9E42806A6763E00422E9E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		CCC9E42906A6763E00422E9E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
