@@ -163,6 +163,7 @@ NSString *local(NSString *theString)
 
 	passphraseIsRequestedLock = [[NSLock alloc] init];
 	appleKeychainUnlockedLock = [[NSLock alloc] init];
+	statusitemLock = [[NSLock alloc] init];
 
 	sharedController = self;
 
@@ -184,6 +185,7 @@ NSString *local(NSString *theString)
 {
 	[passphraseIsRequestedLock dealloc];
 	[appleKeychainUnlockedLock dealloc];
+	[statusitemLock dealloc];
 
 	[super dealloc];
 }
