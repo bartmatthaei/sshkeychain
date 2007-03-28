@@ -27,6 +27,8 @@
 	if (! (self = [super init]))
 		return nil;
 		
+	terminated = NO;
+	observing = NO;
 	task = [[NSTask alloc] init];
 	[task setStandardInput:[NSFileHandle fileHandleWithNullDevice]];
 
@@ -35,12 +37,20 @@
 
 - (void)dealloc
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+        if (observing)
+	{
+		observing = FALSE;
+		[[NSNotificationCenter defaultCenter] removeObserver:self];
+	}
 	
 	[task release];
+	task = nil;
 	[toolPath release];
+        toolPath = nil;
 	[terminateObject release];
+        terminateObject = nil;
 	[terminateInfo release];
+	terminateInfo = nil;
 	
 	[super dealloc];
 }
@@ -94,7 +104,9 @@
 	[task setStandardOutput:thePipe];
 
 	if (![self launchAndWait])
+	{
 		return nil;
+	}
 
 	/* Put the data from thePipe to theOutput. */
 	NSData *theOutput = [[thePipe fileHandleForReading] readDataToEndOfFile];
@@ -104,16 +116,22 @@
 /* Launch and wait until exit, returning a BOOL to report success or failure. */
 - (BOOL)launchAndWait
 {
+	BOOL term_status;
 	if (![self launch])
+	{
 		return NO;
+	}
 	
 	[task waitUntilExit];
-	return ![task terminationStatus];
+        term_status = ![task terminationStatus];
+	return term_status;
 }
 
 /* Launch. */
 - (BOOL)launch
 {
+        if (terminated)
+		return(NO);
 	/* Let's see if the path is accessible. */
 	if (![[NSFileManager defaultManager] isExecutableFileAtPath:toolPath])
 		return NO;
@@ -138,7 +156,11 @@
 /* Terminate. */
 - (void)terminate
 {
-	[task terminate];
+	if (!terminated)
+	{
+        	terminated = YES;
+		[task terminate];
+	}
 }
 
 /* Handle terminate notifications. */
@@ -156,6 +178,7 @@
 		terminateInfo = self;
 
 	[terminateInfo retain];
+	observing = YES;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(terminatedTaskNotification:)
 						name:NSTaskDidTerminateNotification object:nil];
 }
@@ -163,14 +186,33 @@
 /* Callback for terminated NSTasks. */
 - (void)terminatedTaskNotification:(NSNotification *)notification
 {
-	if ([notification object] == task)
+	/* The [terminateObject perform....] below could actually end up deallocating self!
+           This could (did, on my test setup) lead to the tool being deallocated, then reallocated (at the same address!)
+           in the process of the perform, so that as this method finished it stepped all over the new instance.
+           Solution: hang onto ourselves (so to speak) until we have finished the method.  At the very least this
+                     will ensure the new instance gets allocated somewhere else. */
+	[self retain];
+	if ([notification object] == task && task)
 	{
-		[terminateObject performSelector:terminateSelector withObject:terminateInfo];
-		[terminateObject release];
+        	if (observing)
+		{
+			observing = FALSE;
+			[[NSNotificationCenter defaultCenter] removeObserver:self];
+		}
+		if (terminateObject)
+		{
+			[terminateObject performSelector:terminateSelector withObject:terminateInfo];
+			[terminateObject release];
+			terminateObject = nil;
+		}
 		[terminateInfo release];
-		terminateObject = nil;
 		terminateInfo = nil;
+
+		/* We want at most one notification. */
+		[task release];
+		task = nil;
 	}
+	[self release];
 }
  
 @end

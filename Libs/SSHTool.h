@@ -5,6 +5,8 @@
 	NSTask *task;
 	NSString *toolPath;
 	BOOL waitUntilExit;
+	BOOL terminated;
+	BOOL observing;
 	
 	SEL terminateSelector;
 	id terminateObject;

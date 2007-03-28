@@ -340,7 +340,8 @@ TunnelController *sharedTunnelController;
 	NSString *output;
 	BOOL fails_exceeded = NO;
 		
-	if(!contextInfo) {
+	if(!contextInfo)
+	{
 		return;
 	}
 
@@ -348,7 +349,10 @@ TunnelController *sharedTunnelController;
 	[[statusbarMenuTunnelsItem itemWithRepresentation:contextInfo] setState:NO];
 	[[dockMenuTunnelsItem itemWithRepresentation:contextInfo] setState:NO];
 	
-	if(!tunnels) { return; }
+	if(!tunnels)
+	{
+		return;
+	}
 	
 	NSEnumerator *e = [tunnels objectEnumerator];
 	NSMutableDictionary *aTunnel;
@@ -469,7 +473,7 @@ TunnelController *sharedTunnelController;
 - (void)openTunnelWithDict:(NSMutableDictionary *)dict
 {
 	int i;
-	SSHTunnel *tunnel = [[[SSHTunnel alloc] init] autorelease];
+	SSHTunnel *tunnel = [[SSHTunnel alloc] init];
 	
 	[tunnel setTunnelHost:[dict objectForKey:@"TunnelHostname"]
 			withPort:[[dict objectForKey:@"TunnelPort"] intValue]
@@ -521,6 +525,7 @@ TunnelController *sharedTunnelController;
 	if([tunnel openTunnel]) 
 	{
 		[dict setObject:tunnel forKey:@"TunnelObject"];
+		/* Now that the dictionary has it, we can let it go, see below. */
 		
 		NSString *uuid = [dict objectForKey:@"TunnelUUID"];
 		[[mainMenuTunnelsItem itemWithRepresentation:uuid] setState:YES];
@@ -529,6 +534,8 @@ TunnelController *sharedTunnelController;
 		
 		[self setToolTipForActiveTunnels];
 	}
+	/* Either the dictionary has it, or it didn't work and we don't want it. */
+	[tunnel release];
 
 }
 

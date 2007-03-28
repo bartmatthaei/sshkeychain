@@ -76,32 +76,6 @@
 		CCE66DE506B15AEA002A5BEE /* TunnelsView.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE66DE306B15AEA002A5BEE /* TunnelsView.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildStyle section */
-		4A9504CCFFE6A4B311CA0CBA /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				DEBUGGING_SYMBOLS = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OPTIMIZATION_CFLAGS = "-O0";
-				ZERO_LINK = NO;
-			};
-			name = Development;
-		};
-		4A9504CDFFE6A4B311CA0CBA /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
-
 /* Begin PBXContainerItemProxy section */
 		CCC9E3E406A5A44900422E9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -134,7 +108,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* SSHKeychain_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHKeychain_Prefix.pch; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* SSHKeychain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SSHKeychain.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* SSHKeychain.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SSHKeychain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC08A64506A876B300C578A3 /* PreferenceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PreferenceController.h; sourceTree = "<group>"; usesTabs = 1; };
 		CC08A64606A876B300C578A3 /* PreferenceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PreferenceController.m; sourceTree = "<group>"; usesTabs = 1; };
 		CC14663E06AD2DBF0083071B /* PreferenceView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PreferenceView.h; path = PreferenceViews/PreferenceView.h; sourceTree = "<group>"; usesTabs = 1; };
@@ -186,7 +160,7 @@
 		CCC9E32806A58F9600422E9E /* SSHKeychain.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = SSHKeychain.icns; sourceTree = "<group>"; };
 		CCC9E32906A58F9600422E9E /* TunnelRunner.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = TunnelRunner.c; sourceTree = "<group>"; };
 		CCC9E33706A58FA800422E9E /* TODO */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
-		CCC9E3B606A5A3BC00422E9E /* TunnelRunner */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = TunnelRunner; sourceTree = BUILT_PRODUCTS_DIR; };
+		CCC9E3B606A5A3BC00422E9E /* TunnelRunner */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = TunnelRunner; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCC9E3CF06A5A3FA00422E9E /* PassphraseRequester */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PassphraseRequester; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCC9E42806A6763E00422E9E /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		CCC9E42906A6763E00422E9E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
@@ -446,29 +420,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				GCC_ENABLE_TRIGRAPHS = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = SSHKeychain_Prefix.pch;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				HEADER_SEARCH_PATHS = "";
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = SSHKeychain;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				WRAPPER_EXTENSION = app;
-			};
 			dependencies = (
 				CCC9E3E506A5A44900422E9E /* PBXTargetDependency */,
 				CCC9E3E706A5A45300422E9E /* PBXTargetDependency */,
@@ -488,17 +439,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = TunnelRunner;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
-			};
 			dependencies = (
 			);
 			name = TunnelRunner;
@@ -516,24 +456,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = PassphraseRequester;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
-			};
 			dependencies = (
 			);
 			name = PassphraseRequester;
@@ -547,12 +469,6 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = CC39D6370921118A00FE3BC5 /* Build configuration list for PBXProject "SSHKeychain" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				4A9504CCFFE6A4B311CA0CBA /* Development */,
-				4A9504CDFFE6A4B311CA0CBA /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -743,6 +659,10 @@
 		CC39D62C0921118A00FE3BC5 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -799,6 +719,10 @@
 		CC39D6300921118A00FE3BC5 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -876,6 +800,10 @@
 		CC39D6340921118A00FE3BC5 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -967,6 +895,14 @@
 		CC39D6380921118A00FE3BC5 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				MACOSX_DEPLOYMENT_TARGET_i386 = 10.4;
+				MACOSX_DEPLOYMENT_TARGET_ppc = 10.3;
+				SDKROOT_i386 = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.3.9.sdk;
 			};
 			name = Development;
 		};
