@@ -264,7 +264,12 @@
 - (void)closeTunnel
 {	
 	if (open && tunnel)
-		[tunnel terminate];
+	{	
+		SSHTool *killTunnel = [[SSHTool toolWithPath:[[[NSBundle mainBundle] resourcePath] 
+			stringByAppendingPathComponent:@"TunnelRunner"]] retain];
+		[killTunnel setArguments:[NSArray arrayWithObjects:@"-k", [NSString stringWithFormat:@"%d", [[tunnel task] processIdentifier]], nil]];
+		[killTunnel launch];
+	}
 
 	[tunnel release];
 	tunnel = nil;

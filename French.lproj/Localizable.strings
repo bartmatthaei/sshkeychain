@@ -1,4 +1,4 @@
-/* $Id: Localizable.strings,v 1.6 2004/06/23 08:12:20 bart Exp $ */
+﻿/* $Id: Localizable.strings,v 1.6 2004/06/23 08:12:20 bart Exp $ */
 
 "Yes" = "Oui";
 "No" = "Non";
@@ -13,7 +13,7 @@
 "AddedAuthsockToEnvironment" = "La variable \"SSH_AUTH_SOCK\" a été ajoutée au fichier ~/.MacOSX/environment.plist\".\nElle sera opérationnelle lors de la prochaine session.";
 "ChangedAuthsockInEnvironment" = "La variable \"SSH_AUTH_SOCK\" a été modifiée dans le fichier ~/.MacOSX/environment.plist\".\nElle sera opérationnelle lors de la prochaine session.";
 
-"CheckForUpdates" = "Vérifier les mises à jour";
+"CheckForUpdates" = "Vérifier les mises à jour...";
 "FailedToRetrieveXMLVersionInfo" = "Échec lors de la vérification du fichier XML d'information.";
 
 "Can'tFigureOutOwnVersion" = "Je ne sais même pas quelle est ma version.";
@@ -28,7 +28,7 @@
 "PreferencesNotSavedPanelTitle" = "Préférences non enregistrées.";
 "PreferencesNotSavedPanelText" = "Voulez-vous enregistrer vos préférences ?";
 
-"DisplayPanelTitle" = "Changement de configuration";
+"DisplayPanelTitle" = "Affichage";
 "DisplayPanelText" = "Les changements apportés seront opérationnels au prochain lancement de SSHKeychain.";
 "DisplayChangeNotAllowed" = "Vous n'avez pas le droit d'écrire dans le bundle SSHKeychain, donc l'option d'affichage ne peut être changée.";
 
@@ -83,7 +83,7 @@
 "WhereWouldYouLikeToSaveThePrivateKey" = "Où voulez-vous enregistrer la clé privée ?";
 
 "AddPassphraseToAppleKeychain" = "Ajouter le mot de passe dans le trousseau d'accès Apple";
-"Passphrase" = "Mot de passe";
+"Passphrase" = "Mot de passe :";
 
 "TunnelForwardingFailed" = "Échec lors du passage par le tunnel";
 
@@ -109,3 +109,5 @@
 "Environment" = "Environnement";
 "SSH Keys" = "Clés SSH";
 "Tunnels" = "Tunnels";
+
+"UnknownHostKey" = "Clé de l'hôte inconnue";

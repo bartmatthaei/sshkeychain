@@ -6,6 +6,10 @@
 #import "Utilities.h"
 #import "NSMenu_Additions.h"
 
+#ifndef NSAppKitVersionNumber10_3
+#define NSAppKitVersionNumber10_3 743
+#endif
+
 #include "SSHKeychain_Prefix.pch"
 
 /* This function resides in Controller.m. */
@@ -542,8 +546,13 @@ TunnelController *sharedTunnelController;
 /* This method displays a warning. */
 - (void)warningPanelWithTitle:(NSString *)title andMessage:(NSString *)message
 {
-	[NSApp activateIgnoringOtherApps:YES];
-	NSRunAlertPanel(title, message, nil, nil, nil);
+	/* Dictionary for the panel. */
+	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+	
+	[dict setObject:title forKey:(NSString *)kCFUserNotificationAlertHeaderKey];
+	[dict setObject:message forKey:(NSString *)kCFUserNotificationAlertMessageKey];
+	
+	CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), nil, (CFDictionaryRef)dict);
 }
 
 /* Handle the notification queue. */

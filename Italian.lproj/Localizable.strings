@@ -1,6 +1,6 @@
 /* $Id: Localizable.strings,v 1.6 2004/06/23 08:12:20 bart Exp $ */
 
-"Yes" = "Sì";
+"Yes" = "S√¨";
 "No" = "No";
 
 "Download" = "Download";
@@ -10,8 +10,8 @@
 "LockAppleKeychain" = "Blocca portachiavi";
 "UnlockAppleKeychain" = "Sblocca portachiavi";
 
-"AddedAuthsockToEnvironment" = "La variabile SSH_AUTH_SOCK è stata aggiunta nel file ~/.MacOSX/environment.plist.\nLe modifiche avranno effetto al prossimo login.";
-"ChangedAuthsockInEnvironment" = "La variabile SSH_AUTH_SOCK è stata aggiunta nel file ~/.MacOSX/environment.plist.\nLe modifiche avranno effetto al prossimo login.";
+"AddedAuthsockToEnvironment" = "La variabile SSH_AUTH_SOCK √® stata aggiunta nel file ~/.MacOSX/environment.plist.\nLe modifiche avranno effetto al prossimo login.";
+"ChangedAuthsockInEnvironment" = "La variabile SSH_AUTH_SOCK √® stata aggiunta nel file ~/.MacOSX/environment.plist.\nLe modifiche avranno effetto al prossimo login.";
 
 "CheckForUpdates" = "Controllo presenza aggiornamenti";
 "FailedToRetrieveXMLVersionInfo" = "Recupero informazioni di versione XML fallito.";
@@ -19,11 +19,11 @@
 "Can'tFigureOutOwnVersion" = "Impossibile stabilire la versione del programma.";
 
 "NewVersion" = "Ricerca nuove versioni";
-"NewVersionAvailable" = "C'è una nuova versione di SSHKeychain disponibile.";
+"NewVersionAvailable" = "C'√® una nuova versione di SSHKeychain disponibile.";
 "NoNewVersion" = "Non ci sono nuove versioni disponibili.";
 
 "AgentTerminatedPanelTitle" = "Agente terminato";
-"AgentTerminatedPanelText" = "L'agente è terminato inaspettatamente. Desiderate riavviarlo?";
+"AgentTerminatedPanelText" = "L'agente √® terminato inaspettatamente. Desiderate riavviarlo?";
 
 "PreferencesNotSavedPanelTitle" = "Preferenze non salvate";
 "PreferencesNotSavedPanelText" = "Volete salvare le preferenze?";
@@ -33,10 +33,10 @@
 "DisplayChangeNotAllowed" = "Non avete il permesso di scrittura nel pacchetto SSHKeychain, per cui le opzioni di visualizzazione non possono essere modificate.";
 
 "NewSocketpathPanelTitle" = "Nuovo percorso della socket";
-"NewSocketpathPanelText" = "Il nuovo percorso della socket verrà utilizzato dall'agente la prossima volta che verrà avviato.\nLa variabile globale d'ambiente SSH_AUTH_SOCK avrà effetto al prossimo login.";
+"NewSocketpathPanelText" = "Il nuovo percorso della socket verr√† utilizzato dall'agente la prossima volta che verr√† avviato.\nLa variabile globale d'ambiente SSH_AUTH_SOCK avr√† effetto al prossimo login.";
 
 "InvalidKey" = "Chiave non valida";
-"KeyAlreadyOnList" = "La chiave è già presente nella lista";
+"KeyAlreadyOnList" = "La chiave √® gi√† presente nella lista";
 
 "ReadPermissionToKeyDenied" = "Permesso di lettura alla chiave negato";
 
@@ -54,7 +54,7 @@
 "AddAllKeysToAgentFailed" = "Aggiungi una chiave all'agente.";
 "AddSingleKeyToAgent" = "Add single key to agent";
 "AddSingleKeyToAgentFailed" = "Fallita l'aggiunta di una chiave all'agente.";
-"AgentNotRunning" = "L'agente non è in esecuzione.";
+"AgentNotRunning" = "L'agente non √® in esecuzione.";
 
 "RemoveAllKeysFromAgent" = "Rimuovi tutte le chiavi dall'agente";
 "RemoveAllKeysFromAgentFailed" = "Fallita la rimozione di tutte le chiavi dall'agente.";
@@ -73,7 +73,7 @@
 
 
 "PleaseSelectAPath" = "Per favore, selezionate un percorso.";
-"AlreadyExists" = "esiste di già.";
+"AlreadyExists" = "esiste di gi√†.";
 "KeyTypeUnknown" = "Tipo della chiave sconosciuto.";
 "NumberOfBitsInvalid" = "Numero di bit non valido.";
 "PassphraseTooShort" = "Passphrase troppo corta (minimo 5 caratteri).";
@@ -92,8 +92,8 @@
 "TunnelSetupFailed" = "Setup del tunnel fallito";
 
 "TunnelTerminated" = "Tunnel terminato";
-"TunnelUnexpectedlyTerminated" = "Il tunnel è terminato inaspettatamente più volte. Non verrà ristabilito.";
-"TunnelTerminatedAndCouldNotBeRestarted" = "Il tunnel è terminato inaspettatamente e non può essere ristabilito.";
+"TunnelUnexpectedlyTerminated" = "Il tunnel √® terminato inaspettatamente pi√π volte. Non verr√† ristabilito.";
+"TunnelTerminatedAndCouldNotBeRestarted" = "Il tunnel √® terminato inaspettatamente e non pu√≤ essere ristabilito.";
 
 "ActiveTunnel" = "Tunnel attivo";
 "ActiveTunnels" = "Tunnel attivi";
@@ -109,3 +109,5 @@
 "Environment" = "Ambiente";
 "SSH Keys" = "Chiavi SSH";
 "Tunnels" = "Tunnel";
+
+"UnknownHostKey" = "Chiave dell'host sconosciuta";

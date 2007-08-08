@@ -13,14 +13,26 @@
 + (SSHKeyType) typeOfKeyAtPath:(NSString *)thePath
 {
 	/* Read the file and determine what type we're working with. */
-	NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:thePath];
-	NSArray *lines = [[[[NSString alloc] initWithData:[handle availableData] encoding:NSUTF8StringEncoding] autorelease] componentsSeparatedByString:@"\n"];
-
-	if ([[lines objectAtIndex:0] isEqualToString:@"SSH PRIVATE KEY FILE FORMAT 1.1"])
+	NSMutableData *data = [NSMutableData dataWithContentsOfFile:thePath];
+	
+	if(data == nil)
+		return SSH_KEYTYPE_UNKNOWN;
+	
+	const char *dataPtr = [data bytes];
+	const char *newline = index(dataPtr, '\n');
+	
+	NSString *header = [NSString string];
+	if (newline != NULL)
+	{
+		[data setLength:newline - dataPtr];
+		header = [[[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding] autorelease];
+	}
+	
+	if ([header isEqualToString:@"SSH PRIVATE KEY FILE FORMAT 1.1"])
 		return SSH_KEYTYPE_RSA1;
-	else if ([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN RSA PRIVATE KEY-----"])
+	else if ([header isEqualToString:@"-----BEGIN RSA PRIVATE KEY-----"])
 		return SSH_KEYTYPE_RSA;
-	else if ([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN DSA PRIVATE KEY-----"])
+	else if ([header isEqualToString:@"-----BEGIN DSA PRIVATE KEY-----"])
 		return SSH_KEYTYPE_DSA;
 	else
 		return SSH_KEYTYPE_UNKNOWN;

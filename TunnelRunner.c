@@ -37,6 +37,13 @@ int main(int argc, char **argv)
 	char buf[BUFSIZE];
 
 	buf[0] = '\0';
+	
+	if(argc == 3 && strstr(argv[1], "-k") != NULL) {
+		setuid(geteuid());
+		
+		kill(atoi(argv[2]), SIGTERM);
+		exit(0);
+	}
 
 	if(argc < 2)
 	{
@@ -71,6 +78,8 @@ int main(int argc, char **argv)
 		printf("pipe() failed (%s)\n", (em) ? em : "");
 		return(-1);
 	}
+	
+	setuid(geteuid());
 	
 	child = fork();
 

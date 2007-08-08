@@ -1,0 +1,4 @@
+#!/bin/sh
+chown -R $USER:$USER "$2/SSHKeychain.app"
+chown root:admin "$2/SSHKeychain.app/Contents/Resources/TunnelRunner"
+chmod u+s "$2/SSHKeychain.app/Contents/Resources/TunnelRunner"

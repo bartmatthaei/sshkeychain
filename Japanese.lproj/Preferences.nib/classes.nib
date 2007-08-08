@@ -76,17 +76,25 @@
         }, 
         {
             ACTIONS = {
+                changeCheckScreensaverInterval = id; 
+                changeKeyTimeout = id; 
                 changeMinutesOfSleep = id; 
+                changeOnScreensaver = id; 
                 changeOnSleep = id; 
                 toggleCustomSecuritySettings = id; 
             }; 
             CLASS = SecurityView; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                addInteractivePasswordsToKeychain = id; 
                 addKeysOnConnection = id; 
                 askForConfirmation = id; 
+                checkScreensaverInterval = id; 
+                checkScreensaverIntervalTextfield = id; 
                 customSecuritySettingsView = id; 
                 followKeychain = id; 
+                keyTimeout = id; 
+                keyTimeoutTextfield = id; 
                 minutesOfSleep = id; 
                 minutesOfSleepTextfield = id; 
                 onScreensaver = id; 
@@ -97,9 +105,11 @@
         }, 
         {
             ACTIONS = {
+                addDynamicPortForward = id; 
                 addLocalPortForward = id; 
                 addRemotePortForward = id; 
                 addTunnel = id; 
+                delDynamicPortForward = id; 
                 delLocalPortForward = id; 
                 delRemotePortForward = id; 
                 delTunnel = id; 
@@ -107,18 +117,22 @@
             CLASS = TunnelsView; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                delDynamicPortForwardButton = id; 
                 delLocalPortForwardButton = id; 
                 delRemotePortForwardButton = id; 
                 delTunnelButton = id; 
+                dynamicPortForwardTable = id; 
                 localPortForwardTable = id; 
                 remotePortForwardTable = id; 
                 tunnelCompression = id; 
+                tunnelDetailsTabView = NSTabView; 
                 tunnelDetailsView = id; 
                 tunnelHostname = id; 
                 tunnelLaunchAfterSleep = id; 
                 tunnelLaunchOnAgentFilled = id; 
                 tunnelName = id; 
                 tunnelPort = id; 
+                tunnelRemoteAccess = id; 
                 tunnelTable = id; 
                 tunnelUser = id; 
             }; 

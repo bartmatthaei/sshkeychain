@@ -6,7 +6,7 @@
 	IBOutlet id useCustomSecuritySettings, customSecuritySettingsView;
 
 	/* Custom Security Settings View. */
-	IBOutlet id addInteractivePasswordsToKeychain, addKeysOnConnection, askForConfirmation, followKeychain, onScreensaver, onSleep;
+	IBOutlet id addKeysOnConnection, askForConfirmation, followKeychain, onScreensaver, onSleep;
 	IBOutlet id minutesOfSleep, minutesOfSleepTextfield, checkScreensaverInterval, checkScreensaverIntervalTextfield;
 	IBOutlet id keyTimeout, keyTimeoutTextfield;
 }
