@@ -24,5 +24,7 @@
 	<string>NSApplication</string>
 	<key>NSAppleScriptEnabled</key>
 	<string>YES</string>
+	<key>OSAScriptingDefinition</key>
+    <string>SSHKeychain.sdef</string>
 </dict>
 </plist>

@@ -16,6 +16,10 @@ NSString *UseGlobalEnvironmentString = @"Use Global Environment ~/.MacOSX/enviro
 NSString *UseCustomSecuritySettingsString = @"Use Custom Security Settings";
 NSString *CheckScreensaverIntervalString = @"Check Screensaver Interval";
 NSString *KeyTimeoutString = @"Key Timeout";
+/* Growl support */
+NSString *UseGrowlString = @"Use Growl";
+NSString *DisableDialogNotificationsWhenUsingGrowlString = @"Disable Dialog Notifications When Using Growl";
+
 
 PreferenceController *sharedPreferenceController = nil;
 
@@ -77,11 +81,12 @@ PreferenceController *sharedPreferenceController = nil;
 			[NSArray arrayWithObjects:@"preference_keys", keysController, local(@"SSH Keys"), nil], @"SSH Keys",
 			[NSArray arrayWithObjects:@"preference_tunnels", tunnelsController, local(@"Tunnels"), nil], @"Tunnels",
 			[NSArray arrayWithObjects:@"preference_security", securityController, local(@"Security"), nil], @"Security",
+			[NSArray arrayWithObjects:@"preference_growl", growlController, local(@"Growl"), nil], @"Growl",
 			nil]
 		retain];
 
 	/* Define the precedence of the sections. */
-	preferenceItemsKeys = [[NSArray arrayWithObjects:@"General", @"Display", @"SSH Keys", @"Tunnels", @"Security", @"Environment", nil] retain];
+	preferenceItemsKeys = [[NSArray arrayWithObjects:@"General", @"Display", @"SSH Keys", @"Tunnels", @"Security", @"Environment", @"Growl", nil] retain];
 
 	toolbar = [[NSToolbar alloc] initWithIdentifier:@"preferenceToolbar"];
 	[toolbar setDelegate:self];

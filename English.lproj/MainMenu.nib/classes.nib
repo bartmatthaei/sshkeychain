@@ -49,10 +49,18 @@
         }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {
+            CLASS = GrowlNotificationController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {}; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {toggleTunnel = id; }; 
             CLASS = TunnelController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 dockMenuTunnelsItem = id; 
+                growlNotificationController = id; 
                 mainMenuTunnelsItem = id; 
                 statusbarMenuTunnelsItem = id; 
             }; 

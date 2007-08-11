@@ -19,6 +19,9 @@ extern NSString *UseCustomSecuritySettingsString;
 extern NSString *CheckScreensaverIntervalString;
 extern NSString *KeyTimeoutString;
 extern NSString *AddInteractivePasswordString;
+/* Growl support */
+extern NSString *UseGrowlString;
+extern NSString *DisableDialogNotificationsWhenUsingGrowlString;
 
 @interface PreferenceController : NSObject 
 {
@@ -28,6 +31,9 @@ extern NSString *AddInteractivePasswordString;
 	IBOutlet NSWindow *window;
 	
 	IBOutlet PreferenceView *generalController, *displayController, *keysController, *tunnelsController, *securityController, *environmentController;
+	
+	/* Growl support */
+	IBOutlet PreferenceView *growlController;
 
 	NSView *blankView;
 

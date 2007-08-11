@@ -30,6 +30,12 @@
             SUPERCLASS = PreferenceView; 
         }, 
         {
+            CLASS = GrowlView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {disableDialogNotificationsWhenUsingGrowl = id; useGrowl = id; }; 
+            SUPERCLASS = PreferenceView; 
+        }, 
+        {
             ACTIONS = {
                 addKey = id; 
                 cancelNewKey = id; 
@@ -61,6 +67,7 @@
                 displayController = PreferenceView; 
                 environmentController = PreferenceView; 
                 generalController = PreferenceView; 
+                growlController = PreferenceView; 
                 keysController = PreferenceView; 
                 securityController = PreferenceView; 
                 tunnelsController = PreferenceView; 

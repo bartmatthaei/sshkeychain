@@ -5,6 +5,7 @@
 #import "Libs/SSHTunnel.h"
 #import "Utilities.h"
 #import "NSMenu_Additions.h"
+#import "GrowlNotificationController.h"
 
 #ifndef NSAppKitVersionNumber10_3
 #define NSAppKitVersionNumber10_3 743
@@ -537,6 +538,8 @@ TunnelController *sharedTunnelController;
 		[[dockMenuTunnelsItem itemWithRepresentation:uuid] setState:YES];
 		
 		[self setToolTipForActiveTunnels];
+		
+		[growlNotificationController tunnelOpened];
 	}
 	/* Either the dictionary has it, or it didn't work and we don't want it. */
 	[tunnel release];
@@ -552,7 +555,16 @@ TunnelController *sharedTunnelController;
 	[dict setObject:title forKey:(NSString *)kCFUserNotificationAlertHeaderKey];
 	[dict setObject:message forKey:(NSString *)kCFUserNotificationAlertMessageKey];
 	
-	CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), nil, (CFDictionaryRef)dict);
+	/* Growl support */
+	[growlNotificationController warningWithTitle:title andMessage:message];
+
+	NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+	if (
+		([prefs boolForKey:UseGrowlString] == NO)
+		|| ([prefs boolForKey:DisableDialogNotificationsWhenUsingGrowlString] == NO))
+	{
+		CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), nil, (CFDictionaryRef)dict);
+	}
 }
 
 /* Handle the notification queue. */

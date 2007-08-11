@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="SSHKeychain Terminology">
+	<suite name="SSHKeychain Suite" description="AppleScript for the SSHKeychain application" code="SKCH">
+		<command name="open tunnel" code="optunn" description="Open a tunnel">
+			<parameter name="with name" code="name" type="text" description="name of the tunnel">
+				<cocoa key="tunnelName"/>
+			</parameter>
+		</command>
+	</suite>
+</dictionary>
