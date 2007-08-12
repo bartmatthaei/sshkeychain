@@ -111,3 +111,10 @@
 "Tunnels" = "Tunnels";
 
 "UnknownHostKey" = "Unknown Host Key";
+
+"TunnelOpened" = "Tunnel Opened";
+"TunnelHasBeenOpened" = "The tunnel has been opened.";
+"TunnelClosed" = "Tunnel Closed";
+"TunnelHasBeenClosed" = "The tunnel has been closed.";
+"TunnelRestart" = "Tunnel Restart";
+"TunnelIsBeeingRestarted" = "The tunnel is beeing restarted.";

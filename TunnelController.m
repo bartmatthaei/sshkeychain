@@ -325,6 +325,8 @@ TunnelController *sharedTunnelController;
 
 		[tunnel closeTunnel];
 		
+		[growlNotificationController tunnelClosed:[aTunnel objectForKey:@"TunnelName"]];
+		
 		[dict removeObjectForKey:@"TunnelObject"];
 		
 		[sender setState:NO];
@@ -527,6 +529,10 @@ TunnelController *sharedTunnelController;
 	[tunnel handleClosedWithSelector:@selector(handleClosedTunnels:) toObject:self 
 				withInfo:[dict objectForKey:@"TunnelUUID"]];
 	
+	if ([dict objectForKey:@"LastTerminated"]) {
+		[growlNotificationController tunnelRestart: [dict objectForKey:@"TunnelName"]];
+	}
+	
 	if([tunnel openTunnel]) 
 	{
 		[dict setObject:tunnel forKey:@"TunnelObject"];
@@ -539,7 +545,9 @@ TunnelController *sharedTunnelController;
 		
 		[self setToolTipForActiveTunnels];
 		
-		[growlNotificationController tunnelOpened];
+		if (! [dict objectForKey:@"LastTerminated"]) {
+			[growlNotificationController tunnelOpened: [dict objectForKey:@"TunnelName"]];
+		}
 	}
 	/* Either the dictionary has it, or it didn't work and we don't want it. */
 	[tunnel release];

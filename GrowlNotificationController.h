@@ -11,6 +11,8 @@
 - (NSDictionary *) registrationDictionaryForGrowl; 
 
 /* events */
-- (void) tunnelOpened;
+- (void) tunnelOpened:(NSString *) tunnelName;
+- (void) tunnelClosed:(NSString *) tunnelName;
+- (void) tunnelRestart:(NSString *) tunnelName;
 - (void) warningWithTitle:(NSString *)title andMessage:(NSString *)message;
 @end

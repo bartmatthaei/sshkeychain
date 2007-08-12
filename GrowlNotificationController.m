@@ -1,6 +1,9 @@
 #import "GrowlNotificationController.h"
 #import "PreferenceController.h"
 
+/* This function resides in Controller.m. */
+extern NSString *local(NSString *theString);
+
 @implementation GrowlNotificationController
 
 - (void)awakeFromNib
@@ -12,7 +15,7 @@
 {
 	NSArray *notifications;
 	
-	notifications = [NSArray arrayWithObjects: @"Tunnel Opened", @"Warning", nil];
+	notifications = [NSArray arrayWithObjects: @"Tunnel Opened", @"Tunnel Closed", @"Tunnel Restart", @"Warning", nil];
 	
 	NSDictionary *dict;
 	dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -27,13 +30,41 @@
 	return ([[NSUserDefaults standardUserDefaults] boolForKey:UseGrowlString] == YES);
 }
 
-- (void) tunnelOpened
+- (void) tunnelOpened:(NSString *) tunnelName
 {
 	if ([self isOn]) {
 		[GrowlApplicationBridge 
-			notifyWithTitle:@"Tunnel Opened"
-				description:@"Yuppi!"
+			notifyWithTitle:local(@"TunnelOpened")
+				description:[NSString stringWithFormat: @"(%@) %@", tunnelName, local(@"TunnelHasBeenOpened")]
 		   notificationName:@"Tunnel Opened"
+				   iconData:nil
+				   priority:0
+				   isSticky:NO
+			   clickContext:nil];
+	}
+}
+
+- (void) tunnelClosed:(NSString *) tunnelName
+{
+	if ([self isOn]) {
+		[GrowlApplicationBridge 
+			notifyWithTitle:local(@"TunnelClosed")
+				description:[NSString stringWithFormat: @"(%@) %@", tunnelName, local(@"TunnelHasBeenClosed")]
+		   notificationName:@"Tunnel Closed"
+				   iconData:nil
+				   priority:0
+				   isSticky:NO
+			   clickContext:nil];
+	}
+}
+
+- (void) tunnelRestart:(NSString *) tunnelName
+{
+	if ([self isOn]) {
+		[GrowlApplicationBridge 
+			notifyWithTitle:local(@"TunnelRestart")
+				description:[NSString stringWithFormat: @"(%@) %@", tunnelName, local(@"TunnelIsBeeingRestarted")]
+		   notificationName:@"Tunnel Restart"
 				   iconData:nil
 				   priority:0
 				   isSticky:NO
