@@ -62,9 +62,9 @@ AgentController *sharedAgentController;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 		selector:@selector(agentStatusChange:) name:@"AgentStopped" object:nil];
-
-	[NSThread detachNewThreadSelector:@selector(checkForScreenSaver:)
-						toTarget:self withObject:self];
+		
+	[[NSDistributedNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(onScreenSaver:) name:@"com.apple.screensaver.didstart" object:nil];
 
 	allKeysOnAgentLock = [[NSLock alloc] init];
 
@@ -678,67 +678,21 @@ AgentController *sharedAgentController;
 	}
 }
 
-- (void)checkForScreenSaver:(id)object
+- (void)onScreenSaver:(NSNotification *)notification
 {
-	NSAutoreleasePool *pool;
-	NSTask *task;
-	NSPipe *thePipe;
-	NSString *theOutput;
-	int interval;
-	
-	while(1)
+	if((([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 2)
+		|| ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
+	   && ([[agent keysOnAgent] count] > 0))
 	{
-		pool = [[NSAutoreleasePool alloc] init];
-		
-		if(([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] > 1)
-		&& ([[NSFileManager defaultManager] isExecutableFileAtPath:@"/bin/ps"]))
-		{
-			task = [[[NSTask alloc] init] autorelease];
-			thePipe = [[[NSPipe alloc] init] autorelease];
-			
-			[task setLaunchPath:@"/bin/ps"];
-			[task setArguments:[NSArray arrayWithObject:@"wxo command"]];
-			[task setStandardOutput:thePipe];
-
-			[task launch];
-			[task waitUntilExit];
-
-			/* Put the data from thePipe to theOutput. */
-			theOutput = [[[NSString alloc] initWithData:[[thePipe fileHandleForReading] readDataToEndOfFile] encoding:NSASCIIStringEncoding] autorelease];
-	
-			if ([theOutput rangeOfString:@"ScreenSaverEngine.app"].location != NSNotFound)
-			{
-				if((([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 2)
-				|| ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
-				&& ([[agent keysOnAgent] count] > 0))
-				{
-					[object removeKeysFromAgent:nil];
-				}
-
-				if(([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 3)
-				|| ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
-				{
-					SecKeychainLockAll();
-				}
-
-			}
-		}
-		
-		interval = [[NSUserDefaults standardUserDefaults] integerForKey:CheckScreensaverIntervalString];
-				
-		if(interval < 5)
-		{
-			interval = 5;
-		}
-		
-		if(interval > 100)
-		{
-			interval = 100;
-		}
-		
-		sleep(interval);
-		[pool release];
+		[self removeKeysFromAgent:nil];
 	}
+
+	if(([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 3)
+	   || ([[NSUserDefaults standardUserDefaults] integerForKey:OnScreensaverString] == 4))
+	{
+		SecKeychainLockAll();
+	}
+	
 }
 
 - (BOOL)checkSocketPath:(NSString *)path
