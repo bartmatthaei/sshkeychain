@@ -1,0 +1,113 @@
+﻿/* $Id: Localizable.strings,v 1.6 2004/06/23 08:12:20 bart Exp $ */
+
+"Yes" = "Ja";
+"No" = "Nee";
+
+"Download" = "Download";
+"Cancel" = "Annuleer";
+"Changes" = "Wijzigingen";
+
+"LockAppleKeychain" = "Vergrendel Apple sleutelhanger";
+"UnlockAppleKeychain" = "Ontgrendel Apple sleutelhanger";
+
+"AddedAuthsockToEnvironment" = "De variabele SSH_AUTH_SOCK is aan het ~/.MacOSX/environment.plist bestand toegevoegd\nen zal actief worden bij de volgende keer aanmelden.";
+"ChangedAuthsockInEnvironment" = "De variabele SSH_AUTH_SOCK in het ~/.MacOSX/environment.plist bestand is gewijzigd.\nDeze wijziging zal actief worden bij de volgende keer aanmelden.";
+
+"CheckForUpdates" = "Zoek naar nieuwe versie";
+"FailedToRetrieveXMLVersionInfo" = "Het achterhalen van XML versie informatie is niet gelukt.";
+
+"Can'tFigureOutOwnVersion" = "Kan mijn eigen versie niet achterhalen.";
+
+"NewVersion" = "Nieuwe versie";
+"NewVersionAvailable" = "Er is een nieuwe versie van SSHKeychain beschikbaar.";
+"NoNewVersion" = "Er is geen nieuwe versie beschikbaar.";
+
+"AgentTerminatedPanelTitle" = "Agent gestopt";
+"AgentTerminatedPanelText" = "De agent is onverwacht gestopt. Wilt u de agent opnieuw starten?";
+
+"PreferencesNotSavedPanelTitle" = "Voorkeuren niet bewaard";
+"PreferencesNotSavedPanelText" = "Wilt u de voorkeuren bewaren?";
+
+"DisplayPanelTitle" = "Beeld";
+"DisplayPanelText" = "Wijzigingen aan de verschijning zullen actief worden de volgende keer wanneer dit programma wordt gestart.";
+"DisplayChangeNotAllowed" = "U heeft geen schrijfbevoegdheid op de SSHkeychain bundel, dus de Beeld optie kan niet gewijzigd worden.";
+
+"NewSocketpathPanelTitle" = "Nieuw socket pad";
+"NewSocketpathPanelText" = "Het nieuwe socket pad zal bij de volgende start van de agent worden gebruikt.\nDe globale omgevingsvariabele SSH_AUTH_SOCK zal actief worden bij de volgende keer aanmelden.";
+
+"InvalidKey" = "Ongeldige sleutel";
+"KeyAlreadyOnList" = "Sleutel staat al in de lijst";
+
+"ReadPermissionToKeyDenied" = "Geen leesbevoegdheid voor de sleutel";
+
+"InvalidPrivateKey" = "Ongeldige private sleutel";
+
+"StartAgent" = "Start agent";
+"StopAgent" = "Stop agent";
+
+"FailedToStartAgent" = "Starten van ssh-agent niet gelukt.";
+"FailedToStopAgent" = "Stoppen van ssh-agent niet gelukt.";
+"FailedToStartAgentSocketpathInvalid" = "Starten van ssh-agent niet gelukt. Ongeldig socket pad.";
+"AgentNotFound" = "ssh-agent kon niet gevonden worden in de opgegeven map met SSH hulpprogramma's.";
+
+"AddAllKeysToAgent" = "Voeg alle sleutels toe aan agent";
+"AddAllKeysToAgentFailed" = "Het is niet gelukt alle sleutels aan de agent toe te voegen.";
+"AddSingleKeyToAgent" = "Voeg sleutel toe aan agent";
+"AddSingleKeyToAgentFailed" = "Het is niet gelukt de sleutel aan de agent toe te voegen.";
+"AgentNotRunning" = "De agent is niet actief.";
+
+"RemoveAllKeysFromAgent" = "Verwijder alle sleutels van de agent";
+"RemoveAllKeysFromAgentFailed" = "Het is niet gelukt alle sleutels van de agent te verwijderen.";
+
+"AgentNotStarted" = "De agent is niet gestart";
+"InternalInconsistency" = "Interne inconsistentie";
+
+"SocketpathDirectory" = "Het socket pad lijkt een map te zijn.";
+"PleaseChangeSocketpath" = "Alstublieft het socket pad wijzigen in de voorkeuren.";
+
+"Can'tWriteSocketInDirectory" = "Kan niet schrijven naar socket in map.";
+"PleaseCheckPermissions" = "Alstublieft de bevoegdheden controleren.";
+
+"Couldn'tCreateSocketDirectory" = "De map voor de socket kon niet aangemaakt worden.";
+"PleaseCreateItManually" = "Alstublieft deze map handmatig aanmaken.";
+
+
+"PleaseSelectAPath" = "Alstublieft een pad selecteren.";
+"AlreadyExists" = "bestaat al.";
+"KeyTypeUnknown" = "Sleuteltype onbekend.";
+"NumberOfBitsInvalid" = "Aantal bits ongeldig.";
+"PassphraseTooShort" = "Wachtzin te kort (minimaal 5 tekens).";
+"Generating" = "Aanmaken…";
+"KeyGenerationFailed" = "Aanmaken sleutel is niet gelukt.";
+
+"WhereWouldYouLikeToSaveThePrivateKey" = "Waar wilt u de private sleutel bewaren?";
+
+"AddPassphraseToAppleKeychain" = "Voeg wachtzin toe aan Apple sleutelhanger";
+"Passphrase" = "Wachtzin";
+
+"TunnelForwardingFailed" = "Tunnelkoppeling mislukt";
+
+"ForwardingFailedDuringInitialization" = "Koppeling is niet gelukt tijdens initialisatie.";
+
+"TunnelSetupFailed" = "Opbouwen tunnel mislukt";
+
+"TunnelTerminated" = "Tunnel afgebroken";
+"TunnelUnexpectedlyTerminated" = "De tunnel is onverwachts meerdere malen afgebroken en zal niet opnieuw opgebouwd worden.";
+"TunnelTerminatedAndCouldNotBeRestarted" = "De tunnel is onverwachts afgebroken en kon niet opnieuw opgebouwd worden.";
+
+"ActiveTunnel" = "Open tunnel";
+"ActiveTunnels" = "Open tunnels";
+"NoActiveTunnels" = "Geen open tunnels";
+
+"ConfirmationPanelTitle" = "Bevestiging noodzakelijk";
+"ConfirmationPanelText" = "Een SSH client probeert uw sleutels te gebruiken. Wilt u dit toestaan?";
+
+"Preferences" = "Voorkeuren";
+"General" = "Algemeen";
+"Display" = "Beeld";
+"Security" = "Beveiliging";
+"Environment" = "Omgeving";
+"SSH Keys" = "SSH sleutels";
+"Tunnels" = "Tunnels";
+
+"UnknownHostKey" = "Onbekende computersleutel";

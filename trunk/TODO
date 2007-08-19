@@ -1,0 +1,15 @@
+
+### All TODO items have moved to Trac. You can view the list at http://trac.sshkeychain.org/cgi-bin/trac.cgi/report/1
+
+### The cleanup stuff remains here for now.
+
+The Early Spring Code Cleanup:
+- Check retain/release
+- Implement dealloc for all classes containing iVars
+- Use objectEnumerator for arrays, instead of indexes
+- Check for repeating code
+- Move local() to a macro (http://developer.apple.com/intl/localization/tools.html)
+
+The Early Spring Code Cleanup DONE:
+- #define NSStrings is rubbish
+- Constants should start uppercase
