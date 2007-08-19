@@ -254,11 +254,13 @@ NSString *local(NSString *theString)
 			[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil];
 		}
 
-		/* If ~/.MacOSX is a file, instead of a directory, remove it and create a directory. */
+		/* If ~/.MacOSX is a file, log and error and return */
 		else if(isDirectory == NO)
 		{
-			[[NSFileManager defaultManager] removeFileAtPath:macOSXDir handler:nil];
-			[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil];
+			NSLog(@"~/.MacOSX is a file, can not create environemnt variables");
+			return;
+/*			[[NSFileManager defaultManager] removeFileAtPath:macOSXDir handler:nil];
+			[[NSFileManager defaultManager] createDirectoryAtPath:macOSXDir attributes:nil]; */
 		}
 
 		/* If ~/.MacOSX/environment.plist doesn't exists, make a new dictionary. */
