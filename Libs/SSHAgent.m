@@ -113,7 +113,7 @@ extern NSString *local(NSString *theString);
 /* Return YES if the agent is (in theory) running, and NO if not. */
 - (BOOL)isRunning
 {
-	return [self PID] > 0;
+	return [agentTask isRunning];
 }
 
 /* Get the pid. */
@@ -152,11 +152,14 @@ extern NSString *local(NSString *theString);
 	[agentLock unlock];
 }
 
+
+/* eric - 20070819 - Tried several variations before settling on this.  It gives us notification
+    of task termination and unfortunatly NSPipe is very bad about dealing with libc apps that don't
+	flush at the end of every line.  The sleep is a hack, but it works and will only happen one */
+	
 /* Start the agent. */
 - (BOOL)start
 {
-	NSString *line;
-
 	if ([self isRunning])
 	{
 		NSLog(@"Agent is already started");
@@ -164,44 +167,26 @@ extern NSString *local(NSString *theString);
 	}
 
 	[self setAgentSocketPath:nil];
-
-	if (![self socketPath])
-	{
-		NSLog(@"DEBUG: start: socketPath not set");
+	[self setPID:-1];
+	
+	/* Create temporary path for ssh-agent */
+	char template[] = "/tmp/ssh-XXXXXXXXXX/agent.XXXXX";
+	char *retVal = mktemp(template);
+	if ( (long)retVal == -1 ) {
+		NSLog(@"SSHAgent start: temp path could not be generated.");
 		return NO;
 	}
+	NSString *tempPath = [NSString stringWithCString:retVal];
 
-	/* Initialize a ssh-agent SSHTool, set the arguments to -c for c-shell output. */
-	SSHTool *theTool = [SSHTool toolWithName:@"ssh-agent"];
-	[theTool setArgument:@"-c"];
+	/* Setup the agentTask and launch */
+	agentTask = [[[NSTask alloc] init] retain];
+	[agentTask setLaunchPath:@"/usr/bin/ssh-agent"];
+	[agentTask setArguments:[NSArray arrayWithObjects:@"-c",@"-d",@"-a", tempPath, nil]];
+	[agentTask launch];
 
-	/* Launch the agent and retrieve stdout. */
-	NSString *theOutput = [theTool launchForStandardOutput];
-	if (!theOutput)
-	{
-		NSLog(@"ssh-agent didn't launch");
-		return NO;
-	}
-
-	/* Split the lines with delimiter ";\n". */
-	NSArray *lines = [theOutput componentsSeparatedByString:@";\n"];
-	NSEnumerator *e = [lines objectEnumerator];
-	while (line = [e nextObject])
-	{
-		/* Split the line with delimiter " ". */
-		NSArray *columns = [line componentsSeparatedByString:@" "];
-		if ([columns count] != 3)
-			continue;
-
-		NSString *key = [columns objectAtIndex:1];
-		/* If 2nd column matches "SSH_AUTH_SOCK", then 3rd column is the socket path. */
-		if ([key isEqualToString:@"SSH_AUTH_SOCK"])
-			[self setAgentSocketPath:[columns objectAtIndex:2]];
-
-		/* If 2nd column matches "SSH_AGENT_PID", then 3rd column is the PID. */
-		else if ([key isEqualToString:@"SSH_AGENT_PID"])
-			[self setPID:[[columns objectAtIndex:2] intValue]];
-	}
+	/* set paths and PID's... we already know them in advance */
+	[self setAgentSocketPath: tempPath];
+	[self setPID:[agentTask processIdentifier]];
 
 	/* If the agent is not running, or the socket path is empty then stop the agent and fail */
 	if (![self isRunning] || ![[self agentSocketPath] length])
@@ -210,12 +195,19 @@ extern NSString *local(NSString *theString);
 		[self stop];
 		return NO;
 	}
+	
+	/* We need to give ssh-agent time to startup, it's an ugly hack but NSPipes wen't cutting it */
+	sleep(1);
 
 	/* Handle connections in a seperate thread. */
 	[NSThread detachNewThreadSelector:@selector(handleAgentConnections) toTarget:self withObject:nil];
+	
+	/* Watch for terminaton of the agent */
+	[[NSNotificationCenter defaultCenter] addObserver:self
+		selector:@selector(agentFailed:) 
+		name:NSTaskDidTerminateNotification 
+		object:agentTask];
 
-	/* Check if agent is alive in a seperate thread. */
-	[NSThread detachNewThreadSelector:@selector(checkAgent) toTarget:self withObject:nil];
 	[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentStarted" object:nil];
 
 	return YES;
@@ -229,6 +221,7 @@ extern NSString *local(NSString *theString);
 		return YES;
 
 	/* We don't need to check if this fails. We clean up the variables either way. */
+	[agentTask terminate];
 	kill([self PID], SIGTERM);
 
 	[self setAgentSocketPath:nil];
@@ -252,7 +245,7 @@ extern NSString *local(NSString *theString);
 /* Handle connections to our socket. */
 - (void)handleAgentConnections
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSTask *currentAgent = agentTask;
 
 	/* Fill the sockaddr_un structs. */
 	struct sockaddr_un localSocketAddress;
@@ -270,7 +263,6 @@ extern NSString *local(NSString *theString);
 	{
 		NSLog(@"handleAgentConnections: socket() failed");
 		[self stop];
-		[pool release];
 		return;
 	}
 
@@ -282,7 +274,6 @@ extern NSString *local(NSString *theString);
 		{ 
 			NSLog(@"handleAgentConnections: bind() failed");
 			[self stop];
-			[pool release];
 			return;
 		}
 	}
@@ -292,7 +283,6 @@ extern NSString *local(NSString *theString);
 	{
 		NSLog(@"handleAgentConnections: listen() failed");
 		[self stop];
-		[pool release];
 		return;
 	}
 	
@@ -304,7 +294,6 @@ extern NSString *local(NSString *theString);
 	{
 		NSLog(@"handleAgentConnections: malloc() failed");
 		[self stop];
-		[pool release];
 		return;
 	}
 
@@ -321,6 +310,12 @@ extern NSString *local(NSString *theString);
 	int result;
 	while ((result = select(largestFileDescriptor + 1, &readFileDescriptors, NULL, NULL, NULL)))
 	{
+		if (agentTask != currentAgent) {
+			NSLog(@"handleAgentConnections: Hmmm our agent has gone away, close shop and hope the next one is up and running");
+			[self stop];
+			free(allFileDescriptors);
+			return;
+		}
 		if (result == -1 && errno == EINTR)
 			continue;
 
@@ -330,7 +325,6 @@ extern NSString *local(NSString *theString);
 			NSLog(@"handleAgentConnections: select() encountered a fatal error");
 			[self stop];
 			free(allFileDescriptors);
-			[pool release];
 			return;
 		}
 
@@ -348,7 +342,6 @@ extern NSString *local(NSString *theString);
 				{
 					NSLog(@"handleAgentConnections: realloc() failed");
 					[self stop];
-					[pool release];
 					return;
 				}
 			}
@@ -365,7 +358,6 @@ extern NSString *local(NSString *theString);
 				close(newLocalFileDescriptor);
 				[self stop];
 				free(allFileDescriptors);
-				[pool release];
 				return;
 			}
 
@@ -378,7 +370,6 @@ extern NSString *local(NSString *theString);
 				close(newRemoteFileDescriptor);
 				[self stop];
 				free(allFileDescriptors);
-				[pool release];
 				return;
 			}
 
@@ -474,14 +465,11 @@ extern NSString *local(NSString *theString);
 	}
 
 	free(allFileDescriptors);
-	[pool release];
 }
 
 /* When there's a request from a client, this method is called. */
 - (void)inputFromClient:(id)object
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
 	int destinationFileDescriptor = [[object objectAtIndex:0] intValue];
 	const char *readBuffer = [[object objectAtIndex:1] cString];
 	int len = [[object objectAtIndex:2] intValue];
@@ -515,7 +503,6 @@ extern NSString *local(NSString *theString);
 				/* Return \2. */
 				write(sourceFileDescriptor, "\0\0\0\5\2\0\0\0\0", 9);
 
-				[pool release];
 				return;
 			}
 		
@@ -524,7 +511,6 @@ extern NSString *local(NSString *theString);
 				/* Return \12. */
 				write(sourceFileDescriptor, "\0\0\0\5\f\0\0\0\0", 9);
 
-				[pool release];
 				return;
 			}
 		}
@@ -539,32 +525,16 @@ extern NSString *local(NSString *theString);
 
 	/* Write the buffer to the agent. */
 	write(destinationFileDescriptor, readBuffer, len);
-	[pool release];
 }
 
-/* This method is called in a separate thread. It periodically checks if the ssh-agent is still alive. */
-- (void)checkAgent
+/* this method is called from a NSTask notification when the agent dies out from underneath us */
+- (void)agentFailed:(NSNotification *)notification
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	int currentPID = [self PID];
-	while (getpgid(currentPID) != -1)
-	{
-		/* The agent is still alive, so sleep for a while before checking again */
-		sleep(30);
-		
-		/* If the PID has changed while we were sleeping then the agent has been stopped and restarted.
-		   In this instance a new thread would have been spawned to monitor the new agent, and the agent
-		   we were monitoring will no longer exist.  Exit early to avoid notifying the user that the old
-		   agent is gone */
-		if (currentPID != [self PID])
-		{
-			[pool release];
-			return;
-		}
+	/* do nothing if the notification is not for out current agent */
+	if ( [notification object] != agentTask ) {
+		return;
 	}
-		
-	[self stop];
-
+	
 	/* Dictionary for the panel. */
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 
@@ -580,20 +550,17 @@ extern NSString *local(NSString *theString);
 	/* Display a passphrase request notification. */
 	SInt32 error;
 	CFOptionFlags response;
-	CFUserNotificationRef notification = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
+	CFUserNotificationRef notificationRef = CFUserNotificationCreate(nil, 30, CFUserNotificationSecureTextField(0), &error, (CFDictionaryRef)dict);
 
 	/* If we couldn't receive a response, return nil. */
-	if (error || CFUserNotificationReceiveResponse(notification, 0, &response))
+	if (error || CFUserNotificationReceiveResponse(notificationRef, 0, &response))
 	{
-		[pool release];
 		return;
 	}
 
 	/* If OK was pressed, add the keys. */
 	if ((response & 0x3) == kCFUserNotificationDefaultResponse)
 		[self start];
-
-	[pool release];
 }
 
 /* Get current keys on agent. */

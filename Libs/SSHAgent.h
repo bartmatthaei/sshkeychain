@@ -8,6 +8,7 @@
 	NSString *socketPath;
 	NSString *agentSocketPath;
 	NSArray *keysOnAgent;
+	NSTask *agentTask;
 
 	NSLock *agentLock;
 }
@@ -30,7 +31,7 @@
 
 - (void)handleAgentConnections;
 - (void)inputFromClient:(id)object;
-- (void)checkAgent;
+- (void)agentFailed:(NSNotification *)notification;
 
 - (NSArray *)currentKeysOnAgent;
 
