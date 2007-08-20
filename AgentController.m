@@ -142,8 +142,7 @@ AgentController *sharedAgentController;
 		
 		if((status & 1) && ([agent isRunning]))
 		{
-			[NSThread detachNewThreadSelector:@selector(addKeysToAgentWithoutInteractionInNewThread)
-						 toTarget:self withObject:self];
+			[keychain addKeysToAgentWithInteraction:NO];
 		}
 	}	
 
@@ -221,9 +220,8 @@ AgentController *sharedAgentController;
 		}
 
 		[allKeysOnAgentLock unlock];
-
-		[NSThread detachNewThreadSelector:@selector(addKeysToAgentWithoutInteractionInNewThread)
-								toTarget:self withObject:self];
+				
+		[keychain addKeysToAgentWithInteraction:NO];
 	}
 }
 
@@ -281,6 +279,16 @@ AgentController *sharedAgentController;
 		allKeysOnAgent = YES;
 		[allKeysOnAgentLock unlock];
 		
+		if ([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)
+		{
+			// Self firing timer with reset
+			[[self class] cancelPreviousPerformRequestsWithTarget: self ];
+			[self performSelector: @selector(removeKeysFromAgent:) 
+					   withObject: nil
+					   afterDelay: [[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] * 60.00 ];
+			
+		}
+		
 		[[Controller sharedController] setStatus:YES];
 	}
 
@@ -335,8 +343,7 @@ AgentController *sharedAgentController;
 			|| ([[NSUserDefaults standardUserDefaults] integerForKey:FollowKeychainString] == 4))
 			&& (![keychain addingKeys]) && (status & 1) && ([agent isRunning]))
 		{
-			[NSThread detachNewThreadSelector:@selector(addKeysToAgentWithoutInteractionInNewThread)
-				toTarget:self withObject:self];
+			[keychain addKeysToAgentWithInteraction:NO];
 		}
 
 	}
@@ -443,6 +450,7 @@ AgentController *sharedAgentController;
 {
 	if([agent isRunning])
 	{
+	
 		[NSThread detachNewThreadSelector:@selector(addKeysToAgentInNewThread)
 							toTarget:self withObject:nil];
 	}
@@ -464,15 +472,6 @@ AgentController *sharedAgentController;
 		[self warningPanelWithTitle:local(@"AddAllKeysToAgent") andMessage:local(@"AddAllKeysToAgentFailed")
 			       inMainThread:YES];
 	}
-
-	[pool release];
-}
-
-- (void)addKeysToAgentWithoutInteractionInNewThread
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-
-	[keychain addKeysToAgentWithInteraction:NO];
 
 	[pool release];
 }

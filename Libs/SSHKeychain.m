@@ -3,6 +3,7 @@
 
 #import "SSHKey.h"
 #import "SSHTool.h"
+#import "SSHAgent.h"
 
 #include <unistd.h>
 
@@ -32,8 +33,6 @@ SSHKeychain *currentKeychain;
 
 	keychainLock = [[NSLock alloc] init];
 	addingKeysLock = [[NSLock alloc] init];
-	lastScheduledLock = [[NSLock alloc] init];
-	lastScheduled = -1;
 	
 	[self resetToKeysWithPaths:paths];
 	
@@ -50,7 +49,6 @@ SSHKeychain *currentKeychain;
 
 	[keychainLock release];
 	[addingKeysLock release];
-	[lastScheduledLock release];
 	[agentSocketPath release];
 	
 	[super dealloc];
@@ -108,21 +106,6 @@ SSHKeychain *currentKeychain;
 	[addingKeysLock unlock];
 }
 
-- (int) lastScheduled
-{
-	[lastScheduledLock lock];
-	int returnInt = lastScheduled;
-	[lastScheduledLock unlock];
-
-	return returnInt;
-}
-
-- (void) setLastScheduled:(int) scheduledTime
-{
-	[lastScheduledLock lock];
-	lastScheduled = scheduledTime;
-	[lastScheduledLock unlock];
-}
 
 /* Returns the SSHKey at Index nr. */
 - (SSHKey *)keyAtIndex:(int)nr
@@ -207,7 +190,7 @@ SSHKeychain *currentKeychain;
 	if ([self addingKeys])
 		return YES;
 
-	if (!agentSocketPath || ![[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath])
+	if (![[SSHAgent currentAgent] isRunning])
 		return NO;
 	
 	NSMutableArray *paths = [NSMutableArray array];
@@ -246,34 +229,10 @@ SSHKeychain *currentKeychain;
 		return NO;
 	}
 	
-	if ([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)
-	{
-		int timeScheduled = time(nil);
-		[self setLastScheduled:timeScheduled];
-		
-		[NSThread detachNewThreadSelector:@selector(removeKeysAfterTimeout:) toTarget:self 
-								withObject:[NSNumber numberWithInt:timeScheduled]];
-	}
-
 	[[NSNotificationCenter defaultCenter]  postNotificationName:@"AgentFilled" object:nil];
 	
 	[self setAddingKeys:NO];
 	return YES;
-}
-
-/* Remove all keys from the ssh-agent from a NSTimer object. */
-- (void)removeKeysAfterTimeout:(id)object
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	int timeScheduled = [object intValue];
-	
-	sleep([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] * 60);
-	
-	/* If the time this timeout was scheduled is still the most recent, go ahead and remove the keys */
-	if (timeScheduled == [self lastScheduled]) 
-		[self removeKeysFromAgent];
-	
-	[pool release];
 }
 
 /* Remove all keys from the ssh-agent. */
@@ -281,9 +240,7 @@ SSHKeychain *currentKeychain;
 {
 	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
 
-	[self setLastScheduled:-1];
-
-	if (!agentSocketPath || ![[NSFileManager defaultManager] isReadableFileAtPath:agentSocketPath])
+	if (![[SSHAgent currentAgent] isRunning])
 		return NO;
 
 	[theTool setArgument:@"-D"];

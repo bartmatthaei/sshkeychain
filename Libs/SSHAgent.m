@@ -638,7 +638,7 @@ extern NSString *local(NSString *theString);
 	if ([[notification name] isEqualToString:@"AgentEmptied"])
 		[self setKeysOnAgent:nil];
 
-	else if ([[notification name] isEqualToString:@"AgentFilled"])
+	else if ([[notification name] isEqualToString:@"AgentFilled"]) 
 		[self setKeysOnAgent:[[SSHAgent currentAgent] currentKeysOnAgent]];
 }
 

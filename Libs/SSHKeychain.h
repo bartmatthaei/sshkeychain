@@ -9,12 +9,9 @@
 	NSString *agentSocketPath;
 	BOOL addingKeys;
 	
-	int lastScheduled;
-
 	/* Locks */
 	NSLock *keychainLock;
 	NSLock *addingKeysLock;
-	NSLock *lastScheduledLock;
 }
 
 + (id)currentKeychain;
@@ -39,7 +36,6 @@
 
 - (BOOL)addKeysToAgent;
 - (BOOL)addKeysToAgentWithInteraction:(BOOL)interaction;
-- (void)removeKeysAfterTimeout:(id)object;
 - (BOOL)removeKeysFromAgent;
 
 @end
