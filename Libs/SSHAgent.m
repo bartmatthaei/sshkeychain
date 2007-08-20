@@ -245,7 +245,7 @@ extern NSString *local(NSString *theString);
 /* Handle connections to our socket. */
 - (void)handleAgentConnections
 {
-	NSTask *currentAgent = agentTask;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	/* Fill the sockaddr_un structs. */
 	struct sockaddr_un localSocketAddress;
@@ -263,6 +263,7 @@ extern NSString *local(NSString *theString);
 	{
 		NSLog(@"handleAgentConnections: socket() failed");
 		[self stop];
+		[pool release];
 		return;
 	}
 
@@ -274,6 +275,7 @@ extern NSString *local(NSString *theString);
 		{ 
 			NSLog(@"handleAgentConnections: bind() failed");
 			[self stop];
+			[pool release];
 			return;
 		}
 	}
@@ -283,6 +285,7 @@ extern NSString *local(NSString *theString);
 	{
 		NSLog(@"handleAgentConnections: listen() failed");
 		[self stop];
+		[pool release];
 		return;
 	}
 	
@@ -294,6 +297,7 @@ extern NSString *local(NSString *theString);
 	{
 		NSLog(@"handleAgentConnections: malloc() failed");
 		[self stop];
+		[pool release];
 		return;
 	}
 
@@ -310,12 +314,6 @@ extern NSString *local(NSString *theString);
 	int result;
 	while ((result = select(largestFileDescriptor + 1, &readFileDescriptors, NULL, NULL, NULL)))
 	{
-		if (agentTask != currentAgent) {
-			NSLog(@"handleAgentConnections: Hmmm our agent has gone away, close shop and hope the next one is up and running");
-			[self stop];
-			free(allFileDescriptors);
-			return;
-		}
 		if (result == -1 && errno == EINTR)
 			continue;
 
@@ -325,6 +323,7 @@ extern NSString *local(NSString *theString);
 			NSLog(@"handleAgentConnections: select() encountered a fatal error");
 			[self stop];
 			free(allFileDescriptors);
+			[pool release];
 			return;
 		}
 
@@ -342,6 +341,7 @@ extern NSString *local(NSString *theString);
 				{
 					NSLog(@"handleAgentConnections: realloc() failed");
 					[self stop];
+					[pool release];
 					return;
 				}
 			}
@@ -358,6 +358,7 @@ extern NSString *local(NSString *theString);
 				close(newLocalFileDescriptor);
 				[self stop];
 				free(allFileDescriptors);
+				[pool release];
 				return;
 			}
 
@@ -370,6 +371,7 @@ extern NSString *local(NSString *theString);
 				close(newRemoteFileDescriptor);
 				[self stop];
 				free(allFileDescriptors);
+				[pool release];
 				return;
 			}
 
@@ -465,11 +467,14 @@ extern NSString *local(NSString *theString);
 	}
 
 	free(allFileDescriptors);
+	[pool release];
 }
 
 /* When there's a request from a client, this method is called. */
 - (void)inputFromClient:(id)object
 {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	int destinationFileDescriptor = [[object objectAtIndex:0] intValue];
 	const char *readBuffer = [[object objectAtIndex:1] cString];
 	int len = [[object objectAtIndex:2] intValue];
@@ -503,6 +508,7 @@ extern NSString *local(NSString *theString);
 				/* Return \2. */
 				write(sourceFileDescriptor, "\0\0\0\5\2\0\0\0\0", 9);
 
+				[pool release];
 				return;
 			}
 		
@@ -511,6 +517,7 @@ extern NSString *local(NSString *theString);
 				/* Return \12. */
 				write(sourceFileDescriptor, "\0\0\0\5\f\0\0\0\0", 9);
 
+				[pool release];
 				return;
 			}
 		}
@@ -525,6 +532,7 @@ extern NSString *local(NSString *theString);
 
 	/* Write the buffer to the agent. */
 	write(destinationFileDescriptor, readBuffer, len);
+	[pool release];
 }
 
 /* this method is called from a NSTask notification when the agent dies out from underneath us */
