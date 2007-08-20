@@ -75,23 +75,6 @@
 		CCE66DE506B15AEA002A5BEE /* TunnelsView.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE66DE306B15AEA002A5BEE /* TunnelsView.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildStyle section */
-		CCE37CF00C606DDA0073E776 /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-			};
-			name = Development;
-		};
-		CCE37CF10C606DDA0073E776 /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
-
 /* Begin PBXContainerItemProxy section */
 		CCC9E3E406A5A44900422E9E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -483,12 +466,6 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = CC39D6370921118A00FE3BC5 /* Build configuration list for PBXProject "SSHKeychain" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				CCE37CF00C606DDA0073E776 /* Development */,
-				CCE37CF10C606DDA0073E776 /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,

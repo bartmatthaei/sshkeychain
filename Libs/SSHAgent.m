@@ -170,7 +170,7 @@ extern NSString *local(NSString *theString);
 	[self setPID:-1];
 	
 	/* Create temporary path for ssh-agent */
-	char template[] = "/tmp/501/agent.XXXXXX";
+	char template[] = "/tmp/agent.XXXXXX";
 	char *retVal = mktemp(template);
 	if ( (long)retVal == -1 ) {
 		NSLog(@"SSHAgent start: temp path could not be generated.");
@@ -198,9 +198,11 @@ extern NSString *local(NSString *theString);
 	}
 	
 	/* We need to give ssh-agent time to startup, it's an ugly hack but NSPipes wen't cutting it */
+	/* FIXME: replace with something that checks for the socket */
 	sleep(1);
 
 	/* Handle connections in a seperate thread. */
+	/* FIXME: really should use the built in mac functions here */
 	[NSThread detachNewThreadSelector:@selector(handleAgentConnections) toTarget:self withObject:nil];
 	
 	/* Watch for terminaton of the agent */

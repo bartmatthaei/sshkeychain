@@ -9,7 +9,7 @@
 		<key>1065</key>
 		<string>452 524 539 122 0 0 1440 878 </string>
 		<key>640</key>
-		<string>459 404 526 361 0 0 1440 878 </string>
+		<string>457 406 526 361 0 0 1440 878 </string>
 		<key>722</key>
 		<string>474 468 495 234 0 0 1440 878 </string>
 		<key>750</key>
@@ -32,6 +32,10 @@
 	<key>IBLockedObjects</key>
 	<array>
 		<integer>746</integer>
+	</array>
+	<key>IBOpenObjects</key>
+	<array>
+		<integer>640</integer>
 	</array>
 	<key>IBSystem Version</key>
 	<string>8R2218</string>
