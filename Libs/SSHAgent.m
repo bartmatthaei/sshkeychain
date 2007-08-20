@@ -170,13 +170,14 @@ extern NSString *local(NSString *theString);
 	[self setPID:-1];
 	
 	/* Create temporary path for ssh-agent */
-	char template[] = "/tmp/ssh-XXXXXXXXXX/agent.XXXXX";
+	char template[] = "/tmp/501/agent.XXXXXX";
 	char *retVal = mktemp(template);
 	if ( (long)retVal == -1 ) {
 		NSLog(@"SSHAgent start: temp path could not be generated.");
 		return NO;
 	}
 	NSString *tempPath = [NSString stringWithCString:retVal];
+	NSLog(tempPath);
 
 	/* Setup the agentTask and launch */
 	agentTask = [[[NSTask alloc] init] retain];
