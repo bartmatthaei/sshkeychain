@@ -40,7 +40,7 @@ NSString *local(NSString *theString)
 	conn = [NSConnection defaultConnection];
 
 	[conn runInNewThread];
-	[conn removeRunLoop:[NSRunLoop currentRunLoop]];
+	[conn removeRunLoop:[NSRunLoop currentRunLoop]]; 
 
 	/* Register the default settings */
 	defaults = [NSMutableDictionary dictionaryWithObjects:
@@ -412,7 +412,10 @@ NSString *local(NSString *theString)
 			return @"no";
 		
 
-		int r = NSRunAlertPanel(local(@"UnknownHostKey"), question, local(@"No"), local(@"Yes"), nil);
+		int r = NSRunAlertPanel(
+			local(@"UnknownHostKey"), 
+			question, local(@"No"), 
+			local(@"Yes"), nil);
 
 		SetFrontProcess(&focusSerialNumber);
 
@@ -435,7 +438,10 @@ NSString *local(NSString *theString)
 				SecKeychainGetStatus(keychain, &keychainStatus);
 				
 				if(keychainStatus & 1) {
-					returnStatus = SecKeychainFindGenericPassword(keychain, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
+					returnStatus = SecKeychainFindGenericPassword(
+						keychain, strlen(serviceName), serviceName, 
+						strlen(accountName), accountName, &passwordLength, 
+						(void **)&kcPassword, nil);
 					
 					if(returnStatus == 0) {
 						break;
@@ -448,7 +454,9 @@ NSString *local(NSString *theString)
 		
 		else
 		{
-			returnStatus = SecKeychainFindGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, &passwordLength, (void **)&kcPassword, nil);
+			returnStatus = SecKeychainFindGenericPassword(
+				nil, strlen(serviceName), serviceName, strlen(accountName), 
+				accountName, &passwordLength, (void **)&kcPassword, nil);
 		}
 		
 		SetFrontProcess(&focusSerialNumber);
@@ -459,11 +467,27 @@ NSString *local(NSString *theString)
 		
 		if(returnStatus == 0)
 		{
-			kcPassword[passwordLength] = '\0';
+			NSString *returnString;
+			
+			if ( kcPassword[passwordLength] != 0 ) {
+				/* Don't trust memory allocated from system, copy it over
+				First before making it a CString */
 
-			NSString *returnString = [NSString stringWithCString:kcPassword];
+				NSLog(@"Buggy password in keycahin workaround");
+				char * buffer = (char*)malloc((passwordLength+1)*sizeof(char));
+				strncpy(buffer, kcPassword, passwordLength);
+				buffer[passwordLength] = '\0';
+			
 
-			SecKeychainItemFreeContent(NULL, kcPassword);
+				returnString = [NSString stringWithUTF8String:buffer];
+
+				SecKeychainItemFreeContent(NULL, kcPassword);
+				free(buffer);
+			} else {
+				returnString = [NSString stringWithUTF8String:kcPassword];
+
+				SecKeychainItemFreeContent(NULL, kcPassword);
+			}
 			
 			return returnString;
 		}
@@ -524,7 +548,8 @@ NSString *local(NSString *theString)
 		}
 		
 		/* Get the passphrase from the textfield. */
-		enteredPassphrase = CFUserNotificationGetResponseValue(notification, kCFUserNotificationTextFieldValuesKey, 0);
+		enteredPassphrase = CFUserNotificationGetResponseValue(notification, 
+			kCFUserNotificationTextFieldValuesKey, 0);
 
 		if(enteredPassphrase != nil)
 		{
@@ -535,7 +560,12 @@ NSString *local(NSString *theString)
 			{
 				serviceName = "SSHKeychain";
 				
-				SecKeychainAddGenericPassword(nil, strlen(serviceName), serviceName, strlen(accountName), accountName, [passphrase length], (const void *)[passphrase UTF8String], nil);
+				const char * utf8password = [passphrase UTF8String];
+				
+				SecKeychainAddGenericPassword(nil, strlen(serviceName), 
+					serviceName, strlen(accountName), accountName, 
+					strlen(utf8password) + 1, 
+					(const void *)utf8password, nil);
 			}
 			
 			[passphraseIsRequestedLock lock];
