@@ -6,6 +6,7 @@
 
 #import "PreferenceController.h"
 #import "UpdateController.h"
+#import "TokenController.h"
 
 #import "Libs/SSHAgent.h"
 #import "Libs/SSHKeychain.h"
@@ -345,7 +346,7 @@ NSString *local(NSString *theString)
 	}
 }
 
-- (NSString *)askPassphrase:(NSString *)question withInteraction:(BOOL)interaction
+- (NSString *)askPassphrase:(NSString *)question withToken:(NSString *)token andInteraction:(BOOL)interaction
 {
 	char *serviceName;
 	const char *accountName = nil;
@@ -367,6 +368,13 @@ NSString *local(NSString *theString)
 	BOOL consultKeychain = NO;
 
 	ProcessSerialNumber focusSerialNumber;
+
+	// Check if the token is valid.
+	if(![[TokenController sharedController] checkToken:token])
+	{
+		return nil;
+	}
+	
 	GetFrontProcess(&focusSerialNumber);
 
 	SecKeychainSetUserInteractionAllowed(TRUE);

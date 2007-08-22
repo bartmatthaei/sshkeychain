@@ -3,7 +3,7 @@
 
 @protocol UI
 
-- (NSString *)askPassphrase:(NSString *)question withInteraction:(BOOL)interaction;
+- (NSString *)askPassphrase:(NSString *)question withToken:(NSString *)token andInteraction:(BOOL)interaction;
 - (void)warningPanelWithTitle:(NSString *)title andMessage:(NSString *)message;
 - (NSData *)statusbarMenu;
 
@@ -42,7 +42,7 @@
 
 - (IBAction)toggleAppleKeychainLock:(id)sender;
 
-- (NSString *)askPassphrase:(NSString *)question withInteraction:(BOOL)interaction;
+- (NSString *)askPassphrase:(NSString *)question withToken:(NSString *)token andInteraction:(BOOL)interaction;
 
 - (IBAction)showAboutPanel:(id)sender;
 

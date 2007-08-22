@@ -1,5 +1,6 @@
 #import "SSHKeychain.h"
 #import "PreferenceController.h"
+#import "TokenController.h"
 
 #import "SSHKey.h"
 #import "SSHTool.h"
@@ -213,6 +214,7 @@ SSHKeychain *currentKeychain;
 	NSMutableArray *paths = [NSMutableArray array];
 	NSEnumerator *e = [[self arrayOfPaths] objectEnumerator];
 	NSString *path;
+
 	while (path = [e nextObject])
 	{
 		if ([[NSFileManager defaultManager] isReadableFileAtPath:path])
@@ -223,27 +225,33 @@ SSHKeychain *currentKeychain;
 		return NO;
 
 	[self setAddingKeys:YES];
-	
-	SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
-	[theTool setArguments:paths];
 
-	/* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
-	[theTool setEnvironmentVariable:@"SSH_ASKPASS" withValue:
-		[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"PassphraseRequester"]];
-		
-	[theTool setEnvironmentVariable:@"DISPLAY" withValue:@":0"];
-
-	/* If we want user interaction, we set the environment variable so PassphraseRequester knows this. */
-	if (interaction)
-		[theTool setEnvironmentVariable:@"INTERACTION" withValue:@"1"];
-
-	/* Set the SSH_AUTH_SOCK environment variable so the tool can talk to the real agent. */
-	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:agentSocketPath];
-
-	if (![theTool launchAndWait])
+	// Add all keys separately since they need different tokens	
+	e = [paths objectEnumerator];
+	while (path = [e nextObject]) 
 	{
-		[self setAddingKeys:NO];
-		return NO;
+		SSHTool *theTool = [SSHTool toolWithName:@"ssh-add"];
+		[theTool setArgument:path];
+		
+		/* Set the SSH_ASKPASS + DISPLAY environment variables, so the tool can ask for a passphrase. */
+		[theTool setEnvironmentVariable:@"SSH_ASKPASS" withValue:
+			[[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"PassphraseRequester"]];
+			
+		[theTool setEnvironmentVariable:@"DISPLAY" withValue:@":0"];
+		
+		/* If we want user interaction, we set the environment variable so PassphraseRequester knows this. */
+		if (interaction)
+			[theTool setEnvironmentVariable:@"INTERACTION" withValue:@"1"];
+		
+		/* Set the SSH_AUTH_SOCK environment variable so the tool can talk to the real agent. */
+		[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:agentSocketPath];
+		
+		/* Set the token and run. */
+		if(![[TokenController sharedController] generateNewTokenForTool:theTool] || ![theTool launchAndWait])
+		{
+			[self setAddingKeys:NO];
+			return NO;
+		}
 	}
 	
 	if ([[NSUserDefaults standardUserDefaults] integerForKey:KeyTimeoutString] > 0)

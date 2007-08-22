@@ -1,6 +1,7 @@
 #import "SSHTunnel.h"
 
 #import "PreferenceController.h"
+#import "TokenController.h"
 
 #ifndef NSAppKitVersionNumber10_3
 #define NSAppKitVersionNumber10_3 743
@@ -252,6 +253,12 @@
 	thePipe = [[NSPipe alloc] init];
 
 	[[tunnel task] setStandardOutput:thePipe];
+
+	// Generate a token.
+	if (![[TokenController sharedController] generateNewTokenForTool:tunnel])
+	{
+		return NO;
+	}
 	
 	/* Launch ssh. */
 	if (![tunnel launch])

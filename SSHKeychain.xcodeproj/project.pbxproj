@@ -34,6 +34,8 @@
 		CC40C2D306A6813E00AE58DD /* SSHTunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = CC40C2D106A6813E00AE58DD /* SSHTunnel.h */; };
 		CC4FC46206AD4A0C00B59C21 /* KeysView.h in Headers */ = {isa = PBXBuildFile; fileRef = CC4FC46006AD4A0C00B59C21 /* KeysView.h */; };
 		CC4FC46306AD4A0C00B59C21 /* KeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4FC46106AD4A0C00B59C21 /* KeysView.m */; };
+		CC51B4110C7C5EE8005D33DB /* TokenController.h in Headers */ = {isa = PBXBuildFile; fileRef = CC51B40F0C7C5EE8005D33DB /* TokenController.h */; };
+		CC51B4120C7C5EE8005D33DB /* TokenController.m in Sources */ = {isa = PBXBuildFile; fileRef = CC51B4100C7C5EE8005D33DB /* TokenController.m */; };
 		CC586C5106C3D56A00D73261 /* SecurityView.h in Headers */ = {isa = PBXBuildFile; fileRef = CC586C4F06C3D56A00D73261 /* SecurityView.h */; };
 		CC586C5206C3D56A00D73261 /* SecurityView.m in Sources */ = {isa = PBXBuildFile; fileRef = CC586C5006C3D56A00D73261 /* SecurityView.m */; };
 		CC604C1E06AE44EE00B9CEBB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
@@ -73,6 +75,8 @@
 		CCDA608B06ACEFD900E2A5B3 /* preference_security.tiff in Resources */ = {isa = PBXBuildFile; fileRef = CCDA608906ACEFD900E2A5B3 /* preference_security.tiff */; };
 		CCE66DE406B15AEA002A5BEE /* TunnelsView.h in Headers */ = {isa = PBXBuildFile; fileRef = CCE66DE206B15AEA002A5BEE /* TunnelsView.h */; };
 		CCE66DE506B15AEA002A5BEE /* TunnelsView.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE66DE306B15AEA002A5BEE /* TunnelsView.m */; };
+		CCFAAB470C7C870900AD9093 /* SSHToken.h in Headers */ = {isa = PBXBuildFile; fileRef = CCFAAB450C7C870900AD9093 /* SSHToken.h */; };
+		CCFAAB480C7C870900AD9093 /* SSHToken.m in Sources */ = {isa = PBXBuildFile; fileRef = CCFAAB460C7C870900AD9093 /* SSHToken.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildStyle section */
@@ -142,6 +146,8 @@
 		CC40C2D106A6813E00AE58DD /* SSHTunnel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SSHTunnel.h; path = Libs/SSHTunnel.h; sourceTree = "<group>"; usesTabs = 1; };
 		CC4FC46006AD4A0C00B59C21 /* KeysView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = KeysView.h; path = PreferenceViews/KeysView.h; sourceTree = "<group>"; usesTabs = 1; };
 		CC4FC46106AD4A0C00B59C21 /* KeysView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = KeysView.m; path = PreferenceViews/KeysView.m; sourceTree = "<group>"; usesTabs = 1; };
+		CC51B40F0C7C5EE8005D33DB /* TokenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TokenController.h; sourceTree = "<group>"; };
+		CC51B4100C7C5EE8005D33DB /* TokenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TokenController.m; sourceTree = "<group>"; };
 		CC586C4F06C3D56A00D73261 /* SecurityView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SecurityView.h; path = PreferenceViews/SecurityView.h; sourceTree = "<group>"; usesTabs = 1; };
 		CC586C5006C3D56A00D73261 /* SecurityView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = SecurityView.m; path = PreferenceViews/SecurityView.m; sourceTree = "<group>"; usesTabs = 1; };
 		CC604C2306AE6B1700B9CEBB /* preference_tunnels.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = preference_tunnels.tiff; sourceTree = "<group>"; };
@@ -200,6 +206,8 @@
 		CCDA608906ACEFD900E2A5B3 /* preference_security.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = preference_security.tiff; sourceTree = "<group>"; };
 		CCE66DE206B15AEA002A5BEE /* TunnelsView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TunnelsView.h; path = PreferenceViews/TunnelsView.h; sourceTree = "<group>"; usesTabs = 1; };
 		CCE66DE306B15AEA002A5BEE /* TunnelsView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = TunnelsView.m; path = PreferenceViews/TunnelsView.m; sourceTree = "<group>"; usesTabs = 1; };
+		CCFAAB450C7C870900AD9093 /* SSHToken.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SSHToken.h; path = Libs/SSHToken.h; sourceTree = "<group>"; };
+		CCFAAB460C7C870900AD9093 /* SSHToken.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = SSHToken.m; path = Libs/SSHToken.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -234,6 +242,8 @@
 				CCCDD4A406A576CF00B68ED1 /* AgentController.m */,
 				CCCDD4A506A576CF00B68ED1 /* Controller.h */,
 				CCCDD4A606A576CF00B68ED1 /* Controller.m */,
+				CC51B40F0C7C5EE8005D33DB /* TokenController.h */,
+				CC51B4100C7C5EE8005D33DB /* TokenController.m */,
 				CC08A64506A876B300C578A3 /* PreferenceController.h */,
 				CC6C191307421C8700CB0A18 /* UpdateController.h */,
 				CC08A64606A876B300C578A3 /* PreferenceController.m */,
@@ -361,6 +371,8 @@
 		CCCDD5FB06A57E9200B68ED1 /* Libs */ = {
 			isa = PBXGroup;
 			children = (
+				CCFAAB450C7C870900AD9093 /* SSHToken.h */,
+				CCFAAB460C7C870900AD9093 /* SSHToken.m */,
 				CC40C2D106A6813E00AE58DD /* SSHTunnel.h */,
 				CCC9E54306A6802000422E9E /* SSHTunnel.m */,
 				CCC9E53B06A6802000422E9E /* SSHAgent.h */,
@@ -402,6 +414,8 @@
 				CC6C191507421C8700CB0A18 /* UpdateController.h in Headers */,
 				0A7F549007676EB500E1C1E4 /* Utilities.h in Headers */,
 				0A7F555007677DCC00E1C1E4 /* NSMenu_Additions.h in Headers */,
+				CC51B4110C7C5EE8005D33DB /* TokenController.h in Headers */,
+				CCFAAB470C7C870900AD9093 /* SSHToken.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -580,6 +594,8 @@
 				CC6C191607421C8700CB0A18 /* UpdateController.m in Sources */,
 				0A7F549107676EB500E1C1E4 /* Utilities.m in Sources */,
 				0A7F555107677DCC00E1C1E4 /* NSMenu_Additions.m in Sources */,
+				CC51B4120C7C5EE8005D33DB /* TokenController.m in Sources */,
+				CCFAAB480C7C870900AD9093 /* SSHToken.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

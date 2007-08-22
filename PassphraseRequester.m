@@ -7,6 +7,7 @@ int main(int argc, const char *argv[])
 	NSAutoreleasePool *pool;
 	char *interaction;
 	NSString *passphrase;
+	NSString *sshkeychainToken = nil;
 
 	if(argc == 2) 
 	{
@@ -20,14 +21,19 @@ int main(int argc, const char *argv[])
 			[pool release]; 
 			exit(1); 
 		}
-
+		
+		if(getenv("SSHKeychainToken")) 
+		{
+			sshkeychainToken = [NSString stringWithCString:getenv("SSHKeychainToken")];
+		}
+		
 		[UI setProtocolForProxy:@protocol(UI)];
 
 		interaction = getenv("INTERACTION");
 
 		if((interaction) && (strcmp(interaction, "1") == 0))
 		{
-			passphrase = [UI askPassphrase:[[procinfo arguments] objectAtIndex:1] withInteraction:YES];
+			passphrase = [UI askPassphrase:[[procinfo arguments] objectAtIndex:1] withToken:sshkeychainToken andInteraction:YES];
 			
 			if(passphrase == nil)
 			{
@@ -38,7 +44,7 @@ int main(int argc, const char *argv[])
 
 		else
 		{
-			passphrase = [UI askPassphrase:[[procinfo arguments] objectAtIndex:1] withInteraction:NO];
+			passphrase = [UI askPassphrase:[[procinfo arguments] objectAtIndex:1] withToken:sshkeychainToken andInteraction:NO];
 			
 			if(passphrase == nil)
 			{

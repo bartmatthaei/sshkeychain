@@ -3,6 +3,7 @@
 #import "SSHKeychain.h"
 #import "SSHTool.h"
 #import "PreferenceController.h"
+#import "TokenController.h"
 
 #include <string.h>
 #include <sys/types.h>
@@ -610,6 +611,12 @@ extern NSString *local(NSString *theString);
 
 	/* Set the SSH_AUTH_SOCK environment variable so ssh-add can talk to the real agent. */
 	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:[self agentSocketPath]];
+
+	/* Set the token. */
+	if([[TokenController sharedController] generateNewTokenForTool:theTool] == NO)
+	{
+		return nil;
+	}
 
 	/* Launch the tool and retrieve stdout. */
 	NSString *theOutput = [theTool launchForStandardOutput];

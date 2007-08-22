@@ -1,4 +1,5 @@
 #import "AgentController.h"
+#import "TokenController.h"
 
 #include <unistd.h>
 
@@ -563,7 +564,8 @@ AgentController *sharedAgentController;
 	/* Set the SSH_AUTH_SOCK environment variable. */
 	[theTool setEnvironmentVariable:@"SSH_AUTH_SOCK" withValue:[agent socketPath]];
 
-	if([theTool launchAndWait] == NO)
+	/* Set the token and run. */
+	if(![[TokenController sharedController] generateNewTokenForTool:theTool] || ![theTool launchAndWait])
 	{
 		[self warningPanelWithTitle:local(@"AddSingleKeyToAgent") andMessage:local(@"AddSingleKeyToAgentFailed")
 			       inMainThread:YES];
