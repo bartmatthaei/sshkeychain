@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
-#import "SSHToken.h"
+#import "Libs/SSHToken.h"
 #import "SSHTool.h"
 
 @interface TokenController : NSObject {
