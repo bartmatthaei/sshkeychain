@@ -32,7 +32,7 @@
 		return SSH_KEYTYPE_RSA1;
 	else if ([header isEqualToString:@"-----BEGIN RSA PRIVATE KEY-----"])
 		return SSH_KEYTYPE_RSA;
-	else if ([[lines objectAtIndex:0] isEqualToString:@"-----BEGIN ENCRYPTED PRIVATE KEY-----"])
+	else if ([[header objectAtIndex:0] isEqualToString:@"-----BEGIN ENCRYPTED PRIVATE KEY-----"])
 		return SSH_KEYTYPE_RSA;
 	else if ([header isEqualToString:@"-----BEGIN DSA PRIVATE KEY-----"])
 		return SSH_KEYTYPE_DSA;
