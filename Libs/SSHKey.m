@@ -16,10 +16,16 @@
 	NSMutableData *data = [NSMutableData dataWithContentsOfFile:thePath];
 	
 	if(data == nil)
+	{
 		return SSH_KEYTYPE_UNKNOWN;
+	}
 	
 	const char *dataPtr = [data bytes];
-	const char *newline = index(dataPtr, '\n');
+	const char *newline = index(dataPtr, '\r');
+	if (newline == NULL)
+	{
+		newline = index(dataPtr, '\n');
+	}
 	
 	NSString *header = [NSString string];
 	if (newline != NULL)
@@ -32,9 +38,9 @@
 		return SSH_KEYTYPE_RSA1;
 	else if ([header isEqualToString:@"-----BEGIN RSA PRIVATE KEY-----"])
 		return SSH_KEYTYPE_RSA;
-	else if ([[header objectAtIndex:0] isEqualToString:@"-----BEGIN ENCRYPTED PRIVATE KEY-----"])
+	else if ([header isEqualToString:@"-----BEGIN ENCRYPTED PRIVATE KEY-----"])
 		return SSH_KEYTYPE_RSA;
-	else if ([header isEqualToString:@"-----BEGIN DSA PRIVATE KEY-----"])
+	else if ([header isEqualToString:@ "-----BEGIN DSA PRIVATE KEY-----"])
 		return SSH_KEYTYPE_DSA;
 	else
 		return SSH_KEYTYPE_UNKNOWN;
